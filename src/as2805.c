@@ -707,8 +707,8 @@ void AS2805BufferUnpack(char * data, uchar format, uint size, uchar * buffer, ui
 			data[size] = '\0';
 			break;
 		case C_LLNVAR:
-			length = 2;
 		case C_LLLNVAR:
+			if (format == C_LLNVAR) length = 2;
 			if (format == C_LLLNVAR) length = 3;
 			size = _bcdToNumber(buffer, index, length, C_BCD);
 			for (i = 0; i < size; i++)

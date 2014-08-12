@@ -170,7 +170,6 @@ static void AddToMsg(char *subMsg, int length);
 static void AddVivoHeader(void);
 static void AddVivo2Header(void);
 static void AppendCRC(void);
-static void UnformatNStr(char *numStr, char *unfmtStr, int noDgts, char convAsc);
 static void FormatAmt(char *amt, char *formattedAmt);
 static int  GetNumDigits(char *amt, int length);
 static int  CheckCRC(char *rsp);
@@ -181,15 +180,10 @@ static void BuildActivateTransactionMsg(char timeout);
 static void BuildSetEMVTxnAmtMsg(void);
 static void BuildCancelTransactionMsg(void);
 static void BuildStoreLCDMsgMsg(char msgNdx, char *str, char *paramStr1, char *paramStr2, char *paramStr3);
-static void BuildGetTLVsMsg(char *aid, short sz);
-static void BuildGetCfgGroupMsg(char *groupNo);
-static void BuildGetAllAidsMsg(void);
-static void BuildDeleteAidMsg(char *aid, short len);
+
 static void BuildSetDateMsgCF(void);
 static void BuildSetTimeMsgCF(void);
 static void BuildSetDateMsgDF(void);
-static void BuildSetTimeMsgDF(void);
-
 static void BuildSetCAPubKeyMsgCF(char dataLen1, char dataLen2);
 static void BuildSetCAPubKeyMsgDF(char *data, char len);
 
@@ -199,18 +193,12 @@ static int CancelTransaction(int reason);
 static int SetEMVTxnAmt(void);
 static int GetPayment(char waitForRsp, int timeout);
 static int StoreLCDMsg(char msgNdx, char *str, char *paramStr1, char *paramStr2, char *paramStr3);
-static int GetCfgGroup(char *groupNo);
-static int GetCfgGroupForAid(char *Aid, short sz);
+
 static int SetSource(void);
 static int SetDateTime(void);
 static int SetCAPubKey(char *keyFile);
 static int SetCAPubKeys(void);
 static int DeleteCAPubKeys(void);
-static int SetCfgAids(void);
-
-static int SetCfgGroups(void);
-static int SetEmvParams(void);
-static int GetAllAids(void);
 
 static void InitRdr(char comPortNumber);
 static int CbAcquireCard(void *pParams);
@@ -225,20 +213,18 @@ static int ExtractClearingRec(char *clrRec);
 static int ExtractTrack(char *trk, char *trkInfo);
 static int ExtractEMVDetails(void);
 static int ExtractFailedEMVDetails(char *details, int length);
-static int ExtractTLVs(void);
+
 static int HandleErrRsp(void);
 static int HandleReqOLErrRsp(void);
 static int HandleNoReqOLErrRsp(void);
 static long getTlv(char *tlv, TLV *tlvStruct);
 static int processEmvTlv(char *tlv);
-static int processCfgAidTlv(char *tlv);
-static int processCfgGroupTlv(char *tlv);
+
 static int GetRspStatus(void);
 static char GetFrameType(void);
 static int HandleRTCNFrame(void);
 static int HandleKeyMgtNFrame(void);
 
-static int SendRawMsg(void);
 static void BuildRawMsg(char* tlv,int tlvlen);
 
 /*******************************************************
@@ -308,12 +294,6 @@ static unsigned long Verifone_parseTag(char *pTLVs, unsigned long *plTag, long *
 	return(lenTag + lenLen + lenValue );
 }
 
-//T
-static long BER_TagLen(char *pTag) {
- long tLen = 0;
- BER_parseTag(pTag,NULL,&tLen,NULL);
- return (tLen); 
-}
 //L
 static char BER_LenLen(char *pLen) { return (((*pLen & 0x80) < 0x80)?1: ((*pLen & 0x7F) +1)); }
 static unsigned long BER_GetLen(char *pLen) {
@@ -330,19 +310,6 @@ static unsigned long BER_GetLen(char *pLen) {
   }
 
   return(ber_len);
-}
-//TLV
-static unsigned long BER_GetTag(char *pTag)
-{
-	return(BER_parseTag(pTag,NULL,NULL,NULL));
-}
- 
-
-static int TLVLen(char* tlv) 
-{	
-	TLV tlvStruct = {0};
-	long iLen = getTlv(tlv, &tlvStruct);
-	return iLen;
 }
 
 static char msg[CTLS_BUFF_SZ] = {0};
@@ -478,25 +445,6 @@ static int GetNumDigits(char *amt, int length)
 	int numDigits = 0, i = 0;
 	for(; i < length; i++) if(isdigit(amt[i])) numDigits++;
 	return numDigits;
-}
-
-static void UnformatNStr(char *numStr, char *unfmtStr, int noDgts, char convAsc)
-{	
-	if(convAsc) SVC_HEX_2_DSP(numStr, unfmtStr, noDgts);
-	else
-	{	
-		int i = 0, j = 0;
-
-		for(; i < noDgts; i++)
-		{
-			if(!(i%2)) numStr[i] = (numStr[j] >> 4);
-			else
-			{
-				numStr[i] = (numStr[j] & 0x0F);
-				j++;
-			}
-		}
-	}
 }
 
 static void FormatAmt(char *amt, char *formattedAmt)
@@ -774,6 +722,7 @@ static int HandleNoReqOLErrRsp()
 		if(*(rsp+V2_DATA_OFS+3) >= 3) 			
 			return CTLS_UNKNOWN | CTLS_FALL_FORWARD; 	
 		//else fall through	
+		break;
 	case V2_CRD_EXPD:
 		//visa only	
 		return CTLS_UNKNOWN | CTLS_DECLINED;
@@ -910,7 +859,7 @@ static long getTlv(char *tlv, TLV *tlvStruct)
 	int i=0;
 	
 	//LOG_PRINTFF(0x00000001L,"getTlv...1,%02x%02x%02x%02x%02x",*tlv,*(tlv+1),*(tlv+2),*(tlv+3),*(tlv+4));
-	if(!tlv || !tlvStruct) return;
+	if(!tlv || !tlvStruct) return(0);
 	memset(tlvStruct, 0, sizeof(TLV));
 	
 	//LOG_PRINTFF(0x00000001L,"getTlv...2");
@@ -937,19 +886,6 @@ static long getTlv(char *tlv, TLV *tlvStruct)
 	return(iLenTag + iLenLen+ iLenValue);
 }
 
-static int processCfgGroupTlv(char *tlv)
-{
-	TLV tlvStruct = {0};
-	int iLen = getTlv(tlv, &tlvStruct);
-	return iLen;		
-}
-
-static int processCfgAidTlv(char *tlv)
-{	
-	TLV tlvStruct = {0};
-	getTlv(tlv, &tlvStruct);	
-
-}
 
 static int processEmvTlv(char *tlv)
 {		
@@ -1102,36 +1038,6 @@ static int GetRspStatus()
 {	
 	if(rspLength < 1) return CTLS_NO_REPLY;	
 	return *(rsp+V2_STATUS_OFS);
-}
-
-static int ExtractTLVs()
-{
-	int dataRead = 0;	
-	
-	while(dataRead < RSP_DATA_LEN)
-	{
-		int read = processCfgAidTlv(rsp+V2_DATA_OFS+dataRead);
-		if(read > 0) dataRead += read;
-		else return read;
-	}
-
-	return CTLS_SUCCESS;
-}
-
-static int ExtractCfgGroup()
-{
-	int dataRead = 0;	
-	
-	if(GetRspStatus() == V2_FAILED_NAK) return CTLS_FAILED;		
-
-	while(dataRead < RSP_DATA_LEN)
-	{		
-		int read = processCfgGroupTlv(rsp+V2_DATA_OFS+dataRead);		
-		if(read > 0) dataRead += read;
-		else return read;
-	}
-		
-	return CTLS_SUCCESS;
 }
 
 static int ExtractCtlsRsp(char* cmd)
@@ -1312,41 +1218,6 @@ static void BuildStoreLCDMsgMsg(char msgNdx, char *str, char *paramStr1, char *p
 	AppendCRC();	
 }
 
-static void BuildGetLCDMsgMsg()
-{	
-	char fields[5] = {0x01, 0x04, 0x00, 0x01,0xFF};
-				
-	ResetMsg();
-	AddVivo2Header();
-	AddToMsg(fields, sizeof(fields));	
-	AppendCRC();	
-}
-
-static void BuildGetTLVsMsg(char *Aid, short sz)
-{
-	short dataLen = sz+3;
-	char fields1[2] = {0x03, 0x04};
-	char fields2[3] = {0};	
-	fields2[0] = 0x9F; fields2[1] = 0x06; fields2[2] = sz;
-	ResetMsg();
-	AddVivo2Header();
-	AddToMsg(fields1, sizeof(fields1));
-	AddToMsg((char*)&dataLen, 1);
-	AddToMsg((char*)(&dataLen)+1, 1);
-	AddToMsg(fields2, sizeof(fields2));
-	AddToMsg(Aid, sz);
-	AppendCRC();	
-}
-
-static void BuildGetCfgGroupMsg(char *groupNo)
-{
-	char fields[8] = {0x03, 0x06, 0x00, 0x04, 0xFF, 0xE4, 0x01, 0x00};	
-	fields[7] = *groupNo;
-	ResetMsg();
-	AddVivo2Header();
-	AddToMsg(fields, sizeof(fields));
-	AppendCRC();	
-}
 
 static int SendGeneralMsg(char cmd,char subcmd,char *data,short datalen)
 {
@@ -1371,30 +1242,6 @@ static int BuildGeneralMsg(char cmd,char subcmd,char *data,short datalen)
 	AppendCRC();
 }
 
-static void BuildGetAllAidsMsg(void)
-{
-	char fields[4] = {0x03, 0x05, 0x00, 0x00};
-	ResetMsg();
-	AddVivo2Header();
-	AddToMsg(fields, sizeof(fields));
-	AppendCRC();
-}
-
-static void BuildDeleteAidMsg(char *aid, short len)
-{
-	//char fields[7] = {0x04, 0x04, 0x00, 0x00, 0x9f, 0x06, 0x00};	
-	char fields[11] = {0x04, 0x02, 0x00, 0x00, 0xFF,0xE4,0x01,0x00, 0x9f, 0x06, 0x00};	
-	char fields2[4] = "\xFF\xE6\x01\x80";
-	fields[3] = len+11;	
-	fields[6] = len;
-	ResetMsg();
-	AddVivo2Header();
-	AddToMsg(fields, sizeof(fields));	
-	AddToMsg(aid, len);
-	AddToMsg(fields2, 4);
-	AppendCRC();	
-
-}
 
 static void BuildSetSourceMsg()
 { 
@@ -1457,24 +1304,6 @@ static void BuildSetTimeMsgCF()
 	AddToMsg(hexTime, 1);
 	AddToMsg(hexTime+1, 1);
 	AppendCRC();
-}
-
-static void BuildSetTimeMsgDF()
-{	
-	char dateTime[15] = {0};
-	char hexTime[3] = {0};
-	read_clock(dateTime);
-
-	SVC_DSP_2_HEX(dateTime+8, hexTime, 3);		
-
-	ResetMsg();
-	AddVivoHeader();
-	AddToMsg("D", 1);
-	AddToMsg(hexTime, 1);
-	AddToMsg(hexTime+1, 1);
-	AddToMsg(hexTime+2, 1);
-	
-	AppendCRC();		
 }
 
 static void BuildSetCAPubKeyMsgCF(char dataLen1, char dataLen2)
@@ -1643,39 +1472,7 @@ static int StoreLCDMsg(char msgNdx, char *str, char *paramStr1, char *paramStr2,
 	BuildStoreLCDMsgMsg(msgNdx, str, paramStr1, paramStr2, paramStr3);
 	return SendRxMsg(5000);
 }
-static int GetLCDMsg()
-{
-	BuildGetLCDMsgMsg();
-	return SendRxMsg(5000);
-}
-static int GetTLVs(char *Aid, short sz)
-{
-	int res = 0;
-	//LOG_PRINTFF(0x00000001L,"GetTLVs");
-	BuildGetTLVsMsg(Aid, sz);
 
-	res = SendRxMsg(2000);	
-
-	if(res == CTLS_SUCCESS)
-	{
-		//LOG_PRINTFF(0x00000001L,"GetTLVs 1");
-		return ExtractTLVs();
-	}
-	//LOG_PRINTFF(0x00000001L,"GetTLVs 2");
-	return res;
-}
-static int GetCfgGroup(char *groupNo)
-{
-	int res = 0;
-	BuildGetCfgGroupMsg(groupNo);
-
-	res = SendRxMsg(0);
-
-	if(res == CTLS_SUCCESS)
-		return ExtractCfgGroup();
-
-	return res;
-}
 static int SetSource()
 {
 	BuildSetSourceMsg();
@@ -1718,18 +1515,16 @@ static int SetDateTime()
 
 static int SetCAPubKey(char *keyFile)
 {	
-	char data1[244] = {0}, data2[244] = {0}, dataLen1, dataLen2;
+	char dataLen1, dataLen2;
 	int bytes = dir_get_file_sz(keyFile);
 	int fHndl, res;	
 	unsigned char rid[10], idx[10], mod[1000], exp[10], chk[100],Modata[2048];
 	unsigned int modlen, explen;
 	unsigned char capkdata[1000];
-	unsigned char reqdata1[300], reqdata2[300];
-	int reqdata1len, reqdata2len;
 	char temp[1024], temp2[1024], temp3[1024],tmpdata[2048];
 	char *ptr;
 	unsigned long ulmodlen;
-	int i,j,RetVal;
+	int i=0;
 	
 	if(bytes <= 0) return CTLS_FAILED;	
 	
@@ -1887,18 +1682,6 @@ static int DeleteCAPubKeys(void)
 	else return CTLS_FAILED;
 
 	return res;	
-}
-
-static int GetAllAids()
-{
-	int res = 0;
-
-	BuildGetAllAidsMsg();
-	LOG_PRINTFF(0x00000001L,"GetAll AIDS..");
-	res = SendRxMsg(2000);
-	if(res != CTLS_SUCCESS) return res;
-
-	return CTLS_SUCCESS;
 }
 
 static int SendCfgLine()
@@ -2226,7 +2009,7 @@ int GetCtlsTxnLimit(char *aid,  int *p_translimit, int *p_cvmlimit,int *p_floorl
 		strnlwr (aid_chk,aid ,strlen(aid));
 
 		for(i=0;;i++){
-			//if( AIDlist[i].GroupNo==0) break;
+			if( AIDlist[i].GroupNo==0) break;
 			strnlwr (aid_chk2 , AIDlist[i].AID ,strlen(AIDlist[i].AID));
 
 			if( strncmp( aid_chk,aid_chk2,strlen(aid_chk2))==0) {
