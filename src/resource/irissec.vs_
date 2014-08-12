@@ -1,0 +1,1858 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// i-RIS security script
+//
+// The following key position types are used in this script to enforce key hierarchy and seperation:
+// Keys 000 to 040:	Key Encrypting Keys. They can only be used to derive other keys
+// Keys 041 to 050:	PPASN or OWF variant. They can only be used to vary the KEK keys using a OWF.
+// Keys 051 to 150:	Data Encryption Keys. They can only be used to encrypt a data block and produce a MAC
+//					if required.
+// Keys 151 to 200:	Data Decryption Keys: They can only be used to decrypt a data block.
+// Keys 201 to 210:	PIN Encryption Keys: They can only be used to produce a PIN block.
+// Keys 211 to 255:	**MORE** Key Encrypting Keys. They can only be used to derive other keys
+//
+// Only KEK keys can be copied, moved or xored from one KEK type location to another.
+//
+// Key Application Ownership is enfored by the application at a higher level.
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+SUBDEV		7		//	Script ID
+SCRIPT		IRISSEC	//	Script Name
+
+DEF_BLK		255 255
+//RETAIN_BLK	D9EE16DFD793B031
+
+//**************************************************************************************************
+//**************************************************************************************************
+// Macro Name:	WriteDESKey
+//
+// Description	Loads a single length DES key into a specified key block
+//
+// Parameters	<= 	BYTE 0: Key Block Number
+// 					BYTES 1 to 8: DES key value
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			80	//	BEGIN
+	LENGTH		9	//		Check for exactly 9 input bytes
+
+	GETX		0	//		Get the key block number
+	GETA		1	// 		Get the DES key value
+	STAX			// 		Store the key content in the key block
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	Write3DESKey
+//
+// Description	Write a double length 3-DES key into a specified key block
+//
+// Parameters	<= 	BYTE 0: Key Number
+// 					BYTES 1 to 8: High Order DES key value
+// 					BYTES 9 to 16: Low Order DES key value
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			81	//	BEGIN
+	LENGTH		17	//		Check for exactly 17 input bytes
+
+	GETX		0	// 		Get the high order key block number
+	GETA		1	// 		Get the high order DES key value
+	STAX			// 		Store the high order key content in the key block
+
+	INCX			// 		Set X to next key block number
+	GETA		9	// 		Get the low order DES key value
+	STAX			// 		Store the low order key content in the key block
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	EraseDESKey
+//
+// Description	Clears a single DES key
+//
+// Parameters	<= 	BYTE 0: Key Block Number
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			82	//	BEGIN
+	LENGTH		1	// 		Check for exactly 1 input byte
+
+	GETX		0	//		Get the key block number
+	DELETEX			//		Delete the key content
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	Erase3DESKey
+//
+// Description	Clears a 3-DES key
+//
+// Parameters	<= 	BYTE 0: Key Block Number
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			83	//	BEGIN
+	LENGTH		1	//		Check for exactly 1 input byte
+
+	GETX		0	// 		Get the high-order key block number
+	DELETEX			//		Delete high order the key content
+
+	INCX			//		Set to the low-rder key block number position
+	DELETEX			//		Delete the low order key content
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	RandomDESKey
+//
+// Description	Create a random DES key
+//
+// Parameters	<= 	BYTE 0: Key Block Number
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			84	//	BEGIN
+	LENGTH		1	// 		Check for exactly 1 input byte
+
+	GETX		0	//		Get the key block number
+	RNDA			//		Get a random number
+	STAX			//		Store the random number as the key value
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	Random3DESKey
+//
+// Description	Create a random 3-DES key
+//
+// Parameters	<= 	BYTE 0: Key Block Number
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			85	//	BEGIN
+	LENGTH		1	//		Check for exactly 1 input byte
+
+	GETX		0	// 		Get the high-order key block number
+	RNDA			//		Get a random number
+	ADJ_ODD			//		Adjust the result for odd parity as per DES standard
+	STAX			//		Store the random number as the high order key value
+
+	INCX			//		Set to the low-rder key block number position
+	RNDA			//		Get a random number
+	ADJ_ODD			//		Adjust the result for odd parity as per DES standard
+	STAX			//		Store the random number as the low order key value
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	KVCDESKey
+//
+// Description	Calculate the KVC of a DES key
+//
+// Parameters	<= 	BYTE 0: Key Block Number
+//				=>	BYTE 0-7: KVC
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			86	//	BEGIN
+	LENGTH		1	// 		Check for exactly 1 input byte
+
+	GETX		0	//		Get the key block number
+	SELECTX			//		Make the key current
+
+	CLRA			//		Prepare 8 bytes of all ZEROs.
+	EECB			//		Encrypt it to obtain the KVC
+	SENDA		0	//		Return the KVC
+EOM				3	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	KVC3DESKey
+//
+// Description	Calculate the KVC of a 3-DES key
+//
+// Parameters	<= 	BYTE 0: Key Block Number
+//				=>	BYTE 0-7: KVC
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			87	//	BEGIN
+	LENGTH		1	// 		Check for exactly 1 input byte
+
+	GETX		0	//		Get the key block number
+	ALGO_DES112		//		Set the key length (double)
+	SELECTX			//		Make the key current
+
+	CLRA			//		Prepare 8 bytes of all ZEROs.
+	EECB			//		Encrypt it to obtain the KVC
+	SENDA		0	//		Return the KVC
+EOM				3	//	END
+
+
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+// Macro Name:	CopyDESKey
+//
+// Description	Copies a single DES KEK key from one key block to another
+//
+// Parameters	<= 	BYTE 0: Index of source KEK key block
+// 					BYTE 1: Index of destination KEK key block
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			90	//	BEGIN
+	LENGTH		2	//		Check for exactly 2 input bytes
+
+	GETX		0	//		Get the source key block number
+	LDAX			//		Load the source key content
+	
+	GETX		1	//		Load the destination key block number
+	STAX			//		Store the source key content into the destination key block
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	Copy3DESKey
+//
+// Description	Copies a 3-DES key from one key block to another
+//
+// Parameters	<= 	BYTE 0: Index of source 3-DES key block
+// 					BYTE 1: Index of destination 3-DES key block
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			91	//	BEGIN
+	LENGTH		2	//		Check for exactly 2 input bytes
+
+	GETX		0	//		Get the source high order key block number
+	LDAX			//		Load the high order high order key content
+	
+	GETX		1	//		Get the destination high order key block number
+	STAX			//		Store the source high order key content into the destination key block
+
+	// Ditto for the low order DES key
+	GETX		0
+	INCX
+	LDAX
+	GETX		1
+	INCX
+	STAX
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	MoveDESKey
+//
+// Description:	Moves a single DES key from one key block to another
+//
+// Parameters:	<= 	BYTE 0: Index of source key block
+// 					BYTE 1: Index of destination key block
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			92	//	BEGIN
+	LENGTH		2	//		Check for exactly 2 input bytes
+
+	GETX		0	//		Get the source key block number
+	LDAX			//		Load the key content
+	DELETEX			//		Erase the key from the source key block
+	
+	GETX		1	//		Load the destination key block number
+	STAX			//		Store the source key content into the destination key block
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	Move3DESKey
+//
+// Description	Moves a 3-DES key from one key block to another
+//
+// Parameters	<= 	BYTE 0: Index of source 3-DES key block
+// 					BYTE 1: Index of destination 3-DES key block
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			93	//	BEGIN
+	LENGTH		2	//		Check for exactly 2 input bytes
+
+	GETX		0	//		Get the source key block number
+	LDAX			//		Load the high order key content
+	DELETEX			//		Erase the key from the source key block
+	
+	GETX		1	//		Get the destination key block number
+	STAX			//		Store the source high order key content into the destination key block
+
+	// Repeat for the low order DES key
+	GETX		0
+	INCX
+	LDAX
+	DELETEX
+	GETX		1
+	INCX
+	STAX
+EOM				0	//	END
+
+
+
+//**************************************************************************************************
+// Macro Name:	XorDESKey
+//
+// Description	XOR a DES key from a key block with another in a different key block and place the
+//				result in a different key block. Note that the operand key values must be already
+//				stored in their own blocks
+//
+// Parameters	<= 	BYTE 0: Index of the first single DES key block to XOR
+// 					BYTE 1: Index of the second single DES key block to XOR
+// 					BYTE 2: Index of single DES key block where the result is to be stored
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			94	//	BEGIN
+	LENGTH		3	//		Check for exactly 3 input bytes
+
+	GETX		0	//		Get the first DES key block number
+	LDAX			//		Load the first DES key
+	MOV_A_B0		//		Keep the key in a temporary location B0
+
+	GETX		1	//		Get the second DES key block number
+	LDAX			//		Load the second DES key
+	XORA_B0			//		XOR both key together
+	ADJ_ODD			//		Adjust the result for odd parity as per DES standard
+
+	GETX		2	//		Get the destination key block number
+	STAX			//		Store the result into the destination key block
+EOM				0	//	END
+
+
+//**************************************************************************************************
+// Macro Name:	Xor3DESKey
+//
+// Description	XOR a 3-DES key from a key block with another in a different key block and place the
+//			result in a different key block. Note that the operand key values must be already
+//			stored in their own blocks
+//
+// Parameters	<= 	BYTE 0: Index of the first 3-DES key block to XOR
+// 					BYTE 1: Index of the second 3-DES key block to XOR
+// 					BYTE 2: Index of 3-DES key block where the result is to be stored
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			95	//	BEGIN
+	LENGTH		3	//		Check for exactly 3 input bytes
+
+	GETX		0	//		Get the first high order 3-DES key block number
+	LDAX			//		Load the first high order 3-DES key
+	MOV_A_B0		//		Keep the first high-order 3-DES key in a temporary location B0
+	INCX			//		Set to the first low order 3-DES key block number
+	LDAX			//		Load the first low order 3-DES key
+	MOV_A_B1		//		Keep the first low-order 3-DES key in a temporary location B1
+
+	GETX		1	//		Get the second high order 3-DES key block number
+	LDAX			//		Load the second high order 3-DES key
+	XORA_B0			//		XOR both high order keys together
+	ADJ_ODD			//		Adjust the result for odd parity as per DES standard
+	MOV_A_B0		//		Keep the result in a temporary location B0
+	INCX			//		Set to the second low order 3-DES key block number
+	LDAX			//		Load the second low order 3-DES key
+	XORA_B0			//		XOR both low order keys together
+	ADJ_ODD			//		Adjust the result for odd parity as per DES standard
+
+	GETX		2	//		Get the destination high order key block number
+	INCX			//		Set to the destination low order key block number
+	STAX			//		Store the low order result into the detination low order key block
+	DECX			//		Set to the destination high order key block number
+	MOV_B0_A		//		Retrive the high order result
+	STAX			//		Store the high order result into the destination high order key block
+EOM				0	//	END
+
+
+
+
+//**************************************************************************************************
+// Macro Name:	Xor3DESKeyData
+//
+// Description	XOR a 3-DES key from a key block with another in a different key block and place the
+//			result in a different key block. Note that the operand key values must be already
+//			stored in their own blocks
+//
+// Parameters	<= 	BYTE 0: Index of the first 3-DES key block to XOR
+// 					BYTE 1: Index of 3-DES key block where the result is to be stored
+// 					BYTE 2 - 9: Data to XOR
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			96	//	BEGIN
+	LENGTH		3	//		Check for exactly 3 input bytes
+
+	GETX		0	//		Get the first high order 3-DES key block number
+	LDAX			//		Load the first high order 3-DES key
+	MOV_A_B0		//		Keep the first high-order 3-DES key in a temporary location B0
+	INCX			//		Set to the first low order 3-DES key block number
+	LDAX			//		Load the first low order 3-DES key
+	MOV_A_B1		//		Keep the first low-order 3-DES key in a temporary location B1
+
+	GETA		2	//		Get the data to xor
+	XORA_B0			//		XOR both high order keys together
+	ADJ_ODD			//		Adjust the result for odd parity as per DES standard
+	MOV_A_B0		//		Keep the result in a temporary location B0
+	GETA		2	//		Get the data to xor
+	XORA_B1			//		XOR both low order keys together
+	ADJ_ODD			//		Adjust the result for odd parity as per DES standard
+
+	GETX		1	//		Get the destination high order key block number
+	INCX			//		Set to the destination low order key block number
+	STAX			//		Store the low order result into the detination low order key block
+	DECX			//		Set to the destination high order key block number
+	MOV_B0_A		//		Retrive the high order result
+	STAX			//		Store the high order result into the destination high order key block
+EOM				0	//	END
+
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+// Macro Name:	ClearIV
+//
+// Description	Clear the Initial Vector used for DES and 3-DES encryption
+//
+// Parameters	None
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			100		//	BEGIN
+	CLRIV				//		Clear the Initial Vector
+EOM				0		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	SetIV
+//
+// Description	Sets or clears the Initial Vector used for DES and 3-DES encryption
+//
+// Parameters	<=	BYTES 0 - 7: Initial Vector
+//
+// Return:		None
+//**************************************************************************************************
+MACRO			101		//	BEGIN
+	LENGTH		8		//		Only set the Initial Vector if data ia available
+
+	GETA		0		//		Get the 8-byte Initial Vector
+	MOV_A_IV			//		Set the Initial Vector
+EOM				0		//	END
+
+
+
+
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+// Macro Name:	DESEncrypt
+//
+// Description	DES Encrypt an 8 byte data block.
+//
+// Parameters	<= 	BYTE 0: Index of the DES key block used for encryption
+// 					BYTES 1 - 8: 8 bytes data to encrypt
+//				=>	BYTES 0 - 7: Encrypted data
+//
+// Return:		Error if key used is not a DEK, length is wrong, or key not loaded.
+//				Success with encrypted data otherwise.
+//**************************************************************************************************
+MACRO			110		//	BEGIN
+	LENGTH		9		//		Check for exactly 9 input bytes
+
+	GETX		0		//		Get the key block number
+	SELECTX				//		Select the DES key as the current DES key
+
+	GETA		1		//		Get the 8-byte data to encrypt
+	ECBC				//		Encrypt the data.
+
+	SENDA		0		//		Output the encrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	3DESEncrypt
+//
+// Description	3-DES Encrypt an 8 byte data block.
+//
+// Parameters	<= 	BYTE 0: Index of the 3-DES key block used for encryption
+// 					BYTES 1 - 8: 8 bytes data to encrypt
+//				=>	BYTES 0 - 7: Encrypted data
+//
+// Return:		Error if key used is not a DEK, length is wrong, or key not loaded.
+//				Success with encrypted data otherwise.
+//**************************************************************************************************
+MACRO			111		//	BEGIN
+	LENGTH		9		//		Check for exactly 9 input bytes
+
+	GETX		0		//		Get the key block number
+	ALGO_DES112			//		Set the key length
+	SELECTX				//		Select the 3-DES key as the current key
+
+	GETA		1		//		Get the 8-byte data to encrypt
+	ECBC				//		Encrypt the data
+
+	SENDA		0		//		Output the encrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	DESEncryptWithVariant
+//
+// Description	DES Encrypt an 8 byte data block after varying the key with a constant variant.
+//
+// Parameters	<= 	BYTE 0: Index of the DES key block used for encryption
+// 					BYTES 1 - 8: 8 bytes data to encrypt
+// 					BYTES 9 - 16: 8 bytes key variant
+//				=>	BYTES 0 - 7: Encrypted data
+//
+// Return:		Error if key used is not a DEK, length is wrong, or key not loaded.
+//				Success with encrypted data otherwise.
+//**************************************************************************************************
+MACRO			112		//	BEGIN
+	LENGTH		17		//		Check for exactly 17 input bytes
+
+	GETX		0		//		Get the key block number
+	LDAX				//		Load the DES key
+	MOV_A_B0			//		Store it temporarily in register B0
+	GETA		9		//		Get the key variant
+	XORA_B0				//		Vary the key
+	SELECTA				//		Make the key variant the current key
+
+	GETA		1		//		Get the 8-byte data to encrypt
+	ECBC				//		Encrypt the data
+
+	SENDA		0		//		Output the encrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	3DESEncryptWithVariant
+//
+// Description:	3-DES Encrypt an 8 byte data block after varying the key with a constant variant.
+//
+// Parameters	<= 	BYTE 0: Index of the DES key block used for encryption
+// 					BYTES 1 - 8: 8 bytes data to encrypt
+// 					BYTES 9 - 24: 16 bytes key variant
+//				=>	BYTES 0 - 7: Encrypted data
+//
+// Return:		Error if key used is not a DEK, length is wrong, or key not loaded.
+//				Success with encrypted data otherwise.
+//**************************************************************************************************
+MACRO			113		//	BEGIN
+	LENGTH		25		//		Check for exactly 25 input bytes
+
+	GETX		0		//		Get the key block number
+
+	LDAX				//		Load the high order 3-DES key
+	MOV_A_B1			//		Temporarily store it in B1.
+	GETA		9		//		Get the key variant
+	XORA_B1				//		Vary the key
+	MOV_A_B1			//		Update the temporary storage at B1 with the varied key.
+
+	INCX				//		Point to the low order 3-DES key block.
+	LDAX				//		Load the low order 3-DES key
+	MOV_A_B0			//		Store it in register B0
+	GETA		17		//		Get the key variant
+	XORA_B0				//		Vary the key
+	MOV_A_B0			//		Update B0 with the varied low order 3-DES key
+	MOV_B1_A			//		Store the varied high order 3-DES key in A.
+	ALGO_DES112			//		Set the key length
+	SELECTA				//		Make the key variant the current key
+
+	GETA		1		//		Get the 8-byte data to encrypt
+	ECBC				//		If operation != 1, Encrypt the data
+
+	SENDA		0		//		Output the encrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	DESDecrypt
+//
+// Description	DES Decrypt an 8 byte data block.
+//
+// Parameters	<= 	BYTE 0: Index of the DES key block used for decryption
+// 					BYTES 1 - 8: 8 bytes data to decrypt
+//				=>	BYTES 0 - 7: Decrypted data
+//
+// Return:		Error if key used is not a DDK, length is wrong, or key not loaded.
+//				Success with decrypted data otherwise.
+//**************************************************************************************************
+MACRO			114		//	BEGIN
+	LENGTH		9		//		Check for exactly 9 input bytes
+
+	GETX		0		//		Get the key block number
+	SELECTX				//		Select the DES key as the current DES key
+
+	GETA		1		//		Get the 8-byte data to decrypt
+	DCBC				//		Decrypt the data. Encrypted data will be kept as IV for next DCBC
+
+	SENDA		0		//		Output the decrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	3DESDecrypt
+//
+// Description	3-DES Decrypt an 8 byte data block.
+//
+// Parameters	<= 	BYTE 0: Index of the 3-DES key block used for decryption
+// 					BYTES 1 - 8: 8 bytes data to decrypt
+//				=>	BYTES 0 - 7: Decrypted data
+//
+// Return:		Error if key used is not a DDK, length is wrong, or key not loaded.
+//				Success with decrypted data otherwise.
+//**************************************************************************************************
+MACRO			115		//	BEGIN
+	LENGTH		9		//		Check for exactly 9 input bytes
+
+	GETX		0		//		Get the key block number
+	ALGO_DES112			//		Set the key length
+	SELECTX				//		Select the 3-DES key as the current key
+
+	GETA		1		//		Get the 8-byte data to decrypt
+	DCBC				//		Decrypt the data
+
+	SENDA		0		//		Output the decrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	DESDecryptWithVariant
+//
+// Description	DES Decrypt an 8 byte data block after varying the key with a constant variant.
+//
+// Parameters	<= 	BYTE 0: Index of the DES key block used for decryption
+// 					BYTES 1 - 8: 8 bytes data to decrypt
+// 					BYTES 9 - 16: 8 bytes key variant
+//				=>	BYTES 0 - 7: Decrypted data
+//
+// Return:		Error if key used is not a DDK, length is wrong, or key not loaded.
+//				Success with decrypted data otherwise.
+//**************************************************************************************************
+MACRO			116		//	BEGIN
+	LENGTH		17		//		Check for exactly 17 input bytes
+
+	GETX		0		//		Get the key block number
+	LDAX				//		Load the DES key
+	MOV_A_B0			//		Store it temporarily in register B0
+	GETA		9		//		Get the key variant
+	XORA_B0				//		Vary the key
+	SELECTA				//		Make the key variant the current key
+
+	GETA		1		//		Get the 8-byte data to decrypt
+	DCBC				//		Decrypt the data
+
+	SENDA		0		//		Output the decrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	3DESDecryptWithVariant
+//
+// Description:	3-DES Decrypt an 8 byte data block after varying the key with a constant variant.
+//
+// Parameters	<= 	BYTE 0: Index of the DES key block used for decryption
+// 					BYTES 1 - 8: 8 bytes data to decrypt
+// 					BYTES 9 - 24: 16 bytes key variant
+//				=>	BYTES 0 - 7: Decrypted data
+//
+// Return:		Error if key used is not a DDK, length is wrong, or key not loaded.
+//				Success with decrypted data otherwise.
+//**************************************************************************************************
+MACRO			117		//	BEGIN
+	LENGTH		25		//		Check for exactly 25 input bytes
+
+	GETX		0		//		Get the key block number
+
+	LDAX				//		Load the high order 3-DES key
+	MOV_A_B1			//		Temporarily store it in B1.
+	GETA		9		//		Get the key variant
+	XORA_B1				//		Vary the key
+	MOV_A_B1			//		Update the temporary storage at B1 with the varied key.
+
+	INCX				//		Point to the low order 3-DES key block.
+	LDAX				//		Load the low order 3-DES key
+	MOV_A_B0			//		Store it in register B0
+	GETA		17		//		Get the key variant
+	XORA_B0				//		Vary the key
+	MOV_A_B0			//		Update B0 with the varied low order 3-DES key
+	MOV_B1_A			//		Store the varied high order 3-DES key in A.
+	ALGO_DES112			//		Set the key length
+	SELECTA				//		Make the key variant the current key
+
+	GETA		1		//		Get the 8-byte data to decrypt
+	DCBC				//		Decrypt the data
+
+	SENDA		0		//		Output the decrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	DESOFBCrypt
+//
+// Description	DES OFB Crypt an 8 byte data block.
+//
+// Parameters	<= 	BYTE 0: Index of the DES key block used for encryption
+// 					BYTES 1 - 8: 8 bytes of data to encrypt/decrypt (right filled with anything if not 8 bytes).
+//				=>	BYTES 0 - 7: Enrypted/Decrypted data
+//
+// Return:		Error if key used is not a DEK, length is wrong, or key not loaded.
+//				Success with encrypted data otherwise.
+//**************************************************************************************************
+MACRO			118		//	BEGIN
+	LENGTH		9		//		Check for exactly 9 input bytes
+
+	GETX		0		//		Get the key block number
+	SELECTX				//		Select the DES key as the current key
+
+	CLRA				//		Prepare 8 bytes of ZEROs
+	ECBC				//		Encrypt them taking into account the IV.
+	MOV_A_B0			//		Keep the result
+
+	GETA		1		//		Get the data eo OFB encrypt
+	XORA_B0				//		XOR with kept result to get OFB encrypted data
+
+	SENDA		0		//		Output the encrypted data
+EOM				8		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	3DESOFBCrypt
+//
+// Description	3-DES OFB Crypt an 8 byte data block.
+//
+// Parameters	<= 	BYTE 0: Index of the 3-DES key block used for encryption
+// 					BYTES 1 - 8: 8 bytes of data to encrypt/decrypt (right filled with anything if not 8 bytes).
+//				=>	BYTES 0 - 7: Enrypted/Decrypted data
+//
+// Return:		Error if key used is not a DEK, length is wrong, or key not loaded.
+//				Success with encrypted data otherwise.
+//**************************************************************************************************
+MACRO			119		//	BEGIN
+	LENGTH		9		//		Check for exactly 9 input bytes
+
+	GETX		0		//		Get the key block number
+	ALGO_DES112			//		Set the key length
+	SELECTX				//		Select the DES/3-DES key as the current key
+
+	CLRA				//		Prepare 8 bytes of ZEROs
+	ECBC				//		Encrypt them taking into account the IV.
+	MOV_A_B0			//		Keep the result
+
+	GETA		1		//		Get the data eo OFB encrypt
+	XORA_B0				//		XOR with kept result to get OFB encrypted data
+
+	SENDA		0		//		Output the encrypted data
+EOM				8		//	END
+
+
+
+
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+// Macro Name:	KEKDeriveDESKey
+//
+// Description:	Decrypt a DES key using a DES KEK key and store the decrypted DES key
+//				in the specified key block number
+//
+// Parameters	<= 	BYTE 0: Index of the DES Key Encryption Key
+//					BYTE 1:	Index of the key block where the DES derived key should be stored
+// 					BYTES 2 - 9: Encrypted DES Key
+// 					BYTES 10 - 17: 8 bytes KEK variant
+//
+// Return:		Error if key used is not a KEK, length is wrong, or key not loaded.
+//				Success.
+//**************************************************************************************************
+MACRO			130		//	BEGIN
+	LENGTH		18		//		Check for exactly 18 input bytes
+
+	GETX		0		//		Get the index of the KEK key block
+
+	LDAX				//		Load the DES KEK key
+	MOV_A_B0			//		Temporarily store it in B0.
+	GETA		10		//		Get the KEK variant
+	XORA_B0				//		Vary the KEK key
+	SELECTA				//		Make the KEK key variant the current key
+
+	GETA		2		//		Get the encrypted DES key
+	DECB				//		Decrypt using the KEK. Ignore IV.
+	ADJ_ODD				//		Adjust the resulting key parity.
+	GETX		1		//		Get the index of the key block where the decrypted key should be stored
+	STAX				//		Store the derived DES key
+EOM				0		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	3KEKDeriveDESKey
+//
+// Description:	Decrypt a DES key using a 3-DES KEK key and store the decrypted DES key
+//				in the specified key block number
+//
+// Parameters	<= 	BYTE 0: Index of the 3-DES Key Encryption Key
+//					BYTE 1:	Index of the key block where the DES derived key should be stored
+// 					BYTES 2 - 9: Encrypted DES Key
+// 					BYTES 10 - 25: 16 bytes KEK variant
+//
+// Return:		Error if key used is not a KEK, length is wrong, or key not loaded.
+//				Success.
+//**************************************************************************************************
+MACRO			131		//	BEGIN
+	LENGTH		26		//		Check for exactly 34 input bytes
+
+	GETX		0		//		Get the index of the KEK key block
+
+	LDAX				//		Load the high order 3-DES KEK key
+	MOV_A_B1			//		Temporarily store it in B1.
+	GETA		10		//		Get the key variant
+	XORA_B1				//		Vary the key
+	MOV_A_B1			//		Update the temporary storage at B1 with the varied key.
+
+	INCX				//		Point to the low order 3-DES key block.
+	LDAX				//		Load the low order 3-DES key
+	MOV_A_B0			//		Store it in register B0
+	GETA		18		//		Get the key variant
+	XORA_B0				//		Vary the key
+	MOV_A_B0			//		Update B0 with the varied low order 3-DES key
+	MOV_B1_A			//		Store the varied high order 3-DES key in A.
+	ALGO_DES112			//		Set the key length
+	SELECTA				//		Make the key variant the current key
+
+	GETA		2		//		Get the encrypted DES key
+	DECB				//		Decrypt using the KEK. Ignore IV.
+	ADJ_ODD				//		Adjust the resulting key parity.
+	GETX		1		//		Get the index of the key block where the decrypted key should be stored
+	STAX				//		Store the derived DES key
+EOM				0		//	End
+
+
+//**************************************************************************************************
+// Macro Name:	3KEKDerive3DESKey
+//
+// Description:	Decrypt a 3-DES key using a 3-DES KEK key and store the decrypted 3-DES key
+//				in the specified key block number
+//
+// Parameters	<= 	BYTE 0: Index of the 3-DES Key Encryption Key
+//					BYTE 1:	Index of the key block where the 3-DES derived key should be stored
+// 					BYTES 2 - 17: Encrypted 3-DES Key
+// 					BYTES 18 - 33: 16 bytes KEK variant
+//
+// Return:		Error if key used is not a KEK, length is wrong, or key not loaded.
+//				Success.
+//**************************************************************************************************
+MACRO			132		//	BEGIN
+	LENGTH		34		//		Check for exactly 34 input bytes
+
+	GETX		0		//		Get the index of the KEK key block
+
+	LDAX				//		Load the high order 3-DES KEK key
+	MOV_A_B1			//		Temporarily store it in B1.
+	GETA		18		//		Get the key variant
+	XORA_B1				//		Vary the key
+	MOV_A_B1			//		Update the temporary storage at B1 with the varied key.
+
+	INCX				//		Point to the low order 3-DES key block.
+	LDAX				//		Load the low order 3-DES key
+	MOV_A_B0			//		Store it in register B0
+	GETA		26		//		Get the key variant
+	XORA_B0				//		Vary the key
+	MOV_A_B0			//		Update B0 with the varied low order 3-DES key
+	MOV_B1_A			//		Store the varied high order 3-DES key in A.
+	ALGO_DES112			//		Set the key length
+	SELECTA				//		Make the key variant the current key
+
+	GETA		10		//		Get the low order encrypted key
+	DECB				//		Decrypt using the KEK. Ignore IV.
+	MOV_A_B0			//		Temporarily store the decrypted unadjusted for CBC low order derived key
+
+	GETA		2		//		Get the high order encrypted key
+	XORA_B0				//		Apply CBC chaining by XORing with the previous result
+	ADJ_ODD				//		Adjust the resulting key parity.
+	GETX		1		//		Get the index of the key block where the decrypted key should be stored
+	INCX
+	STAX				//		Store the high order derived key
+
+	GETA		2		//		Get the high order encrypted key
+	DECB				//		Decrypt using the KEK. Ignore IV.
+	ADJ_ODD				//		Adjust the result key parity.
+	DECX				//		Point to the high order derived key block number.
+	STAX				//		Store the low order derived key
+EOM				0		//	End
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+// Macro Name:	KEK-OWF
+//
+// Description:	Perform a OWF on a single DES KEK key and store the result in the specified KEK key block number
+//
+// Parameters	<= 	BYTE 0: Index of the DES Key Encryption Key
+//					BYTE 1:	Index of the new KEK key block
+//					BYTE 2: Index of PPASN key
+//
+// Return:		Error if key used is not a KEK, length is wrong, or key not loaded.
+//				Success.
+//**************************************************************************************************
+MACRO			140		//	BEGIN
+	LENGTH		3		//		Check for exactly 3 input bytes
+
+	GETX		0		//		Get the key block number
+	SELECTX				//		Select the DES/3-DES key as the current key
+
+	GETX		2		//		Get the PPASN variant location
+	LDAX				//		Load the PPASN
+	DECB				//		Decrypt the PPASN. Ignore IV.
+	MOV_A_B0			//		Store it temporarily in B0
+	LDAX				//		Load the PPASN again
+	XORA_B0				//		Vary the result. This is now the new KEK key
+
+	GETX		1		//		Get the key block number
+	STAX				//		Update the single DES KEK key.
+EOM				0		//	END
+
+
+
+//**************************************************************************************************
+// Macro Name:	3KEK-OWF
+//
+// Description:	Perform a OWF on a 3-DES KEK key and store the result in the specified KEK key block number
+//
+// Parameters	<= 	BYTE 0: Index of the 3-DES Key Encryption Key
+//					BYTE 1:	Index of the new KEK key block
+//					BYTE 2: Index of PPASN key
+//
+// Return:		Error if key used is not a KEK, length is wrong, or key not loaded.
+//				Success.
+//**************************************************************************************************
+MACRO			141		//	BEGIN
+	LENGTH		3		//		Check for exactly 3 input bytes
+
+	GETX		2		//		Get the PPASN variant location
+	LDAX				//		Load the PPASN
+	MOV_A_B1			//		Keep it in register B1
+
+	GETX		0		//		Get the key block number
+	ALGO_DES112			//		Set the key length
+	SELECTX				//		Select the DES/3-DES key as the current key
+
+	GETX		1		//		Get the destination key block number
+
+// ROUND 1:		Get the MAB
+	CLRIV				//		No initial IV
+	MOV_B1_A			//		Get the PPASN
+	ECBC				//		Encrypt it.
+	MOV_B1_A			//		Get the PPASN
+	ECBC				//		Encrypt it to get the MAB (Message Authentication Block) as an IV.
+
+// ROUND 2/3:	CBC encrypt [PPASN | PPASN] using the MAB as the Initial Vector
+//				then XOR with [PPASN | PPASN] to get the updated KEK
+	MOV_B1_A			//		Get the PPASN
+	ECBC				//		Encrypt it taking into account the initial vector
+	XORA_B1				//		Get the final update for the KEK
+	ADJ_ODD
+	STAX				//		Store the updated high order KEK key
+	MOV_B1_A			//		Get the PPASN
+	ECBC				//		Encrypt it
+	XORA_B1				//		Get the final update for the KEK
+	ADJ_ODD
+	INCX
+	STAX				//		Store the updated low order KEK key
+EOM				0		//	END
+
+
+
+//**************************************************************************************************
+// Macro Name:	3KEK-OWFWithVariant
+//
+// Description:	Perform a OWF on a 3-DES KEK key and store the result in the specified KEK key block number
+//
+// Parameters	<= 	BYTE 0: Index of the 3-DES Key Encryption Key
+//					BYTE 1:	Index of the new KEK key block
+//					BYTE 2: Index of PPASN key
+//
+// Return:		Error if key used is not a KEK, length is wrong, or key not loaded.
+//				Success.
+//**************************************************************************************************
+MACRO			142		//	BEGIN
+	LENGTH		3		//		Check for exactly 3 input bytes
+
+	GETX		2		//		Get the PPASN variant location
+	LDAX				//		Load the PPASN
+	MOV_A_B1			//		Keep it in register B1
+
+	GETX		0		//		Get the key block number
+	INCX				//		Point to the low order 3-DES key block.
+	LDAX				//		Load the low order DES key
+	XORA_B1				//		Vary the low order KEK key
+	MOV_A_B0			//		Keep the varied low order KEK key
+
+	DECX				//		Point to the high order 3-DES key block.
+	LDAX				//		Load the high order DES key
+	XORA_B1				//		Vary the high order KEK key in register A only
+
+	ALGO_DES112			//		Set the key length
+	SELECTA				//		Select the DES/3-DES key as the current key
+
+	GETX		1		//		Get the destination key block number
+
+// ROUND 1: Get the MAB
+	CLRIV				//		No initial IV
+	MOV_B1_A			//		Get the PPASN
+	ECBC				//		Encrypt it.
+	MOV_B1_A			//		Get the PPASN
+	ECBC				//		Encrypt it to get the MAB (Message Authentication Block) as an IV.
+
+// ROUND 2/3:	CBC encrypt [PPASN | PPASN] using the MAB as the Initial Vector
+//				then XOR with [PPASN | PPASN] to get the updated KEK
+	MOV_B1_A			//		Get the PPASN
+	ECBC				//		Encrypt it taking into account the initial vector
+	XORA_B1				//		Get the final update for the KEK
+	ADJ_ODD
+	STAX				//		Store the updated high order KEK key
+	MOV_B1_A			//		Get the PPASN
+	ECBC				//		Encrypt it
+	XORA_B1				//		Get the final update for the KEK
+	ADJ_ODD
+	INCX
+	STAX				//		Store the updated low order KEK key
+EOM				0		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	OWF
+//
+// Description:	Perform a OWF on a single DES DEK or DDK key and store the result in the specified DEK or DDK key block number
+//
+// Parameters	<= 	BYTE 0: Index of the DES Key Encryption Key
+//					BYTE 1:	Index of the new KEK key block
+//					BYTE 2-9: DATA to use during OWF operation
+//
+// Return:		Error if key used is not a KEK, length is wrong, or key not loaded.
+//				Success.
+//**************************************************************************************************
+MACRO			143		//	BEGIN
+	LENGTH		10		//		Check for exactly 10 input bytes
+
+	GETX		0		//		Get the key block number
+	SELECTX				//		Select the DES key as the current key
+
+	GETA		2		//		Get the variant
+	DECB				//		Decrypt the variant. Ignore IV.
+	MOV_A_B0			//		Store it temporarily in B0
+	GETA		2		//		Get the variant again
+	XORA_B0				//		Vary the result. This is now the new DEK or DDK key
+
+	GETX		1		//		Get the key block number
+	STAX				//		Update the single DES KEK key.
+EOM				0		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	3OWF
+//
+// Description:	Perform a OWF on a single 3-DES DEK or DDK key and store the result in the specified DEK or DDK key block number
+//
+// Parameters	<= 	BYTE 0: Index of the 3-DES DEK or DDK
+//					BYTE 1:	Index of the new 3-DES DEK or DDK
+//					BYTE 2-17: DATA to use during OWF operation
+//
+//
+// Return:		Error if key used is not a KEK, length is wrong, or key not loaded.
+//				Success.
+//**************************************************************************************************
+MACRO			144		//	BEGIN
+	LENGTH		18		//		Check for exactly 18 input bytes
+
+	GETX		0		//		Get the key block number
+	ALGO_DES112			//		Set the key length
+	SELECTX				//		Select the 3-DES key as the current key
+
+	GETX		1		//		Get the destination key block number
+
+// ROUND 1:		Get the MAB
+	CLRIV				//		No initial IV
+	GETA		2		//		Get the top part of the variant
+	ECBC				//		Encrypt it.
+	GETA		10		//		Get the top part of the variant
+	ECBC				//		Encrypt it to get the MAB (Message Authentication Block) as an IV.
+
+// ROUND 2/3:	CBC encrypt the 128 bit variant using the MAB as the Initial Vector
+//				then XOR with 128 bit variant to get the updated KEK
+	GETA		2		//		Get the PPASN
+	MOV_A_B1
+	ECBC				//		Encrypt it taking into account the initial vector
+	XORA_B1				//		Get the final update for the KEK
+	ADJ_ODD
+	STAX				//		Store the updated high order KEK key
+	GETA		10		//		Get the PPASN
+	MOV_A_B1
+	ECBC				//		Encrypt it
+	XORA_B1				//		Get the final update for the KEK
+	ADJ_ODD
+	INCX
+	STAX				//		Store the updated low order KEK key
+EOM				0		//	END
+
+
+
+
+//**************************************************************************************************
+//**************************************************************************************************
+// Macro Name:	WriteRSA
+//
+// Description:	Store an RSA public -OR- private key in an RSA slot
+//
+// Parameters	<=	BYTE 0: RSA key location
+//				 	BYTE 1: Key Type (EMV only).
+//					BYTE 2 - 6: RID (EMV only)
+//					BYTE 7: Key Index (EMV only)
+//					BYTE 8: Modulus Length in bytes.
+//							Example: 2 = 16 bits. Minimum ??? = 8 bytes.
+//							Use 0 = 2048 bits or 256 bytes.
+//							For slots 0-3: Maximum size = 252 bytes.
+//					BYTE 9: Exponent Length in bytes.
+//							For slots 0-3: Maximum size = 3 bytes.
+//					BYTES 10-x: Modulus. x = 10  + modulus length - 1
+//					BYTES (10+x)-y: Exponent. y = 10 + modulus length + exponent length - 1
+//
+// Return:			Error if RSA key index is > 5
+//					Success.
+//**************************************************************************************************
+MACRO			150		//	BEGIN
+	GETX		0		//		Get the RSA key index. Range (0-5)
+	GETW	1	511		//		Get the RSA key
+	STRSAX				//		Store the RSA public or private key
+EOM				0		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	RSACrypt
+//
+// Description:	Use an RSA key to encrypt(sign) / decrypt the data block
+//
+// Parameters	<= 	BYTE 0: RSA key location
+//					BYTE 1 - modulus length: Data to encrypt (sign) / decrypt
+//				=>	BYTE 0 - modulus length-1: Encrypted (signed) / decrypted data
+//
+// Return:			Error if RSA key index is > 5
+//					Success.
+//**************************************************************************************************
+MACRO			151		//	BEGIN
+	GETX		0		//		Get the RSA key index
+	SELRSAX				//		Load the RSA key
+
+	GETW	1	256		//		Get maximum block than can be computed = 2048 bits.
+	RSACOMP				//		Encrypt (sign) / Decrypt the data block
+
+	SENDW	0	256		//		Return the encrypted (signed) / decrypted data
+EOM				256		//	END
+
+
+
+//**************************************************************************************************
+// Macro Name:	RSAInjectDESKey
+//
+// Description:	Use an RSA key to inject a DES key
+//
+// Parameters	<= 	BYTE 0: RSA key location
+//					BYTE 1:	Index of DES key block
+//					BYTE 2 - 257: Data to decrypt starting with the encrypted DES key.
+//								Assuming block 2 PKCS format: 00 02 RR RR RR .... RR RR RR 00 [DES KEY]
+//								This leaves little choice but to assume length of RSA key. Hence, 2048 bit modulus
+//
+// Return:			Error if RSA key index is > 5
+//					Success.
+//**************************************************************************************************
+MACRO			152		//	BEGIN
+	LENGTH		3		//		Check for exactly 3 input bytes
+
+	GETX		0		//		Get the RSA key index
+	SELRSAX				//		Load the RSA key
+
+	GETX		1		//		Get the 3-DES key block number
+
+	GETW	2	256		//		Get maximum block that can be computed = 2048 bits.
+	RSACOMP				//		Decrypt the data block
+	SENDW	0	256		//		Place the decrypted block 2 PKCS in the communication buffer
+
+	GETA		248		//		Get the low order 3-DES KEK key
+	ADJ_ODD				//		Ensure the key has odd parity
+	STAX				//		Store the low order 3DES key
+EOM				0		//	END
+
+
+//**************************************************************************************************
+// Macro Name:	RSAInject3DESKey
+//
+// Description:	Use an RSA key to inject a 3-DES key
+//
+// Parameters	<= 	BYTE 0: RSA key location
+//					BYTE 1:	Index of 3-DES key block
+//					BYTE 2 - 257: Data to decrypt starting with the encrypted 3-DES key.
+//								Assuming block 2 PKCS format: 00 02 RR RR RR .... RR RR RR 00 [3DES KEY]
+//								This leaves little choice but to assume length of RSA key. Hence, 2048 bit modulues
+//
+// Return:			Error if RSA key index is > 5
+//					Success.
+//**************************************************************************************************
+MACRO			153		//	BEGIN
+	GETX		0		//		Get the RSA key index
+	SELRSAX				//		Load the RSA key
+
+	GETX		1		//		Get the 3-DES key block number
+
+	GETW	2	256		//		Get maximum block than can be computed = 2048 bits.
+	RSACOMP				//		Decrypt the data block
+	SENDW	0	256		//		Place the decrypted block 2 PKCS in the communication buffer
+
+	GETA		240		//		Get the high order 3-DES KEK key.
+	ADJ_ODD				//		Ensure the key has odd parity
+	STAX				//		Store the high order 3DES key
+
+	INCX				//		Get the 3-DES key block number
+	GETA		248		//		Get the low order 3-DES KEK key
+	ADJ_ODD				//		Ensure the key has odd parity
+	STAX				//		Store the low order 3DES key
+EOM				0		//	END
+
+
+
+//**************************************************************************************************
+// Macro Name:	RSAInjectRSAKey
+//
+// Description:	Use an RSA key to inject an RSA key
+//
+// Parameters	<= 	BYTE 0: RSA key location
+//					BYTE 1:	Injected RSA key location
+//
+//				 	BYTE 2: Key Type (EMV only).
+//					BYTE 3 - 7: RID (EMV only)
+//					BYTE 8: Key Index (EMV only)
+//					BYTE 9: Modulus Length in bytes.
+//							Example: 2 = 16 bits. Minimum ??? = 8 bytes.
+//							Use 0 = 2048 bits or 256 bytes.
+//							For slots 0-3: Maximum size = 252 bytes.
+//					BYTE 10: Exponent Length in bytes.
+//							For slots 0-3: Maximum size = 3 bytes.
+//					BYTES 11-x: Modulus. x = 11  + modulus length - 1
+//					BYTES (11+x)-y: Exponent. y = 11 + modulus length + exponent length - 1
+//
+// Return:			Error if RSA key index is > 5
+//					Success.
+//**************************************************************************************************
+MACRO			154		//	BEGIN
+	GETX		0		//		Get the RSA key index
+	SELRSAX				//		Load the RSA key
+
+	GETX		1		//		Get the injected RSA key location
+
+	GETW	2	519		//		Get maximum block than can be computed = 2048 bits.
+	RSACOMP				//		Decrypt the data block
+	STRSAX				//		Store the RSA public or private key
+
+EOM				0		//	END
+
+//**************************************************************************************************
+// Macro Name:	RSAWrap3DESKey
+//
+// Description:	Use an RSA key (1024-bit length) to wrap (encrypt) a 3DES key using block 2 format
+//
+// Parameters	<= 	BYTE 0: RSA key location
+//					BYTE 1 - 3DES key location to wrap
+//					BYTE 2 - modulus length-15:	Block 2 formatted data: 00 02 RR RR RR .... RR RR RR 00 [16 BYTES OF ZEROS TO BE FILLED WITH KEY HERE]
+//				=>	BYTE 0 - modulue length-1: wrapped key
+//
+// Return:			Error if RSA key index is > 5
+//					Success.
+//**************************************************************************************************
+MACRO			155		//	BEGIN
+	GETX		0		//		Get the RSA key index
+	SELRSAX				//		Load the RSA key
+
+	GETX		1		//		Get the 3DES key location
+
+	LDAX				//		Get the high order key
+	SENDA		114		//		Store the high order 3DES key at the correct area
+	INCX				//		Point to the low order key
+	LDAX				//		Get the low order key
+	SENDA		122		//		Store the low order 3DES key at the correct area (the end).
+
+	GETW	2	128		//		Get maximum block that can be computed = 2048 bits.
+
+	RSACOMP				//		Encrypt (sign) / Decrypt the data block
+
+	SENDW	0	128		//		Return the encrypted (signed) / decrypted data
+EOM				128		//	END
+
+//**************************************************************************************************
+// Macro Name:	3DESInjectRSAKey
+//
+// Description:	Derive an RSA public -OR- private key in an RSA slot using a 3DES key
+//
+// Parameters	<=	BYTE 0: 3DES key location
+//				 	BYTE 1: Injected RSA Key location
+//				 	BYTE 2: Key Type (EMV only).
+//					BYTE 3 - 7: RID (EMV only)
+//					BYTE 8: Key Index (EMV only)
+//					BYTE 9: Modulus Length in bytes.
+//							Example: 2 = 16 bits. Minimum ??? = 8 bytes.
+//							Use 0 = 2048 bits or 256 bytes.
+//							For slots 0-3: Maximum size = 252 bytes.
+//					BYTE 10: Exponent Length in bytes.
+//							For slots 0-3: Maximum size = 3 bytes.
+//					BYTES 11-x: Modulus. x = 11  + modulus length - 1
+//					BYTES (11+x)-y: Exponent. y = 11 + modulus length + exponent length - 1
+//
+// Return:			Error if RSA key index is > 5
+//					Success.
+//**************************************************************************************************
+MACRO			159		//	BEGIN
+
+	GETX		0		//		Get the key block number
+	ALGO_DES112			//		Set the key length
+	SELECTX				//		Select the 3-DES key as the current key
+
+	GETA		9
+	DCBC
+	SENDA		9
+
+	GETA		17
+	DCBC
+	SENDA		17
+
+	GETA		25
+	DCBC
+	SENDA		25
+
+	GETA		33
+	DCBC
+	SENDA		33
+
+	GETA		41
+	DCBC
+	SENDA		41
+
+	GETA		49
+	DCBC
+	SENDA		49
+
+	GETA		57
+	DCBC
+	SENDA		57
+
+	GETA		65
+	DCBC
+	SENDA		65
+
+	GETA		73
+	DCBC
+	SENDA		73
+
+	GETA		81
+	DCBC
+	SENDA		81
+
+	GETA		89
+	DCBC
+	SENDA		89
+
+	GETA		97
+	DCBC
+	SENDA		97
+
+	GETA		105
+	DCBC
+	SENDA		105
+
+	GETA		113
+	DCBC
+	SENDA		113
+
+	GETA		121
+	DCBC
+	SENDA		121
+
+	GETA		129
+	DCBC
+	SENDA		129
+
+	GETA		137
+	DCBC
+	SENDA		137
+
+	GETA		145
+	DCBC
+	SENDA		145
+
+	GETA		153
+	DCBC
+	SENDA		153
+
+	GETA		161
+	DCBC
+	SENDA		161
+
+	GETA		169
+	DCBC
+	SENDA		169
+
+	GETA		177
+	DCBC
+	SENDA		177
+
+	GETA		185
+	DCBC
+	SENDA		185
+
+	GETA		193
+	DCBC
+	SENDA		193
+
+	GETA		201
+	DCBC
+	SENDA		201
+
+	GETA		209
+	DCBC
+	SENDA		209
+
+	GETA		217
+	DCBC
+	SENDA		217
+
+	GETA		225
+	DCBC
+	SENDA		225
+
+	GETA		233
+	DCBC
+	SENDA		233
+
+	GETA		241
+	DCBC
+	SENDA		241
+
+	GETA		249
+	DCBC
+	SENDA		249
+
+	GETA		257
+	DCBC
+	SENDA		257
+
+	GETA		265
+	DCBC
+	SENDA		265
+
+	GETA		273
+	DCBC
+	SENDA		273
+
+	GETA		281
+	DCBC
+	SENDA		281
+
+	GETA		289
+	DCBC
+	SENDA		289
+
+	GETA		297
+	DCBC
+	SENDA		297
+
+	GETA		305
+	DCBC
+	SENDA		305
+
+	GETA		313
+	DCBC
+	SENDA		313
+
+	GETA		321
+	DCBC
+	SENDA		321
+
+	GETA		329
+	DCBC
+	SENDA		329
+
+	GETA		337
+	DCBC
+	SENDA		337
+
+	GETA		345
+	DCBC
+	SENDA		345
+
+	GETA		353
+	DCBC
+	SENDA		353
+
+	GETA		361
+	DCBC
+	SENDA		361
+
+	GETA		369
+	DCBC
+	SENDA		369
+
+	GETA		377
+	DCBC
+	SENDA		377
+
+	GETA		385
+	DCBC
+	SENDA		385
+
+	GETA		393
+	DCBC
+	SENDA		393
+
+	GETA		401
+	DCBC
+	SENDA		401
+
+	GETA		409
+	DCBC
+	SENDA		409
+
+	GETA		417
+	DCBC
+	SENDA		417
+
+	GETA		425
+	DCBC
+	SENDA		425
+
+	GETA		433
+	DCBC
+	SENDA		433
+
+	GETA		441
+	DCBC
+	SENDA		441
+
+	GETA		449
+	DCBC
+	SENDA		449
+
+	GETA		457
+	DCBC
+	SENDA		457
+
+	GETA		465
+	DCBC
+	SENDA		465
+
+	GETA		473
+	DCBC
+	SENDA		473
+
+	GETA		481
+	DCBC
+	SENDA		481
+
+	GETA		489
+	DCBC
+	SENDA		489
+
+	GETA		497
+	DCBC
+	SENDA		497
+
+	GETA		505
+	DCBC
+	SENDA		505
+
+	GETA		513
+	DCBC
+	SENDA		513
+
+	GETX		1		//		Get the RSA key index. Range (0-5)
+	GETW	2	519		//		Get the RSA key
+	STRSAX				//		Store the RSA public or private key
+
+EOM				0		//	END
+
+//**************************************************************************************************
+//**************************************************************************************************
+// Macro Name:	KPPPinBlock
+//
+// Description:	Calculate and get the pin block
+//
+// Parameters	<= 	BYTE 0: Index of PIN Encrypting Key
+//					BYTE 1 - 8: In BCD, 4 zeros followed by the 12 right most ASCII digits of the PAN
+//
+// Return:			Error if key used is not a PEK, length is wrong, or key not loaded.
+//					Success.
+//**************************************************************************************************
+MACRO			160		//	BEGIN
+	LENGTH		9		//		Check for exactly 9 input bytes
+
+	GETX		0		//		Get the 3-DES PIN key block number
+	TSTXI	201 210		//		Make sure the key is a PIN type
+	SELECTX				//		Select the DES key as the current key
+
+	SETA				//		Prepare the plain text pin field
+	GETPIN0				//		Store the PIN at the left of register A
+	LSRA		8		//		Make room for the PIN length (top left byte)
+	GETPINNB			//		Store the length of the PIN at the left of register A
+	MOV_A_B0			//		Temporarily save the plain text pin field
+
+	GETA		1		//		Get the PAN
+	XORA_B0				//		Calculate clear "format-0 pin block".
+
+	EECB				//		Encrypt the PIN block
+	SENDA		0		//		Send the PIN block back
+EOM				8		//	END
+
+
+
+//**************************************************************************************************
+// Macro Name:	3KPPPinBlock
+//
+// Description:	Calculate and get the pin block
+//
+// Parameters	<= 	BYTE 0: Index of PIN Encrypting Key
+//					BYTE 1 - 8: In BCD, 4 zeros followed by the 12 right most ASCII digits of the PAN
+//
+// Return:			Error if key used is not a PEK, length is wrong, or key not loaded.
+//					Success.
+//**************************************************************************************************
+MACRO			161		//	BEGIN
+	LENGTH		9		//		Check for exactly 9 input bytes
+
+	GETX		0		//		Get the 3-DES PIN key block number
+	TSTXI	201 209		//		Make sure the key is a PIN type
+	ALGO_DES112			//		Set the key length (3-DES).
+	SELECTX				//		Select the 3-DES key as the current key
+
+	SETA				//		Prepare the plain text pin field
+	GETPIN0				//		Store the PIN at the left of register A
+	LSRA		8		//		Make room for the PIN length (top left byte)
+	GETPINNB			//		Store the length of the PIN at the left of register A
+	MOV_A_B0			//		Temporarily save the plain text pin field
+
+	GETA		1		//		Get the PAN
+	XORA_B0				//		Calculate clear "format-0 pin block".
+
+	EECB				//		Encrypt the PIN block
+	SENDA		0		//		Send the PIN block back
+EOM				8		//	END
+
+
+
+//**************************************************************************************************
+// Macro Name:	KPPPinBlockWithVariant
+//
+// Description:	Calculate and get the pin block
+//
+// Parameters	<= 	BYTE 0: Index of PIN Encrypting Key
+//					BYTE 1 - 8: In BCD, 4 zeros followed by the 12 right most ASCII digits of the PAN
+//					BYTE 9 - 16: 6 BCD digits representing the STAN followed by 10 BCD '0's
+//					BYTE 17 - 24: Transaction Amount in 16 BCD digits
+//
+// Return:			Error if key used is not a PEK, length is wrong, or key not loaded.
+//					Success.
+//**************************************************************************************************
+MACRO			162		//	BEGIN
+	LENGTH		25		//		Check for exactly 25 input bytes
+
+	GETX		0		//		Get the 3-DES PIN key block number
+	TSTXI	201 210		//		Make sure the key is a PIN type
+	SELECTX				//		Select the DES key as the current key
+
+	GETA		9		//		Get the STAN block
+	MOV_A_B0			//		Keep it.
+	GETA		17		//		Get the transaction amount block
+	XORA_B0				//		This is the PIN OWF value
+	MOV_A_B0			//		Keep it.
+
+	DECB				//		Vary the data
+	XORA_B0				//		This is the OWF of the PIN key.
+	SELECTA				//		Select the updated PIN key (KPE) as this transaction pin key.
+
+	SETA				//		Prepare the plain text pin field
+	GETPIN0				//		Store the PIN at the left of register A
+	LSRA		8		//		Make room for the PIN length (top left byte)
+	GETPINNB			//		Store the length of the PIN at the left of register A
+	MOV_A_B0			//		Temporarily save the plain text pin field
+
+	GETA		1		//		Get the PAN
+	XORA_B0				//		Calculate clear "format-0 pin block".
+
+	EECB				//		Encrypt the PIN block
+	SENDA		0		//		Send the PIN block back
+EOM				8		//	END
+
+
+
+//**************************************************************************************************
+// Macro Name:	3KPPPinBlockWithVariant
+//
+// Description:	Calculate and get the pin block
+//
+// Parameters	<= 	BYTE 0: Index of PIN Encrypting Key
+//					BYTE 1 - 8: In BCD, 4 zeros followed by the 12 right most ASCII digits of the PAN
+//					BYTE 9 - 16: 6 BCD digits representing the STAN followed by 10 BCD '0's
+//					BYTE 17 - 24: Transaction Amount in 16 BCD digits
+//
+// Return:			Error if key used is not a PEK, length is wrong, or key not loaded.
+//					Success.
+//**************************************************************************************************
+MACRO			163		//	BEGIN
+	LENGTH		25		//		Check for exactly 25 input bytes
+
+	GETX		0		//		Get the 3-DES PIN key block number
+	TSTXI	201 209		//		Make sure the key is a PIN type
+	ALGO_DES112			//		Set the key length (3-DES).
+	SELECTX				//		Select the 3-DES key as the current key
+
+// PIN-OWF ROUND1: Get the MAB
+	CLRIV				//		No initial IV.
+	GETA		9		//		Get the STAN block
+	ECBC				//		Encrypt it.
+	GETA		17		//		Get the transaction amount block
+	ECBC				//		Encrypt it to get the MAB (Message Authentication Block) in IV.
+
+// PIN-OWF ROUND 2: CBC encrypt the [STAN | AMOUNT] using the MAB as the Initial Vector
+	GETA		9		//		Get the STAN block
+	ECBC				//		Encrypt it taking into account the initial vector
+	MOV_A_B1			//		also keep the result for later
+	GETA		17		//		Get the transaction amount block
+	ECBC				//		Encrypt it
+	MOV_A_B0			//		and keep the result
+
+// PIN-OWF ROUND 3: XOR the encrypted [STAN | AMOUNT] with the [STAN | AMOUNT] to get the final result
+	GETA		17		//		Get the transaction amount block
+	XORA_B0				//
+	MOV_A_B0			//		
+	GETA		9		//		Get the STAN block
+	XORA_B1				//
+	SELECTA				//		Select the updated PIN key (KPE) as this transaction pin key.
+
+	SETA				//		Prepare the plain text pin field
+	GETPIN0				//		Store the PIN at the left of register A
+	LSRA		8		//		Make room for the PIN length (top left byte)
+	GETPINNB			//		Store the length of the PIN at the left of register A
+	MOV_A_B0			//		Temporarily save the plain text pin field
+
+	GETA		1		//		Get the PAN
+	XORA_B0				//		Calculate clear "format-0 pin block".
+
+	EECB				//		Encrypt the PIN block
+	SENDA		0		//		Send the PIN block back
+EOM				8		//	END
+
+
+
+
+//**************************************************************************************************
+MACRO			164		//	BEGIN
+	GETX		0		//		Get the index of the key block
+
+	LDAX				//		Load the DES key
+	SENDA		0		//		Send the PIN block back
+	INCX				// 		Set X to next key block number
+	LDAX				//		Load the DES key
+	SENDA		8		//		Send the key block back
+EOM				16		//	END
+
+//**************************************************************************************************
+MACRO			165		//	BEGIN
+	SETA				//		Prepare the plain text pin field
+	GETPINNB			//		Store the length of the PIN at the left of register A
+	SENDA		0		//		Send the key block back
+	SETA				//		Prepare the plain text pin field
+	GETPIN0				//		Store the PIN at the left of register A
+	SENDA		1		//		Send the key block back
+EOM				9		//	END
+
+//**************************************************************************************************
+// Macro Name:	
+//
+// Description:	Calculate and get the pin block
+//
+// Parameters	<= 	BYTE 0: Index of PIN Encrypting Key
+//					BYTE 1 - 8: In BCD, 4 zeros followed by the 12 right most ASCII digits of the PAN
+//					BYTE 9 - 16: 6 BCD digits representing the STAN followed by 10 BCD '0's
+//					BYTE 17 - 24: Transaction Amount in 16 BCD digits
+//					BYTE 25 : PIN length
+//					BYTE 26 - 32: plain pin
+//
+// Return:			Error if key used is not a PEK, length is wrong, or key not loaded.
+//					Success.
+//**************************************************************************************************
+MACRO			166		//	BEGIN
+
+	GETX		0		//		Get the 3-DES PIN key block number
+	TSTXI	201 209		//		Make sure the key is a PIN type
+	ALGO_DES112			//		Set the key length (3-DES).
+	SELECTX				//		Select the 3-DES key as the current key
+
+// PIN-OWF ROUND1: Get the MAB
+	CLRIV				//		No initial IV.
+	GETA		9		//		Get the STAN block
+	ECBC				//		Encrypt it.
+	GETA		17		//		Get the transaction amount block
+	ECBC				//		Encrypt it to get the MAB (Message Authentication Block) in IV.
+
+// PIN-OWF ROUND 2: CBC encrypt the [STAN | AMOUNT] using the MAB as the Initial Vector
+	GETA		9		//		Get the STAN block
+	ECBC				//		Encrypt it taking into account the initial vector
+	MOV_A_B1			//		also keep the result for later
+	GETA		17		//		Get the transaction amount block
+	ECBC				//		Encrypt it
+	MOV_A_B0			//		and keep the result
+
+// PIN-OWF ROUND 3: XOR the encrypted [STAN | AMOUNT] with the [STAN | AMOUNT] to get the final result
+	GETA		17		//		Get the transaction amount block
+	XORA_B0				//
+	MOV_A_B0			//		
+	GETA		9		//		Get the STAN block
+	XORA_B1				//
+	SELECTA				//		Select the updated PIN key (KPE) as this transaction pin key.
+
+	SETA				//		Prepare the plain text pin field
+	GETA		25		//		Get the pinlength,pin block
+	MOV_A_B0			//		Temporarily save the plain text pin field
+
+	GETA		1		//		Get the PAN
+	XORA_B0				//		Calculate clear "format-0 pin block".
+
+	EECB				//		Encrypt the PIN block
+	SENDA		0		//		Send the PIN block back
+EOM				8		//	END
+
+//**************************************************************************************************
+// Macro Name:	RSAWrap3DESKey_ASN
+//
+// Description:	Use an RSA key (1024-bit length) to wrap (encrypt) a 3DES key using block 2 format
+//
+// Parameters	<= 	BYTE 0: RSA key location
+//					BYTE 1 - 3DES key location to wrap
+//					BYTE 2 - modulus length-15:	Block 2 formatted data: 00 02 RR RR ...  RR 00 [ BYTES OF ASN.1 KEY HERE]
+//				=>	BYTE 0 - modulue length-1: wrapped key
+//
+// Return:			Error if RSA key index is > 5
+//					Success.
+//**************************************************************************************************
+MACRO			167		//	BEGIN
+	GETX		0		//		Get the RSA key index
+	SELRSAX				//		Load the RSA key
+
+	GETX		1		//		Get the 3DES key location
+
+	GETW	2	128		//		Get maximum block that can be computed = 2048 bits.
+
+	RSACOMP				//		Encrypt (sign) / Decrypt the data block
+
+	SENDW	0	128		//		Return the encrypted (signed) / decrypted data
+EOM				128		//	END

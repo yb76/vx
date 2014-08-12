@@ -1,0 +1,44 @@
+/******************************************************************
+  Filename:	    DevMan.RT
+  Product:      Multi-app Conductor
+  Version:      1.0
+  Module:       Device Manager
+  Description:	This Template File defines the resource listing the
+				devices and the input/output events for applications
+				under MAM environment
+  
+  Modification History:
+      #       Date         Who         Comments
+      1.0    10 May 2000   Prabha_R1   Initial Implementaion
+
+	  1.1    19 June 2000   Prabha_R1  Modifications for Priority of 
+										events (HIGH, MEDIUM, LOW)
+	  1.2    13 July 2000   Prabha_R1  Fixed Unit Testing defects
+*******************************************************************/
+/******************************************************************
+   Copyright (C) 2000-2001 by VeriFone Inc. All rights reserved.
+
+ No part of this software may be used, stored, compiled, reproduced,
+ modified, transcribed, translated, transmitted, or transferred, in
+ any form or by any means  whether electronic, mechanical,  magnetic,
+ optical, or otherwise, without the express prior written permission
+                          of VeriFone, Inc.
+*******************************************************************/
+
+template DevManRsrc TEMPLATE_DEVMAN_RSRC
+{
+	short numOfInEvt = $countof(evtDeviceList);			// internally updated by resource manager
+	array evtDeviceList
+	{
+		short priority;									// priority of the event 
+														//  HIGH, MEDIUM, LOW
+		unsigned short  inputEvent;						// input event
+		unsigned short	outputEvent;					// output event
+		short numOfAct = $countof(reqActions);          // internally updated by resource manager
+		array reqActions								// list of required devices, 
+		{												// change owner actions or Activate
+			short	action;
+		}
+	}
+};
+

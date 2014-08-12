@@ -1,0 +1,57 @@
+#include "devman.h"
+#include "devman.rt"
+
+// DEVMAN_RSRC resource
+resource irisRsrc DEVMAN_RSRC DevManRsrc
+{
+	{
+		// New Event (initialisation)
+		(	HIGH,					// Priority of the event
+			APPLICATION_INIT_EVENT,		// input event
+			APPLICATION_INIT_EVENT,		// output event
+			{(NO_DEVICES_REQUIRED)}		// devices required
+		),
+
+		// New Event (initialisation)
+		(	LOW,					// Priority of the event
+			CONSOLE_AVAILABLE_EVENT,	// input event
+			CONSOLE_AVAILABLE_EVENT,	// output event
+			{(NO_DEVICES_REQUIRED)}		// devices required
+		),
+
+		// New Event (activation)
+		(	MEDIUM,					// Priority of the event
+			15001,				// input event
+			15001,				// output event
+			{(CONSOLE),(MAG_READER),(CLOCK),(BEEPER),(COMM_1),(COMM_2),(COMM_3),(COMM_4),(CRYPTO),(ETH1)}		// devices required
+		),
+
+		// New Event (PAN range registration: Store the data in order to send 10002 event to application if OK)
+		(	HIGH,					// Priority of the event
+			10001,				// input event
+			10001,				// output event
+			{(NO_DEVICES_REQUIRED)}		// devices required
+		),
+
+		// New Event (PAN range deletion: Delete Pan Ranges belonging to the sending application)
+		(	HIGH,				// Priority of the event
+			10007,				// input event
+			10007,				// output event
+			{(NO_DEVICES_REQUIRED)}		// devices required
+		),
+
+		// New Event (MCR Data Response: If OK, self deactivates and starts timer to self activate periodically (SVC_WAIT() then try, etc.)
+		(	HIGH,					// Priority of the event
+			10003,				// input event
+			10003,				// output event
+			{(NO_DEVICES_REQUIRED)}		// devices required
+		),
+
+		// New Event (MID/TID request)
+		(	HIGH,					// Priority of the event
+			10005,				// input event
+			10005,				// output event
+			{(NO_DEVICES_REQUIRED)}		// devices required
+		)
+	}
+};

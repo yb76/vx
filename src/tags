@@ -1,0 +1,1137 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AAC	Contactless.c	49;"	d	file:
+ACTIVATE_TRAN	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+AIDlist	Contactless.c	/^static AID_DATA AIDlist[10];$/;"	v	file:
+ARQC	Contactless.c	47;"	d	file:
+AS2805BcdLength	as2805.c	/^void AS2805BcdLength(bool state)$/;"	f
+AS2805BufferPack	as2805.c	/^void AS2805BufferPack(char * data, uchar format, uint size, uchar * buffer, uint * index)$/;"	f
+AS2805BufferUnpack	as2805.c	/^void AS2805BufferUnpack(char * data, uchar format, uint size, uchar * buffer, uint * index)$/;"	f
+AS2805Close	as2805.c	/^void AS2805Close()$/;"	f
+AS2805Init	as2805.c	/^uchar * AS2805Init(uint size)$/;"	f
+AS2805OFBAdjust	as2805.c	/^void AS2805OFBAdjust(uchar * source, uchar * dest, uint length)$/;"	f
+AS2805OFBVariation	as2805.c	/^void AS2805OFBVariation(int my_maxField, int my_addField)$/;"	f
+AS2805Pack	as2805.c	/^uint AS2805Pack(uchar field, char * data)$/;"	f
+AS2805Position	as2805.c	/^uchar * AS2805Position(uint * length)$/;"	f
+AS2805SetBit	as2805.c	/^void AS2805SetBit(uchar field)$/;"	f
+AS2805Unpack	as2805.c	/^void AS2805Unpack(uchar field, char * data, uchar * buffer, uint length)$/;"	f
+AS2805_Error	iris2805.c	/^int AS2805_Error = -1;$/;"	v
+AcquireCard	Contactless.c	/^int AcquireCard(char waitForRsp, int timeoutMs, _ctlsStru * ptr_ctls )$/;"	f
+AcquireCardParams	Contactless.c	/^} AcquireCardParams;$/;"	t	typeref:struct:AcquireCardParams_	file:
+AcquireCardParams_	Contactless.c	/^typedef struct AcquireCardParams_$/;"	s	file:
+AcquireRsp	Contactless.c	/^static int AcquireRsp(char waitForRsp, int timeout)$/;"	f	file:
+ActivateTransaction	Contactless.c	/^static int ActivateTransaction(char waitForRsp, int timeout)$/;"	f	file:
+AddToMsg	Contactless.c	/^static void AddToMsg(char *subMsg, int length)$/;"	f	file:
+AddVivo2Header	Contactless.c	/^static void AddVivo2Header()$/;"	f	file:
+AddVivoHeader	Contactless.c	/^static void AddVivoHeader(void)$/;"	f	file:
+AppendCRC	Contactless.c	/^static void AppendCRC()$/;"	f	file:
+B8	Prtean13.c	53;"	d	file:
+B8__	Prtean13.c	56;"	d	file:
+BASE	adler32.c	11;"	d	file:
+BIG_ENDIAN	ctlsmod.c	/^typedef enum {LITTLE_ENDIAN = 0, BIG_ENDIAN} CRC_TYPE;$/;"	e	enum:__anon4	file:
+BITS	inflate.c	436;"	d	file:
+BUILDFIXED	inflate.c	90;"	d	file:
+BYFOUR	crc32.c	37;"	d	file:
+BYFOUR	crc32.c	47;"	d	file:
+BYTEBITS	inflate.c	447;"	d	file:
+BuildActivateTransactionMsg	Contactless.c	/^static void BuildActivateTransactionMsg(char timeout) \/\/add txn amount and type$/;"	f	file:
+BuildCancelTransactionMsg	Contactless.c	/^static void BuildCancelTransactionMsg()$/;"	f	file:
+BuildDelCAPubKeysMsg	Contactless.c	/^static void BuildDelCAPubKeysMsg()$/;"	f	file:
+BuildDeleteAidMsg	Contactless.c	/^static void BuildDeleteAidMsg(char *aid, short len)$/;"	f	file:
+BuildEan128BarCode	Prtean128.c	/^int BuildEan128BarCode(uchar * data, uchar * out, uint size, int height)$/;"	f
+BuildEan13BarCode	Prtean13.c	/^int BuildEan13BarCode ( uchar * bpChar, uchar * abPrintBlock, uint wSizePrintBlock)$/;"	f
+BuildGeneralMsg	Contactless.c	/^static int BuildGeneralMsg(char cmd,char subcmd,char *data,short datalen)$/;"	f	file:
+BuildGetAllAidsMsg	Contactless.c	/^static void BuildGetAllAidsMsg(void)$/;"	f	file:
+BuildGetCfgGroupMsg	Contactless.c	/^static void BuildGetCfgGroupMsg(char *groupNo)$/;"	f	file:
+BuildGetLCDMsgMsg	Contactless.c	/^static void BuildGetLCDMsgMsg()$/;"	f	file:
+BuildGetTLVsMsg	Contactless.c	/^static void BuildGetTLVsMsg(char *Aid, short sz)$/;"	f	file:
+BuildRawMsg	Contactless.c	/^static void BuildRawMsg(char* tlv,int tlvlen)$/;"	f	file:
+BuildSetADDReaderPrm	Contactless.c	/^static void BuildSetADDReaderPrm()$/;"	f	file:
+BuildSetCAPubKeyMsgCF	Contactless.c	/^static void BuildSetCAPubKeyMsgCF(char dataLen1, char dataLen2)$/;"	f	file:
+BuildSetCAPubKeyMsgDF	Contactless.c	/^static void BuildSetCAPubKeyMsgDF(char *data, char len)$/;"	f	file:
+BuildSetCfgAidMsg	Contactless.c	/^static void BuildSetCfgAidMsg(char *tlv, char closeMsg)$/;"	f	file:
+BuildSetCfgGroupMsg	Contactless.c	/^static void BuildSetCfgGroupMsg(char *tlv, char closeMsg)$/;"	f	file:
+BuildSetDateMsgCF	Contactless.c	/^static void BuildSetDateMsgCF()$/;"	f	file:
+BuildSetDateMsgDF	Contactless.c	/^static void BuildSetDateMsgDF()$/;"	f	file:
+BuildSetEMVGrpMsg	Contactless.c	/^static void BuildSetEMVGrpMsg()$/;"	f	file:
+BuildSetEMVTrmCapMsg	Contactless.c	/^static void BuildSetEMVTrmCapMsg()$/;"	f	file:
+BuildSetEMVTxnAmtMsg	Contactless.c	/^static void BuildSetEMVTxnAmtMsg()$/;"	f	file:
+BuildSetEmvMsg	Contactless.c	/^static void BuildSetEmvMsg(char *tlv, char closeMsg)$/;"	f	file:
+BuildSetPollOnDemandMsg	Contactless.c	/^static void BuildSetPollOnDemandMsg()$/;"	f	file:
+BuildSetSourceMsg	Contactless.c	/^static void BuildSetSourceMsg()$/;"	f	file:
+BuildSetTimeMsgCF	Contactless.c	/^static void BuildSetTimeMsgCF()$/;"	f	file:
+BuildSetTimeMsgDF	Contactless.c	/^static void BuildSetTimeMsgDF()$/;"	f	file:
+BuildStoreLCDMsgMsg	Contactless.c	/^static void BuildStoreLCDMsgMsg(char msgNdx, char *str, char *paramStr1, char *paramStr2, char *paramStr3)$/;"	f	file:
+CANCEL_TRANSACTION	ctlsmod.c	/^	CANCEL_TRANSACTION, DEL_CFG_GROUP, SET_CFG_GROUP, DEL_CFG_AID, GET_CFG_AID, GET_CFG_GRP, GET_ALL_GRPS$/;"	e	enum:__anon3	file:
+CARD_DATA	ctlsmod.c	/^} CARD_DATA;$/;"	t	typeref:struct:__anon8	file:
+CENTRE_GUARD	Prtean13.c	135;"	d	file:
+CENTRE_GUARD_WIDTH	Prtean13.c	43;"	d	file:
+CODE_A	Prtean128.c	158;"	d	file:
+CODE_B	Prtean128.c	159;"	d	file:
+CODE_C	Prtean128.c	160;"	d	file:
+CONV_TO_ASC	Contactless.c	/^	CONV_TO_ASC$/;"	e	enum:__anon1	file:
+CRC2	inflate.c	371;"	d	file:
+CRC4	inflate.c	378;"	d	file:
+CRC_TYPE	ctlsmod.c	/^typedef enum {LITTLE_ENDIAN = 0, BIG_ENDIAN} CRC_TYPE;$/;"	t	typeref:enum:__anon4	file:
+CTLSDEBUG	Contactless.c	51;"	d	file:
+CTLSEmvGetTac	Contactless.c	/^int CTLSEmvGetTac(char *tac_df,char *tac_dn,char *tac_ol, const char *AID)$/;"	f
+CTLS_BUFF_SZ	Contactless.c	46;"	d	file:
+CTLS_VIVOTECH_CMD_TYPE	ctlsmod.c	/^} CTLS_VIVOTECH_CMD_TYPE;$/;"	t	typeref:enum:__anon3	file:
+CTLS_VIVOTECH_CMD_VALUES	ctlsmod.c	/^} CTLS_VIVOTECH_CMD_VALUES;$/;"	t	typeref:struct:__anon5	file:
+CTLS_WAVE3_CMD_TYPE	ctlsmod.c	/^} CTLS_WAVE3_CMD_TYPE;$/;"	t	typeref:enum:__anon9	file:
+CTLS_WAVE3_CMD_VALUES	ctlsmod.c	/^} CTLS_WAVE3_CMD_VALUES;$/;"	t	typeref:struct:__anon10	file:
+C_APPNAME_MAX	security.c	113;"	d	file:
+C_CFG_FILE_LEN	iriscfg.c	51;"	d	file:
+C_DAY	iristime.c	48;"	d	file:
+C_FMT_MAX	iristime.c	53;"	d	file:
+C_HOUR	iristime.c	49;"	d	file:
+C_MAX_STACK	iris.c	49;"	d	file:
+C_MIN	iristime.c	50;"	d	file:
+C_MON	iristime.c	47;"	d	file:
+C_NO_OF_KEYS	security.c	111;"	d	file:
+C_NO_OF_RSA	security.c	112;"	d	file:
+C_PPID	iriscfg.c	48;"	d	file:
+C_PPID_LEN	iriscfg.c	46;"	d	file:
+C_SCRIPT_ID	security.c	49;"	d	file:
+C_SEC	iristime.c	51;"	d	file:
+C_YEAR	iristime.c	46;"	d	file:
+CancelAcquireCard	Contactless.c	/^void CancelAcquireCard(int reason)$/;"	f
+CancelTransaction	Contactless.c	/^static int CancelTransaction(int reason)$/;"	f	file:
+CardData	ctlsmod.c	/^CARD_DATA CardData;$/;"	v
+CbAcquireCard	Contactless.c	/^static int CbAcquireCard(void *pParams)$/;"	f	file:
+CbCancelAcquireCard	Contactless.c	/^static int CbCancelAcquireCard(void *pParams)$/;"	f	file:
+CbProcessCard	Contactless.c	/^static int CbProcessCard(void *pParams)$/;"	f	file:
+CentreGuard	Prtean13.c	/^const uchar CentreGuard[2] = {B8(00011100),B8(01110000)};\/\/{0x38, 0x0E};$/;"	v
+CheckCRC	Contactless.c	/^static int CheckCRC(char *rsp)$/;"	f	file:
+CheckScriptLen	emvmisc.c	/^short CheckScriptLen( byte *Scdata , int totalLen )$/;"	f
+ClearCardData	ctlsmod.c	/^void ClearCardData(void)$/;"	f
+Comms	comms.c	/^uint Comms(E_COMMS_FUNC eFunc, T_COMMS * psComms)$/;"	f
+CommsConnect	comms.c	/^uint CommsConnect(T_COMMS * psComms)$/;"	f
+CommsReceive	comms.c	/^uint CommsReceive( T_COMMS * psComms, bool fFirstChar)$/;"	f
+CommsSend	comms.c	/^uint CommsSend( T_COMMS * psComms )$/;"	f
+CommsSerialDataAvailable	comms.c	/^static uint CommsSerialDataAvailable(int port)$/;"	f	file:
+CommsSetSerial	comms.c	/^static uint CommsSetSerial(T_COMMS * psComms)$/;"	f	file:
+DEFAULT	ctlsmod.c	/^	DEFAULT = 0, QX1000, QX120, VX810_CTLS$/;"	e	enum:__anon6	file:
+DEL_ALL_CAPK	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+DEL_CFG_AID	ctlsmod.c	/^	CANCEL_TRANSACTION, DEL_CFG_GROUP, SET_CFG_GROUP, DEL_CFG_AID, GET_CFG_AID, GET_CFG_GRP, GET_ALL_GRPS$/;"	e	enum:__anon3	file:
+DEL_CFG_GROUP	ctlsmod.c	/^	CANCEL_TRANSACTION, DEL_CFG_GROUP, SET_CFG_GROUP, DEL_CFG_AID, GET_CFG_AID, GET_CFG_GRP, GET_ALL_GRPS$/;"	e	enum:__anon3	file:
+DO1	adler32.c	15;"	d	file:
+DO1	crc32.c	210;"	d	file:
+DO16	adler32.c	19;"	d	file:
+DO2	adler32.c	16;"	d	file:
+DO4	adler32.c	17;"	d	file:
+DO8	adler32.c	18;"	d	file:
+DO8	crc32.c	211;"	d	file:
+DOBIG32	crc32.c	290;"	d	file:
+DOBIG4	crc32.c	287;"	d	file:
+DOLIT32	crc32.c	253;"	d	file:
+DOLIT4	crc32.c	250;"	d	file:
+DROPBITS	inflate.c	440;"	d	file:
+DYNAMIC_CRC_TABLE	crc32.c	25;"	d	file:
+DebugDisp	display.c	/^void DebugDisp (const char *template, ...)$/;"	f
+DebugDisp	runmain.c	/^void DebugDisp (const char *template, ...)$/;"	f
+DebugPrint	IrisComm.c	/^static int DebugPrint (const char*template,...) {$/;"	f	file:
+DebugPrint	display.c	/^int DebugPrint (const char*template,...) {$/;"	f
+DebugPrint	gprs.c	/^static int DebugPrint (const char*template,...) {$/;"	f	file:
+DebugPrint2	IrisComm.c	/^static int DebugPrint2 (const char*template,...) $/;"	f	file:
+DebugPrint2	gprs.c	/^static int DebugPrint2 (const char*template,...) $/;"	f	file:
+DefaultTimer	timer.c	/^static TIMER_TYPE DefaultTimer;$/;"	v	file:
+DeleteAids	Contactless.c	/^static int DeleteAids()$/;"	f	file:
+DeleteCAPubKeys	Contactless.c	/^static int DeleteCAPubKeys(void)$/;"	f	file:
+DispArray	display.c	/^int	DispArray(int timeout,char **pcMenuItems, int iMenuItemsTotal)$/;"	f
+DispClearScreen	display.c	/^void DispClearScreen(void)$/;"	f
+DispGraphics	display.c	/^void DispGraphics(const char * graphics, uint row, uint col)$/;"	f
+DispInit	display.c	/^void DispInit(void)$/;"	f
+DispSignal	display.c	/^void DispSignal(uint row, uint col)$/;"	f
+DispText	display.c	/^void DispText(const char * text, uint row, uint col, bool clearLine, bool largeFont, bool inverse)$/;"	f
+DispText2	comms.c	75;"	d	file:
+DispUpdateBattery	display.c	/^void DispUpdateBattery(uint row, uint col)$/;"	f
+DisplayObject	irismain.c	/^int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBitmap,int timeout, char* outevent, char* outinput)$/;"	f
+DoTmsCmd	irisutil.c	/^void DoTmsCmd()$/;"	f
+EAN_NORMAL_WIDTH	Prtean13.c	40;"	d	file:
+ECHO	ctlsmod.c	/^	POLL = 0, ECHO, RESET, INITCOMMS, MUTUAL_AUTH, GET_KEYS, INV_READER, SWITCH_ADMIN,$/;"	e	enum:__anon9	file:
+EMVCB_BLACK_CARDS_FILE	emvCallback.c	39;"	d	file:
+EMVDataAuth	emv.c	/^int EMVDataAuth(void)$/;"	f
+EMVPowerOn	emv.c	/^int	EMVPowerOn(void)$/;"	f
+EMVProcessingRestrictions	emv.c	/^int EMVProcessingRestrictions (void)$/;"	f
+EMVReadAppData	emv.c	/^int	EMVReadAppData(void)$/;"	f
+EMVSelectApplication	emv.c	/^int	EMVSelectApplication(void)$/;"	f
+EMVTransInit	emv.c	/^int	EMVTransInit(void)$/;"	f
+EMV_TAG_REC	ctlsmod.c	/^} EMV_TAG_REC;$/;"	t	typeref:struct:__anon7	file:
+E_PRINT_STATE	printer.c	/^} E_PRINT_STATE;$/;"	t	typeref:enum:__anon14	file:
+E_PRINT_STATE_BARCODE_EAN128	printer.c	/^	E_PRINT_STATE_BARCODE_EAN128,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_BARCODE_EAN13	printer.c	/^	E_PRINT_STATE_BARCODE_EAN13,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_DEFAULT	printer.c	/^	E_PRINT_STATE_DEFAULT = 0,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_ESCAPE	printer.c	/^	E_PRINT_STATE_ESCAPE,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_FIRST_0	printer.c	/^	E_PRINT_STATE_FIRST_0,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_FIRST_9	printer.c	/^	E_PRINT_STATE_FIRST_9,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_K	printer.c	/^	E_PRINT_STATE_K,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_SECOND_03	printer.c	/^	E_PRINT_STATE_SECOND_03,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_SECOND_04	printer.c	/^	E_PRINT_STATE_SECOND_04,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_SECOND_90	printer.c	/^	E_PRINT_STATE_SECOND_90,$/;"	e	enum:__anon14	file:
+E_PRINT_STATE_SECOND_99	printer.c	/^	E_PRINT_STATE_SECOND_99,$/;"	e	enum:__anon14	file:
+EmvCallbackFnInit	emvCallback.c	/^int	EmvCallbackFnInit(void)$/;"	f
+EmvCallbackFnPromptManager	emvCallback.c	/^void	EmvCallbackFnPromptManager(unsigned short usPromptId)$/;"	f
+EmvCallbackFnSelectAppMenu	emvCallback.c	/^int	EmvCallbackFnSelectAppMenu(char **pcMenuItems, int iMenuItemsTotal)$/;"	f
+EmvCallbackIsCardBlackListed	emvCallback.c	/^EMVBoolean	EmvCallbackIsCardBlackListed(unsigned char *pucPan,$/;"	f
+EmvCardPowerOff	emv.c	/^int	EmvCardPowerOff(void)$/;"	f
+EmvCardholderVerify	emv.c	/^int	EmvCardholderVerify(void)$/;"	f
+EmvDispUsrPin	emvCallback.c	/^void EmvDispUsrPin()$/;"	f
+EmvFnAmtEntry	emvCallback.c	/^unsigned short	EmvFnAmtEntry(unsigned long *pulTxnAmt)$/;"	f
+EmvFnLastAmtEntry	emvCallback.c	/^unsigned short	EmvFnLastAmtEntry(unsigned long *pulTxnAmt)$/;"	f
+EmvFnOfflinePin	emvCallback.c	/^unsigned short EmvFnOfflinePin(unsigned char *pin)$/;"	f
+EmvFnOnlinePin	emvCallback.c	/^unsigned short EmvFnOnlinePin(void)$/;"	f
+EmvGetAmtCallback	emv.c	/^int EmvGetAmtCallback(void)$/;"	f
+EmvGetPTermID	emv.c	/^int EmvGetPTermID(char *ptid)$/;"	f
+EmvGetTacIac	emvmisc.c	/^int EmvGetTacIac(char * tac_df, char * tac_dn, char *tac_ol, char * iac_df, char *iac_dn, char *iac_ol)$/;"	f
+EmvGetTagData	emvmisc.c	/^int		EmvGetTagData(const unsigned char* pcTag, unsigned char* pbDataBuf, int *piTagLength, int iDataBufLen)$/;"	f
+EmvGetTagDataRaw	emvmisc.c	/^int EmvGetTagDataRaw( unsigned short pcTag, char *databuf)$/;"	f
+EmvGetUsrPin	emvCallback.c	/^unsigned short	EmvGetUsrPin(unsigned char *ucPin)$/;"	f
+EmvIsCardPresent	emv.c	/^bool EmvIsCardPresent(void)$/;"	f
+EmvMiscTagDataLen	emvmisc.c	/^unsigned short	EmvMiscTagDataLen(const unsigned char* pcTagLenBytes)$/;"	f
+EmvMiscTagLenLen	emvmisc.c	/^unsigned short	EmvMiscTagLenLen(const unsigned char* pcTagLenBytes)$/;"	f
+EmvMiscVerixVEmvErr2RisEmvErr	emvmisc.c	/^int	EmvMiscVerixVEmvErr2RisEmvErr(int iVerixVEmvErr)$/;"	f
+EmvProcess1stAC	emv.c	/^int	EmvProcess1stAC(void)$/;"	f
+EmvSetAccount	emv.c	/^int EmvSetAccount(unsigned char emvAcc)$/;"	f
+EmvSetAmt	emv.c	/^int EmvSetAmt(long emvAmount,long emvCash)$/;"	f
+EmvSetTagData	emvmisc.c	/^int	EmvSetTagData(const unsigned char* pcTag,const unsigned char* pbDataBuf, int iDataBufLen)$/;"	f
+EmvSignature	emvCallback.c	/^unsigned short	EmvSignature(void)$/;"	f
+EmvTag2VxTag	emvmisc.c	/^unsigned short	EmvTag2VxTag(const unsigned char* pcTag)$/;"	f
+EmvTagLen	emvmisc.c	/^unsigned short	EmvTagLen(const unsigned char* pcTag)$/;"	f
+EmvUseHostData	emv.c	/^int EmvUseHostData(int hostDecision,const char *hexdata,short len)$/;"	f
+ExtractBTo	Contactless.c	/^void ExtractBTo(TLV tlvStruct, char *TO, int length, char ASCII)$/;"	f
+ExtractCardDetails	Contactless.c	/^static int ExtractCardDetails()$/;"	f	file:
+ExtractCfgGroup	Contactless.c	/^static int ExtractCfgGroup()$/;"	f	file:
+ExtractClearingRec	Contactless.c	/^static int ExtractClearingRec(char *clrRec)$/;"	f	file:
+ExtractEMVDetails	Contactless.c	/^static int ExtractEMVDetails()$/;"	f	file:
+ExtractFailedEMVDetails	Contactless.c	/^static int ExtractFailedEMVDetails(char *details, int length)$/;"	f	file:
+ExtractNTo	Contactless.c	/^void ExtractNTo(TLV tlvStruct, char *TO, int length, char ASCII)$/;"	f
+ExtractTLVs	Contactless.c	/^static int ExtractTLVs()$/;"	f	file:
+ExtractTrack	Contactless.c	/^static int ExtractTrack(char *trk, char *trkInfo)$/;"	f	file:
+F	sha1.c	119;"	d	file:
+F	sha1.c	121;"	d	file:
+F	sha1.c	146;"	d	file:
+F	sha1.c	148;"	d	file:
+F	sha1.c	173;"	d	file:
+F	sha1.c	175;"	d	file:
+F	sha1.c	200;"	d	file:
+F	sha1.c	94;"	d	file:
+FileExist	iris.c	/^bool FileExist(const char *filename)$/;"	f
+FileRemove	iris.c	/^bool FileRemove(const char *filename)$/;"	f
+FileRename	iris.c	/^bool FileRename(const char *ofilename,const char *nfilename)$/;"	f
+FormatAmt	Contactless.c	/^static void FormatAmt(char *amt, char *formattedAmt)$/;"	f	file:
+GET_ALL_AIDS	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+GET_ALL_GRPS	ctlsmod.c	/^	CANCEL_TRANSACTION, DEL_CFG_GROUP, SET_CFG_GROUP, DEL_CFG_AID, GET_CFG_AID, GET_CFG_GRP, GET_ALL_GRPS$/;"	e	enum:__anon3	file:
+GET_CAPA	ctlsmod.c	/^	GET_CAPA, SET_CAPA, SALE_TRAN, SHOW_STS, GET_DATETIME, SET_DATETIME, GET_PARAMS,$/;"	e	enum:__anon9	file:
+GET_CFG_AID	ctlsmod.c	/^	CANCEL_TRANSACTION, DEL_CFG_GROUP, SET_CFG_GROUP, DEL_CFG_AID, GET_CFG_AID, GET_CFG_GRP, GET_ALL_GRPS$/;"	e	enum:__anon3	file:
+GET_CFG_GRP	ctlsmod.c	/^	CANCEL_TRANSACTION, DEL_CFG_GROUP, SET_CFG_GROUP, DEL_CFG_AID, GET_CFG_AID, GET_CFG_GRP, GET_ALL_GRPS$/;"	e	enum:__anon3	file:
+GET_CVMCAPA	ctlsmod.c	/^	GET_VISAPK, SET_VISAPK, GET_EMVTAGS, SET_EMVTAGS, GET_CVMCAPA$/;"	e	enum:__anon9	file:
+GET_DATETIME	ctlsmod.c	/^	GET_CAPA, SET_CAPA, SALE_TRAN, SHOW_STS, GET_DATETIME, SET_DATETIME, GET_PARAMS,$/;"	e	enum:__anon9	file:
+GET_EMVTAGS	ctlsmod.c	/^	GET_VISAPK, SET_VISAPK, GET_EMVTAGS, SET_EMVTAGS, GET_CVMCAPA$/;"	e	enum:__anon9	file:
+GET_EMV_CONFIG	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+GET_KEYS	ctlsmod.c	/^	POLL = 0, ECHO, RESET, INITCOMMS, MUTUAL_AUTH, GET_KEYS, INV_READER, SWITCH_ADMIN,$/;"	e	enum:__anon9	file:
+GET_LCD	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+GET_PARAMS	ctlsmod.c	/^	GET_CAPA, SET_CAPA, SALE_TRAN, SHOW_STS, GET_DATETIME, SET_DATETIME, GET_PARAMS,$/;"	e	enum:__anon9	file:
+GET_PRODUCT_TYPE	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+GET_UINT32	sha1.c	25;"	d	file:
+GET_VER	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+GET_VISAPK	ctlsmod.c	/^	GET_VISAPK, SET_VISAPK, GET_EMVTAGS, SET_EMVTAGS, GET_CVMCAPA$/;"	e	enum:__anon9	file:
+GPRSProgress	comms.c	/^static void GPRSProgress(char * data)$/;"	f	file:
+GetAllAids	Contactless.c	/^static int GetAllAids()$/;"	f	file:
+GetBatteryRemaining	display.c	/^void GetBatteryRemaining(uint* battcharing,uint *batt)$/;"	f
+GetCfgGroup	Contactless.c	/^static int GetCfgGroup(char *groupNo)$/;"	f	file:
+GetCfgGroupForAid	Contactless.c	/^static int GetCfgGroupForAid(char *Aid, short sz)$/;"	f	file:
+GetConnStatus	IrisComm.c	/^static int GetConnStatus (int iNWIFHandle)$/;"	f	file:
+GetConnStatus	gprs.c	/^static int GetConnStatus (int iNWIFHandle)$/;"	f	file:
+GetCtlsTxnLimit	Contactless.c	/^int GetCtlsTxnLimit(char *aid,  int *p_translimit, int *p_cvmlimit,int *p_floorlimit)$/;"	f
+GetCurrMediaInfo	IrisComm.c	/^static stNIInfo GetCurrMediaInfo (stNIInfo stArray[], int arrayCount, const char* szMedia)$/;"	f	file:
+GetCurrMediaInfo	gprs.c	/^static stNIInfo GetCurrMediaInfo (stNIInfo stArray[], int arrayCount, const char* szMedia)$/;"	f	file:
+GetDataLen	Contactless.c	/^static int GetDataLen(char *rsp)$/;"	f	file:
+GetFrameType	Contactless.c	/^static char GetFrameType()$/;"	f	file:
+GetLCDMsg	Contactless.c	/^static int GetLCDMsg()$/;"	f	file:
+GetNumDigits	Contactless.c	/^static int GetNumDigits(char *amt, int length)$/;"	f	file:
+GetPayment	Contactless.c	/^static int GetPayment(char waitForRsp, int timeout)$/;"	f	file:
+GetRsp	Contactless.c	/^static int GetRsp(char waitForRsp, int timeout)$/;"	f	file:
+GetRspStatus	Contactless.c	/^static int GetRspStatus()$/;"	f	file:
+GetSetEmvPin	emvCallback.c	/^int GetSetEmvPin( unsigned short action,unsigned char *pin)$/;"	f
+GetSetTcpChkFlg	input.c	/^int GetSetTcpChkFlg(int mode, int* flag)$/;"	f
+GetTLVs	Contactless.c	/^static int GetTLVs(char *Aid, short sz)$/;"	f	file:
+HEX__	Prtean13.c	50;"	d	file:
+HandleErrRsp	Contactless.c	/^static int HandleErrRsp()$/;"	f	file:
+HandleKeyMgtNFrame	Contactless.c	/^static int HandleKeyMgtNFrame(void)$/;"	f	file:
+HandleNoReqOLErrRsp	Contactless.c	/^static int HandleNoReqOLErrRsp()$/;"	f	file:
+HandleRTCNFrame	Contactless.c	/^static int HandleRTCNFrame()$/;"	f	file:
+HandleReqOLErrRsp	Contactless.c	/^static int HandleReqOLErrRsp()$/;"	f	file:
+Hex_To_Dec	emv.c	/^long Hex_To_Dec(char *s )$/;"	f
+HiddenAttribute	input.c	/^static bool HiddenAttribute;$/;"	v	file:
+HiddenString	input.c	/^const char HiddenString[] = "********************";$/;"	v
+ICC_Details	Contactless.c	/^CHIP	ICC_Details;$/;"	v
+INITBITS	inflate.c	411;"	d	file:
+INITCOMMS	ctlsmod.c	/^	POLL = 0, ECHO, RESET, INITCOMMS, MUTUAL_AUTH, GET_KEYS, INV_READER, SWITCH_ADMIN,$/;"	e	enum:__anon9	file:
+INV_READER	ctlsmod.c	/^	POLL = 0, ECHO, RESET, INITCOMMS, MUTUAL_AUTH, GET_KEYS, INV_READER, SWITCH_ADMIN,$/;"	e	enum:__anon9	file:
+IRIS_AppendToUpload	iris.c	/^void IRIS_AppendToUpload(const char * addition)$/;"	f
+IRIS_CommsDisconnect	iriscomms.c	/^void IRIS_CommsDisconnect(T_COMMS * comms, int retVal)$/;"	f
+IRIS_CommsRecv	iriscomms.c	/^void IRIS_CommsRecv(T_COMMS * comms, const char* interCharTimeout, const char* timeout, const int bufLen, int * retVal,char** pstring,char* retMsg)$/;"	f
+IRIS_CommsSend	iriscomms.c	/^void IRIS_CommsSend(const char *data,T_COMMS * comms, int * retVal,char*retMsg)$/;"	f
+IRIS_DeallocateStringValue	iris.c	/^void IRIS_DeallocateStringValue(char * value)$/;"	f
+IRIS_GetDirInfo	iris.c	/^int IRIS_GetDirInfo(const char *driver,const char *group,const char *filename_p, char **flist)$/;"	f
+IRIS_GetFileInfo	iris.c	/^int IRIS_GetFileInfo(const char *filename, char *gettype, int *filesize, char *filedate, char **filedata)$/;"	f
+IRIS_GetObjectData	iris.c	/^char * IRIS_GetObjectData(const char * objectName, unsigned int * length)$/;"	f
+IRIS_GetObjectData_all	iris.c	/^char * IRIS_GetObjectData_all(const char * objectName, unsigned int * length, bool jsonfile)$/;"	f
+IRIS_GetObjectTagValue	iris.c	/^char * IRIS_GetObjectTagValue(const char *data, const char * intag)$/;"	f
+IRIS_GetStringValue	iris.c	/^char * IRIS_GetStringValue(const char * data, int size, const char * name)$/;"	f
+IRIS_PutNamedObjectData	iris.c	/^void IRIS_PutNamedObjectData(const char * objectData, uint length, const char * name)$/;"	f
+IRIS_PutObjectData	iris.c	/^void IRIS_PutObjectData(const char * objectData, uint length)$/;"	f
+IRIS_StoreData	iris.c	/^void IRIS_StoreData(const char * objectName, const char *tag, const char * value, bool deleteFlag)$/;"	f
+InitCEEvents	IrisComm.c	/^static int InitCEEvents (void)$/;"	f	file:
+InitCEEvents	gprs.c	/^static int InitCEEvents (void)$/;"	f	file:
+InitCTLS	ctlsmod.c	/^int InitCTLS(void)$/;"	f
+InitComEngine	IrisComm.c	/^int InitComEngine (void)$/;"	f
+InitComEngine	gprs.c	/^int InitComEngine (void)$/;"	f
+InitComPort	Contactless.c	/^static int InitComPort(char comPortNumber)$/;"	f	file:
+InitCtlsPort	Contactless.c	/^void InitCtlsPort(void)$/;"	f
+InitNWIF	IrisComm.c	/^static int InitNWIF (void)$/;"	f	file:
+InitNWIF	gprs.c	/^static int InitNWIF (void)$/;"	f	file:
+InitRdr	Contactless.c	/^static void InitRdr(char comPortNumber)$/;"	f	file:
+InpBeep	input.c	/^void InpBeep(uchar count, uint onDuration, uint offDuration)$/;"	f
+InpGetKeyEvent	input.c	/^uchar InpGetKeyEvent(T_KEYBITMAP keyBitmap, T_EVTBITMAP * evtBitmap, T_INP_ENTRY inpEntry, ulong timeout, bool largeFont, bool flush, bool * keyPress)$/;"	f
+InpGetMCRTracks	input.c	/^bool InpGetMCRTracks(	char * ptTrack1, uchar * pbTrack1Length,$/;"	f
+InpGetNumber	input.c	/^ulong InpGetNumber(void)$/;"	f
+InpGetString	input.c	/^char * InpGetString(void)$/;"	f
+InpSetNumber	input.c	/^void InpSetNumber(ulong value, bool override)$/;"	f
+InpSetOverride	input.c	/^void InpSetOverride(bool override)$/;"	f
+InpSetString	input.c	/^void InpSetString(char * value, bool hidden, bool override)$/;"	f
+InpTurnOff	input.c	/^int InpTurnOff(bool serial0)$/;"	f
+InpTurnOn	input.c	/^void InpTurnOn(void)$/;"	f
+Is1ByteLen	Contactless.c	/^static char Is1ByteLen(char *pLen) { return ((*pLen & 0x80) < 0x80); }$/;"	f	file:
+Is2DigTag	Contactless.c	/^static char Is2DigTag(char *pTag) { return (*pTag & 0x1F)!=0x1F; }$/;"	f	file:
+K	sha1.c	118;"	d	file:
+K	sha1.c	122;"	d	file:
+K	sha1.c	145;"	d	file:
+K	sha1.c	149;"	d	file:
+K	sha1.c	172;"	d	file:
+K	sha1.c	176;"	d	file:
+K	sha1.c	199;"	d	file:
+K	sha1.c	95;"	d	file:
+LEFT_GUARD	Prtean13.c	134;"	d	file:
+LEFT_GUARD_WIDTH	Prtean13.c	41;"	d	file:
+LITTLE_ENDIAN	ctlsmod.c	/^typedef enum {LITTLE_ENDIAN = 0, BIG_ENDIAN} CRC_TYPE;$/;"	e	enum:__anon4	file:
+LOAD	inflate.c	389;"	d	file:
+LOG_PRINTF	input.c	141;"	d	file:
+LeftGuard	Prtean13.c	/^const uchar LeftGuard[2] =	{B8(11100011),B8(10000000)};\/\/{0xC7, 0x01};$/;"	v
+Len	Contactless.c	/^static short Len(char *pLen) { return (Is1ByteLen(pLen)?*pLen & 0x7F:*(short*)(pLen+1) & (1<<(LenLen(pLen)*8))-1); }$/;"	f	file:
+LenLen	Contactless.c	/^static char LenLen(char *pLen) { return (Is1ByteLen(pLen)?1:*pLen & 0x7F); }$/;"	f	file:
+ListNWIF	IrisComm.c	/^static void ListNWIF (stNIInfo stArray[], int arrayCount)$/;"	f	file:
+ListNWIF	gprs.c	/^static void ListNWIF (stNIInfo stArray[], int arrayCount)$/;"	f	file:
+MAXBITS	inftrees.c	9;"	d	file:
+MAX_PTR	zutil.c	198;"	d	file:
+MOD	adler32.c	22;"	d	file:
+MOD	adler32.c	43;"	d	file:
+MUTUAL_AUTH	ctlsmod.c	/^	POLL = 0, ECHO, RESET, INITCOMMS, MUTUAL_AUTH, GET_KEYS, INV_READER, SWITCH_ADMIN,$/;"	e	enum:__anon9	file:
+MY_ZCALLOC	zutil.c	190;"	d	file:
+MY_ZCALLOC	zutil.c	268;"	d	file:
+M_3DES_RSAINJECT	security.c	99;"	d	file:
+M_3INJECT_3DES	security.c	85;"	d	file:
+M_CLRIV	security.c	69;"	d	file:
+M_COPY	security.c	61;"	d	file:
+M_COPY_3DES	security.c	62;"	d	file:
+M_DEC	security.c	76;"	d	file:
+M_DECV	security.c	78;"	d	file:
+M_DECV_3DES	security.c	79;"	d	file:
+M_DEC_3DES	security.c	77;"	d	file:
+M_ENC	security.c	72;"	d	file:
+M_ENCV	security.c	74;"	d	file:
+M_ENCV_3DES	security.c	75;"	d	file:
+M_ENC_3DES	security.c	73;"	d	file:
+M_ERASE	security.c	54;"	d	file:
+M_ERASE_3DES	security.c	55;"	d	file:
+M_GETKEY_3DES	security.c	105;"	d	file:
+M_INJECT	security.c	83;"	d	file:
+M_INJECT_3DES	security.c	84;"	d	file:
+M_KVC	security.c	58;"	d	file:
+M_KVC_3DES	security.c	59;"	d	file:
+M_MOVE	security.c	63;"	d	file:
+M_MOVE_3DES	security.c	64;"	d	file:
+M_OFB	security.c	80;"	d	file:
+M_OFB_3DES	security.c	81;"	d	file:
+M_OWF	security.c	87;"	d	file:
+M_OWFV_3DES	security.c	89;"	d	file:
+M_OWF_3DES	security.c	88;"	d	file:
+M_OWF_3DES_DATA	security.c	91;"	d	file:
+M_OWF_DATA	security.c	90;"	d	file:
+M_PIN	security.c	101;"	d	file:
+M_PINV	security.c	103;"	d	file:
+M_PINV_3DES	security.c	104;"	d	file:
+M_PINV_3DES_EMV	security.c	106;"	d	file:
+M_PIN_3DES	security.c	102;"	d	file:
+M_RANDOM	security.c	56;"	d	file:
+M_RANDOM_3DES	security.c	57;"	d	file:
+M_RSA_3INJECT	security.c	96;"	d	file:
+M_RSA_CRYPT	security.c	94;"	d	file:
+M_RSA_INJECT	security.c	95;"	d	file:
+M_RSA_RSAINJECT	security.c	97;"	d	file:
+M_RSA_WRAP_3DES	security.c	98;"	d	file:
+M_RSA_WRAP_3DES_ASN	security.c	107;"	d	file:
+M_RSA_WRITE	security.c	93;"	d	file:
+M_SETIV	security.c	70;"	d	file:
+M_WRITE	security.c	52;"	d	file:
+M_WRITE_3DES	security.c	53;"	d	file:
+M_XOR	security.c	65;"	d	file:
+M_XOR_3DES	security.c	66;"	d	file:
+M_XOR_3DES_DATA	security.c	67;"	d	file:
+MainMenu_OnClose	IrisComm.c	/^void MainMenu_OnClose (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnClose	gprs.c	/^void MainMenu_OnClose (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnEvtDDIAPPL	IrisComm.c	/^void MainMenu_OnEvtDDIAPPL (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnEvtDDIAPPL	gprs.c	/^void MainMenu_OnEvtDDIAPPL (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetDown	IrisComm.c	/^void MainMenu_OnNetDown (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetDown	gprs.c	/^void MainMenu_OnNetDown (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetFailed	IrisComm.c	/^void MainMenu_OnNetFailed (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetFailed	gprs.c	/^void MainMenu_OnNetFailed (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetOut	IrisComm.c	/^void MainMenu_OnNetOut (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetOut	gprs.c	/^void MainMenu_OnNetOut (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetRestored	IrisComm.c	/^void MainMenu_OnNetRestored (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetRestored	gprs.c	/^void MainMenu_OnNetRestored (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetUp	IrisComm.c	/^void MainMenu_OnNetUp (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnNetUp	gprs.c	/^void MainMenu_OnNetUp (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnOpen	IrisComm.c	/^void MainMenu_OnOpen (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnOpen	gprs.c	/^void MainMenu_OnOpen (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnSignal	IrisComm.c	/^void MainMenu_OnSignal (unsigned int nwifHandle, int signalPercent, int signaldBm, int signalRSSI, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnSignal	gprs.c	/^void MainMenu_OnSignal (unsigned int nwifHandle, int signalPercent, int signaldBm, int signalRSSI, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStartFail	IrisComm.c	/^void MainMenu_OnStartFail (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStartFail	gprs.c	/^void MainMenu_OnStartFail (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStartLink	IrisComm.c	/^void MainMenu_OnStartLink(unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStartLink	gprs.c	/^void MainMenu_OnStartLink(unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStartNW	IrisComm.c	/^void MainMenu_OnStartNW (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStartNW	gprs.c	/^void MainMenu_OnStartNW (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStopFail	IrisComm.c	/^void MainMenu_OnStopFail(unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStopFail	gprs.c	/^void MainMenu_OnStopFail(unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStopLink	IrisComm.c	/^void MainMenu_OnStopLink (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStopLink	gprs.c	/^void MainMenu_OnStopLink (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStopNW	IrisComm.c	/^void MainMenu_OnStopNW (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+MainMenu_OnStopNW	gprs.c	/^void MainMenu_OnStopNW (unsigned int nwifHandle, int neParam1, int neParam2, int neParam3, unsigned char* szData, int iDataLen)$/;"	f
+ManageCEEvents	IrisComm.c	/^static void ManageCEEvents (ceEvent_t ceEventCB)$/;"	f	file:
+ManageCEEvents	gprs.c	/^static void ManageCEEvents (ceEvent_t ceEventCB)$/;"	f	file:
+MenuTch	irismain.c	/^T_MenuTch MenuTch;$/;"	v
+MyPrtConnect	printer.c	/^static E_PRT_ERR MyPrtConnect(void)$/;"	f	file:
+MyPrtPrint	printer.c	/^static E_PRT_ERR MyPrtPrint(uchar * pbData, uint size)$/;"	f	file:
+MyPrtSend	printer.c	/^static E_PRT_ERR MyPrtSend(uchar * pbData, uint wLength)$/;"	f	file:
+NEEDBITS	inflate.c	429;"	d	file:
+NMAX	adler32.c	12;"	d	file:
+NO_CONV_ASC	Contactless.c	/^	NO_CONV_ASC,$/;"	e	enum:__anon1	file:
+Number	input.c	/^static ulong Number;$/;"	v	file:
+OFF	inffast.c	25;"	d	file:
+OFF	inffast.c	28;"	d	file:
+Override	input.c	/^static bool Override;$/;"	v	file:
+P	sha1.c	83;"	d	file:
+PASSTHRU	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+PING	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+POLL	ctlsmod.c	/^	POLL = 0, ECHO, RESET, INITCOMMS, MUTUAL_AUTH, GET_KEYS, INV_READER, SWITCH_ADMIN,$/;"	e	enum:__anon9	file:
+PRODUCT_TYPE	ctlsmod.c	/^} PRODUCT_TYPE;$/;"	t	typeref:enum:__anon6	file:
+PULLBYTE	inflate.c	419;"	d	file:
+PUP	inffast.c	26;"	d	file:
+PUP	inffast.c	29;"	d	file:
+PUT_UINT32	sha1.c	33;"	d	file:
+PrintCharLine	Prtean13.c	/^uchar    PrintCharLine[9];$/;"	v
+ProcessCard	Contactless.c	/^int ProcessCard()$/;"	f
+PrtGetErrorText	printer.c	/^char * PrtGetErrorText(E_PRT_ERR eError)$/;"	f
+PrtPrint	printer.c	/^static E_PRT_ERR PrtPrint(uchar * pbData, uint wLength, E_PRINT ePrintCommand)$/;"	f	file:
+PrtPrintBuffer	printer.c	/^E_PRT_ERR PrtPrintBuffer(uint wLength, uchar * pbData, E_PRINT ePrintCommand)$/;"	f
+PrtPrintFormFeed	printer.c	/^E_PRT_ERR PrtPrintFormFeed()$/;"	f
+PrtPrintGraphics	printer.c	/^E_PRT_ERR PrtPrintGraphics(uint wWidth, uint wHeight, uchar * pbData, bool fCenter, uchar bMultiplier)$/;"	f
+PrtStatus	printer.c	/^E_PRT_ERR PrtStatus(bool fStatusCheck)$/;"	f
+QX1000	ctlsmod.c	/^	DEFAULT = 0, QX1000, QX120, VX810_CTLS$/;"	e	enum:__anon6	file:
+QX120	ctlsmod.c	/^	DEFAULT = 0, QX1000, QX120, VX810_CTLS$/;"	e	enum:__anon6	file:
+R	sha1.c	76;"	d	file:
+RESET	ctlsmod.c	/^	POLL = 0, ECHO, RESET, INITCOMMS, MUTUAL_AUTH, GET_KEYS, INV_READER, SWITCH_ADMIN,$/;"	e	enum:__anon9	file:
+RESTORE	inflate.c	400;"	d	file:
+REV	crc32.c	56;"	d	file:
+REVERSE	inflate.c	454;"	d	file:
+RIGHT_GUARD	Prtean13.c	136;"	d	file:
+RIGHT_GUARD_WIDTH	Prtean13.c	42;"	d	file:
+RIS_DEFAULT_RUNFILE	runmain.c	/^const char *RIS_DEFAULT_RUNFILE= "I:AURIS.OUT";$/;"	v
+RIS_DEFAULT_RUNFILE_SIG	runmain.c	/^const char *RIS_DEFAULT_RUNFILE_SIG= "I:AURIS.OUT.P7S";$/;"	v
+RSP_DATA_LEN	Contactless.c	181;"	d	file:
+ResetMsg	Contactless.c	/^static void ResetMsg()$/;"	f	file:
+ResetRsp	Contactless.c	/^static void ResetRsp()$/;"	f	file:
+RightGuard	Prtean13.c	/^const uchar RightGuard[2] =	{B8(11100011),B8(10000000)};\/\/{0xC7, 0x01};$/;"	v
+RotateEan13	Prtean13.c	/^static void RotateEan13(uchar n, uchar * PrintCharLine)$/;"	f	file:
+S	sha1.c	74;"	d	file:
+SALE_TRAN	ctlsmod.c	/^	GET_CAPA, SET_CAPA, SALE_TRAN, SHOW_STS, GET_DATETIME, SET_DATETIME, GET_PARAMS,$/;"	e	enum:__anon9	file:
+SET_BAUD	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+SET_CAPA	ctlsmod.c	/^	GET_CAPA, SET_CAPA, SALE_TRAN, SHOW_STS, GET_DATETIME, SET_DATETIME, GET_PARAMS,$/;"	e	enum:__anon9	file:
+SET_CAPK	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+SET_CFG_AID	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+SET_CFG_GROUP	ctlsmod.c	/^	CANCEL_TRANSACTION, DEL_CFG_GROUP, SET_CFG_GROUP, DEL_CFG_AID, GET_CFG_AID, GET_CFG_GRP, GET_ALL_GRPS$/;"	e	enum:__anon3	file:
+SET_DATETIME	ctlsmod.c	/^	GET_CAPA, SET_CAPA, SALE_TRAN, SHOW_STS, GET_DATETIME, SET_DATETIME, GET_PARAMS,$/;"	e	enum:__anon9	file:
+SET_DISP	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+SET_EMVTAGS	ctlsmod.c	/^	GET_VISAPK, SET_VISAPK, GET_EMVTAGS, SET_EMVTAGS, GET_CVMCAPA$/;"	e	enum:__anon9	file:
+SET_EMV_CONFIG	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+SET_LCD	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+SET_LED	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+SET_POLL	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+SET_VISAPK	ctlsmod.c	/^	GET_VISAPK, SET_VISAPK, GET_EMVTAGS, SET_EMVTAGS, GET_CVMCAPA$/;"	e	enum:__anon9	file:
+SHIFT	Prtean128.c	152;"	d	file:
+SHOW_STS	ctlsmod.c	/^	GET_CAPA, SET_CAPA, SALE_TRAN, SHOW_STS, GET_DATETIME, SET_DATETIME, GET_PARAMS,$/;"	e	enum:__anon9	file:
+START_A	Prtean128.c	154;"	d	file:
+START_B	Prtean128.c	155;"	d	file:
+START_C	Prtean128.c	156;"	d	file:
+STOP	Prtean128.c	162;"	d	file:
+STOP2	Prtean128.c	163;"	d	file:
+STORE_LCD	ctlsmod.c	/^	GET_VER, GET_LCD, STORE_LCD, SET_LCD, GET_ALL_AIDS, SET_CFG_AID, SET_CAPK, DEL_ALL_CAPK, GET_PRODUCT_TYPE,$/;"	e	enum:__anon3	file:
+SWITCH_ADMIN	ctlsmod.c	/^	POLL = 0, ECHO, RESET, INITCOMMS, MUTUAL_AUTH, GET_KEYS, INV_READER, SWITCH_ADMIN,$/;"	e	enum:__anon9	file:
+Security3DESWriteRSA	security.c	/^bool Security3DESWriteRSA(char * appName, uchar location, char * appName2, uchar to, int blockLen, uchar * block)$/;"	f
+SecurityClearRSA	security.c	/^bool SecurityClearRSA(char * appName, uchar location)$/;"	f
+SecurityCopyKey	security.c	/^bool SecurityCopyKey(char * appName, uchar location, uchar keySize, uchar to)$/;"	f
+SecurityCrypt	security.c	/^bool SecurityCrypt(char * appName, uchar location, uchar keySize, int eDataSize, uchar * eData, bool decrypt, bool ofb)$/;"	f
+SecurityCryptRSA	security.c	/^bool SecurityCryptRSA(char * appName, uchar location, int eDataSize, uchar * eData)$/;"	f
+SecurityCryptWithVariant	security.c	/^bool SecurityCryptWithVariant(char * appName, uchar location, uchar keySize, int eDataSize, uchar * eData, uchar * variant, bool decrypt)$/;"	f
+SecurityEraseKey	security.c	/^bool SecurityEraseKey(char * appName, uchar location, uchar keySize)$/;"	f
+SecurityGenerateKey	security.c	/^bool SecurityGenerateKey(char * appName, uchar location, uchar keySize)$/;"	f
+SecurityGetKey	security.c	/^bool SecurityGetKey(char * appName, uchar location, uchar* value)$/;"	f
+SecurityInit	security.c	/^void SecurityInit(void)$/;"	f
+SecurityInjectKey	security.c	/^bool SecurityInjectKey(char * appName, uchar location, uchar keySize, char * appName2, uchar to, uchar eKeySize, uchar * eKey, uchar * variant)$/;"	f
+SecurityKVCKey	security.c	/^bool SecurityKVCKey(char * appName, uchar location, uchar keySize, uchar * kvc)$/;"	f
+SecurityMAB	security.c	/^bool SecurityMAB(char * appName, uchar location, uchar keySize, int eDataSize, uchar * eData, uchar * variant, uchar * mab)$/;"	f
+SecurityMoveKey	security.c	/^bool SecurityMoveKey(char * appName, uchar location, uchar keySize, uchar to)$/;"	f
+SecurityOWFKey	security.c	/^bool SecurityOWFKey(char * appName, uchar location, uchar keySize, uchar to, uchar ppasn, bool variant)$/;"	f
+SecurityOWFKeyWithData	security.c	/^bool SecurityOWFKeyWithData(char * appName, uchar location, uchar keySize, uchar to, uchar * variant)$/;"	f
+SecurityPINBlock	security.c	/^bool SecurityPINBlock(char * appName, uchar location, uchar keySize, char * pan, uchar * ePinBlock)$/;"	f
+SecurityPINBlockCba	security.c	/^bool SecurityPINBlockCba(uchar* location_1, uchar *location_2,char * pan, bool emv,uchar * ePinBlock)$/;"	f
+SecurityPINBlockWithVariant	security.c	/^bool SecurityPINBlockWithVariant(char * appName, uchar location, uchar keySize, char * pan, char * stan, char * amount, bool emv,uchar * ePinBlock)$/;"	f
+SecurityRSAInjectKey	security.c	/^bool SecurityRSAInjectKey(char * appName, uchar location, char * appName2, uchar to, uchar eKeySize, int eDataSize, uchar * eData)$/;"	f
+SecurityRSAInjectRSA	security.c	/^bool SecurityRSAInjectRSA(char * appName, uchar location, char * appName2, uchar to, int eDataSize, uchar * eData)$/;"	f
+SecurityRSAWrap3Des	security.c	/^bool SecurityRSAWrap3Des(char * appName, uchar location, uchar to, int *eDataSize, uchar * eData)$/;"	f
+SecuritySetIV	security.c	/^bool SecuritySetIV(uchar * iv)$/;"	f
+SecurityWriteKey	security.c	/^bool SecurityWriteKey(char * appName, uchar location, uchar keySize, uchar * key)$/;"	f
+SecurityWriteRSA	security.c	/^bool SecurityWriteRSA(char * appName, uchar location, int blockLen, uchar * block)$/;"	f
+SecurityXorKey	security.c	/^bool SecurityXorKey(char * appName, uchar location, uchar keySize, uchar with, uchar to)$/;"	f
+SecurityXorKeyWithData	security.c	/^bool SecurityXorKeyWithData(char * appName, uchar location, uchar keySize, uchar *xdata, uchar to)$/;"	f
+SendGeneralMsg	Contactless.c	/^static int SendGeneralMsg(char cmd,char subcmd,char *data,short datalen)$/;"	f	file:
+SendMsg	Contactless.c	/^static int SendMsg() $/;"	f	file:
+SendRawMsg	Contactless.c	/^static int SendRawMsg()$/;"	f	file:
+SendRxMsg	Contactless.c	/^static int SendRxMsg(int timeout)$/;"	f	file:
+SetADDReaderPrm	Contactless.c	/^static int SetADDReaderPrm()$/;"	f	file:
+SetCAPubKey	Contactless.c	/^static int SetCAPubKey(char *keyFile)$/;"	f	file:
+SetCAPubKeys	Contactless.c	/^static int SetCAPubKeys()$/;"	f	file:
+SetCfgAids	Contactless.c	/^static int SetCfgAids()$/;"	f	file:
+SetCfgGroups	Contactless.c	/^static int SetCfgGroups()$/;"	f	file:
+SetDateTime	Contactless.c	/^static int SetDateTime()$/;"	f	file:
+SetEMVTermCap	Contactless.c	/^static int SetEMVTermCap()$/;"	f	file:
+SetEMVTxnAmt	Contactless.c	/^static int SetEMVTxnAmt()$/;"	f	file:
+SetEmvParams	Contactless.c	/^static int SetEmvParams()$/;"	f	file:
+SetPollOnDemandMode	Contactless.c	/^static int SetPollOnDemandMode()$/;"	f	file:
+SetSource	Contactless.c	/^static int SetSource()$/;"	f	file:
+SetTxnLimit	Contactless.c	/^static int SetTxnLimit(char *amt)$/;"	f	file:
+SocketConnect	IrisComm.c	/^static int SocketConnect (int* pSocketHandle,char * tHIP, int tPort)$/;"	f	file:
+SocketConnect	gprs.c	/^static int SocketConnect (int* pSocketHandle,char * tHIP, int tPort)$/;"	f	file:
+StoreLCDMsg	Contactless.c	/^static int StoreLCDMsg(char msgNdx, char *str, char *paramStr1, char *paramStr2, char *paramStr3)$/;"	f	file:
+String	input.c	/^static char String[MAX_COL*3+1];$/;"	v	file:
+TBLS	crc32.c	62;"	d	file:
+TBLS	crc32.c	64;"	d	file:
+TC	Contactless.c	48;"	d	file:
+TLV	Contactless.c	/^} TLV;$/;"	t	typeref:struct:TLV_	file:
+TLVLen	Contactless.c	/^static int TLVLen(char* tlv) $/;"	f	file:
+TLV_	Contactless.c	/^typedef struct TLV_$/;"	s	file:
+TLVs	Contactless.c	/^static TlvCollection TLVs = {0};$/;"	v	file:
+TYPE_A	Prtean13.c	115;"	d	file:
+TYPE_B	Prtean13.c	116;"	d	file:
+TYPE_C	Prtean13.c	117;"	d	file:
+T_FIELD_FORMAT	as2805.c	/^} T_FIELD_FORMAT;$/;"	t	typeref:struct:__anon2	file:
+Tag	Contactless.c	/^static short Tag(char *pTag) { return (Is2DigTag(pTag)?Tag2(pTag):Tag4((short*)pTag)); }$/;"	f	file:
+Tag2	Contactless.c	/^static short Tag2(char *pTag) { return (short)(*pTag & 0xFF); }$/;"	f	file:
+Tag4	Contactless.c	/^static short Tag4(short *pTag) { return *pTag; }$/;"	f	file:
+TagLen	Contactless.c	/^static char TagLen(char *pTag) { return Is2DigTag(pTag)?1:2; }$/;"	f	file:
+TimerArm	timer.c	/^bool TimerArm(TIMER_TYPE * timer, ulong timeout)$/;"	f
+TimerExpired	timer.c	/^bool TimerExpired(TIMER_TYPE * timer)$/;"	f
+TlvCollection	Contactless.c	/^} TlvCollection;$/;"	t	typeref:struct:TlvCollection_	file:
+TlvCollection_	Contactless.c	/^typedef struct TlvCollection_$/;"	s	file:
+TranslateBaudRate	comms.c	/^uchar TranslateBaudRate(uchar bBaudRate)$/;"	f
+UPDATE	inflate.c	363;"	d	file:
+UPDATE	inflate.c	366;"	d	file:
+UPDATE_BAL	ctlsmod.c	/^	SET_BAUD = 0, PING, PASSTHRU, SET_LED, SET_POLL, ACTIVATE_TRAN, SET_DISP, UPDATE_BAL, GET_EMV_CONFIG, SET_EMV_CONFIG,$/;"	e	enum:__anon3	file:
+UnformatNStr	Contactless.c	/^static void UnformatNStr(char *numStr, char *unfmtStr, int noDgts, char convAsc)$/;"	f	file:
+UtilBinToBCD	util.c	/^void UtilBinToBCD(uchar data, uchar * bcd, uchar length)$/;"	f
+UtilHexToString	util.c	/^char * UtilHexToString(const char * hex, int length, char * string)$/;"	f
+UtilStrDup	util.c	/^char * UtilStrDup(char ** dest, const char * source)$/;"	f
+UtilStringToHex	util.c	/^int UtilStringToHex(const char * string, int length, uchar * hex)$/;"	f
+UtilStringToNumber	util.c	/^long UtilStringToNumber(const char * string)$/;"	f
+V1_ACK_FRAME	Contactless.c	110;"	d	file:
+V1_CMD_ABORT	Contactless.c	106;"	d	file:
+V1_CMD_NOT_ALW	Contactless.c	107;"	d	file:
+V1_CMD_NOT_SUPP	Contactless.c	103;"	d	file:
+V1_CRC_ERROR	Contactless.c	99;"	d	file:
+V1_FAIL	Contactless.c	100;"	d	file:
+V1_INC_FRAME_TYP	Contactless.c	95;"	d	file:
+V1_INC_FRAME_Tag	Contactless.c	94;"	d	file:
+V1_INC_PARAM	Contactless.c	102;"	d	file:
+V1_KEYMGT_CRYP_CHP_COM_ERR	Contactless.c	131;"	d	file:
+V1_KEYMGT_CRYP_CHP_NO_RSP	Contactless.c	130;"	d	file:
+V1_KEYMGT_DATA_NOT_CMP	Contactless.c	121;"	d	file:
+V1_KEYMGT_INV_DATA	Contactless.c	120;"	d	file:
+V1_KEYMGT_INV_HSH_ALG_IND	Contactless.c	123;"	d	file:
+V1_KEYMGT_INV_KEY_ALG_IND	Contactless.c	124;"	d	file:
+V1_KEYMGT_INV_KEY_EXP	Contactless.c	126;"	d	file:
+V1_KEYMGT_INV_KEY_MOD_Len	Contactless.c	125;"	d	file:
+V1_KEYMGT_INV_KEY_NDX	Contactless.c	122;"	d	file:
+V1_KEYMGT_KEY_EXISTS	Contactless.c	127;"	d	file:
+V1_KEYMGT_KEY_NOT_FOUND	Contactless.c	129;"	d	file:
+V1_KEYMGT_NO_ERR	Contactless.c	118;"	d	file:
+V1_KEYMGT_NO_FREE_SLOTS	Contactless.c	133;"	d	file:
+V1_KEYMGT_NO_SPACE	Contactless.c	128;"	d	file:
+V1_KEYMGT_RID_SLT_FULL	Contactless.c	132;"	d	file:
+V1_KEYMGT_UNK_ERR	Contactless.c	119;"	d	file:
+V1_NACK_FRAME	Contactless.c	111;"	d	file:
+V1_OK	Contactless.c	93;"	d	file:
+V1_PARAM_NOT_SUPP	Contactless.c	105;"	d	file:
+V1_RTC_ERR_NO_RTC_RSP	Contactless.c	116;"	d	file:
+V1_RTC_ERR_UNK	Contactless.c	114;"	d	file:
+V1_RTC_INV_DATA	Contactless.c	115;"	d	file:
+V1_RTC_NO_ERR	Contactless.c	113;"	d	file:
+V1_SUB_CMD_NOT_ALW	Contactless.c	108;"	d	file:
+V1_SUB_CMD_NOT_SUPP	Contactless.c	104;"	d	file:
+V1_TIMEOUT	Contactless.c	101;"	d	file:
+V1_UNK_CMD	Contactless.c	97;"	d	file:
+V1_UNK_FRAME_TYP	Contactless.c	96;"	d	file:
+V1_UNK_SUB_CMD	Contactless.c	98;"	d	file:
+V2_AMT_OVR_MAX	Contactless.c	146;"	d	file:
+V2_AMT_ZERO	Contactless.c	143;"	d	file:
+V2_BUFF_OVERFLOW	Contactless.c	84;"	d	file:
+V2_CA_PUB_KEY_FAIL	Contactless.c	156;"	d	file:
+V2_CMD_NOT_ALLOWED	Contactless.c	82;"	d	file:
+V2_COLLISION	Contactless.c	145;"	d	file:
+V2_CRC_ERR	Contactless.c	76;"	d	file:
+V2_CRC_LSB_OFS	Contactless.c	62;"	d	file:
+V2_CRC_MSB_OFS	Contactless.c	61;"	d	file:
+V2_CRD_BLKD	Contactless.c	148;"	d	file:
+V2_CRD_ERR_STAT	Contactless.c	144;"	d	file:
+V2_CRD_EXPD	Contactless.c	149;"	d	file:
+V2_CRD_GEN_AAC	Contactless.c	154;"	d	file:
+V2_CRD_GEN_ARQC	Contactless.c	155;"	d	file:
+V2_CRD_NOT_RSP	Contactless.c	151;"	d	file:
+V2_CRD_NOT_SUPP	Contactless.c	150;"	d	file:
+V2_CVM_FAIL	Contactless.c	163;"	d	file:
+V2_DATA_OFS	Contactless.c	60;"	d	file:
+V2_DAT_ELMT_MISS	Contactless.c	153;"	d	file:
+V2_DAT_LEN_LSB_OFS	Contactless.c	59;"	d	file:
+V2_DAT_LEN_MSB_OFS	Contactless.c	58;"	d	file:
+V2_DYN_SIG_VER_FAIL	Contactless.c	160;"	d	file:
+V2_ERR_T2_OFS	Contactless.c	64;"	d	file:
+V2_FAILED_NAK	Contactless.c	81;"	d	file:
+V2_FXD_BYTES	Contactless.c	63;"	d	file:
+V2_GOTO_CNT	Contactless.c	142;"	d	file:
+V2_ICC_PUB_KEY_FAIL	Contactless.c	159;"	d	file:
+V2_INCORRECT_PARAM	Contactless.c	77;"	d	file:
+V2_INCORRECT_TAG_HDR	Contactless.c	73;"	d	file:
+V2_ISS_PUB_KEY_FAIL	Contactless.c	157;"	d	file:
+V2_MAL_FORMATTED_DATA	Contactless.c	79;"	d	file:
+V2_NO_ERR	Contactless.c	140;"	d	file:
+V2_OK	Contactless.c	72;"	d	file:
+V2_OUT_SEQ_CMD	Contactless.c	141;"	d	file:
+V2_PARAM_NOT_SUPPORTED	Contactless.c	78;"	d	file:
+V2_PRCS_RST_FAIL	Contactless.c	161;"	d	file:
+V2_REQ_OL_AUTH	Contactless.c	147;"	d	file:
+V2_REQ_OL_AUTH	Contactless.c	86;"	d	file:
+V2_SDA_FAIL	Contactless.c	158;"	d	file:
+V2_SD_MEM_ERR	Contactless.c	165;"	d	file:
+V2_STATUS_OFS	Contactless.c	57;"	d	file:
+V2_SUB_CMD_NOT_ALLOWED	Contactless.c	83;"	d	file:
+V2_T2EQD_SZ	Contactless.c	65;"	d	file:
+V2_TAA_FAIL	Contactless.c	164;"	d	file:
+V2_TRM_FAIL	Contactless.c	162;"	d	file:
+V2_TXN_TIMED_OUT	Contactless.c	80;"	d	file:
+V2_UNK_CMD	Contactless.c	74;"	d	file:
+V2_UNK_DAT_ELMT	Contactless.c	152;"	d	file:
+V2_UNK_SUB_CMD	Contactless.c	75;"	d	file:
+V2_USER_IF_EVT	Contactless.c	85;"	d	file:
+VIVO2_HDR_STR	Contactless.c	45;"	d	file:
+VIVO_HDR_STR	Contactless.c	44;"	d	file:
+VMACDeactivate	input.c	/^void VMACDeactivate(void)$/;"	f
+VMACHotKey	input.c	/^void VMACHotKey(char * appName, int event)$/;"	f
+VMACLoop	input.c	/^int VMACLoop(void)$/;"	f
+VX810_CTLS	ctlsmod.c	/^	DEFAULT = 0, QX1000, QX120, VX810_CTLS$/;"	e	enum:__anon6	file:
+Val	Contactless.c	/^static char *Val(char *tlv)$/;"	f	file:
+ViV0techGenerateKeyDataMsgs	ctlsmod.c	/^void ViV0techGenerateKeyDataMsgs(unsigned char *reqdata, int *reqdatalen, unsigned char *data, int datalen)$/;"	f
+ViVOpayCheckResponse	ctlsmod.c	/^int ViVOpayCheckResponse(unsigned char *data, int length)$/;"	f
+ViVOpayGetAllConfigAIDs	ctlsmod.c	/^int ViVOpayGetAllConfigAIDs(void)$/;"	f
+ViVOpayGetAllConfigGroups	ctlsmod.c	/^int ViVOpayGetAllConfigGroups(void)$/;"	f
+ViVOpayGetConfig	ctlsmod.c	/^int ViVOpayGetConfig(void)$/;"	f
+ViVOpayGetMessages	ctlsmod.c	/^int ViVOpayGetMessages(void)$/;"	f
+ViVOpayGetProductType	ctlsmod.c	/^PRODUCT_TYPE ViVOpayGetProductType(void)$/;"	f
+ViVOpayLoadConfig	ctlsmod.c	/^int ViVOpayLoadConfig(void)$/;"	f
+ViVOpayLoadMessages	ctlsmod.c	/^int ViVOpayLoadMessages(PRODUCT_TYPE ProdType)$/;"	f
+ViVOpayProcessAIDTable	ctlsmod.c	/^int ViVOpayProcessAIDTable(void)$/;"	f
+ViVOtechGenerateCommand	ctlsmod.c	/^int ViVOtechGenerateCommand(CTLS_VIVOTECH_CMD_TYPE cmd, unsigned char *sendCmd, int *sendCmdlen, unsigned char *data, int datalen)$/;"	f
+ViVOtechGenerateKeyMgmtCommand	ctlsmod.c	/^int ViVOtechGenerateKeyMgmtCommand(CTLS_VIVOTECH_CMD_TYPE cmd, unsigned char *sendCmd, int *sendCmdlen, unsigned char *data, int datalen,$/;"	f
+Wave3CheckResponse	ctlsmod.c	/^int Wave3CheckResponse(unsigned char *data, int length)$/;"	f
+Wave3GenerateCommand	ctlsmod.c	/^int Wave3GenerateCommand(CTLS_WAVE3_CMD_TYPE cmdType, unsigned char *req, int *reqlen, unsigned char *data, int datalen)$/;"	f
+Wave3GoodSeqNumber	ctlsmod.c	/^int Wave3GoodSeqNumber(unsigned int seqnumber)$/;"	f
+Wave3IncreaseSeqNumber	ctlsmod.c	/^unsigned int Wave3IncreaseSeqNumber(void)$/;"	f
+Wave3SetEMVTag	ctlsmod.c	/^int Wave3SetEMVTag(void)$/;"	f
+ZLIB_INTERNAL	adler32.c	8;"	d	file:
+__3des_rsa_store	iriscrypt.c	/^bool __3des_rsa_store(char *data, int rsakey, int kek)$/;"	f
+____printDump	iris_io.c	/^static char * ____printDump(char * dump, char * data, int graphics)$/;"	f	file:
+____ser_disconnect	irisser.c	/^int ____ser_disconnect(int myPort)$/;"	f
+____time	iristime.c	/^void ____time(char * value, int * which, char * output, int * j)$/;"	f
+__add_print_data	iris_io.c	/^static void __add_print_data(char ** dump, char * data, int size)$/;"	f	file:
+__as2805_break	iris2805.c	/^void __as2805_break(int fldcnt,const char *msg,T_AS2805FIELD *flds , int *errfld)$/;"	f
+__as2805_break_custom	iris2805.c	/^void __as2805_break_custom(const char *msg,T_AS2805FIELD **flds, int *errfld)$/;"	f
+__as2805_make	iris2805.c	/^void __as2805_make(T_AS2805FIELD **flds, char **pmsg)$/;"	f
+__as2805_make_custom	iris2805.c	/^void __as2805_make_custom(T_AS2805FIELD **flds, char **pmsg)$/;"	f
+__battery_status	irisutil.c	/^void __battery_status(void)$/;"	f
+__crypt	iriscrypt.c	/^char* __crypt(const char* data, const char *keySize, const char* key, const char *variant, bool decrypt, bool ofb)$/;"	f
+__derive_3deskey	iriscrypt.c	/^bool __derive_3deskey(const char* data, const char* variant, const char* key, const char* kek)$/;"	f
+__des_random	iriscrypt.c	/^bool __des_random(const char* keySize, const char *key, char *value)$/;"	f
+__des_store	iriscrypt.c	/^bool __des_store(const char *data, const char* keySize, const char* key)$/;"	f
+__dformat1	iriscrypt.c	/^void __dformat1(char *data, int int_blockSize, char *result)$/;"	f
+__dock_status	irisutil.c	/^void __dock_status(void)$/;"	f
+__get_key	iriscrypt.c	/^bool __get_key(int key,char *value)$/;"	f
+__ip_connect	iristcp.c	/^void __ip_connect(const char* timeout, const char* sdns, const char *pdns, const char *gw, const char * oip, char **retmsg)$/;"	f
+__ip_connect_check	iristcp.c	/^void __ip_connect_check(char *tm,char **retmsg)$/;"	f
+__iv_set	iriscrypt.c	/^bool __iv_set(const char* iv)$/;"	f
+__key_xor	iriscrypt.c	/^bool __key_xor( const char* to, const char* from, const char* with_key, const char * with_data )$/;"	f
+__kvc	iriscrypt.c	/^void __kvc(const char* keySize, const char * key, char *kvc_)$/;"	f
+__lowPower	input.c	/^void __lowPower(int event,int tcpcheck, long timeout, long timeout_fail)$/;"	f
+__luhn	irisutil.c	/^bool __luhn(const char *pan)$/;"	f
+__mac	iriscrypt.c	/^char* __mac(const char* data, const char* variant, const char *key , int length, bool dataIsHex, char * mac_value)$/;"	f
+__manufacturer	iriscfg.c	/^char* __manufacturer(char* mf)$/;"	f
+__model	iriscfg.c	/^void __model(char *model_s)$/;"	f
+__now	iristime.c	/^void __now(char *result)$/;"	f
+__owf	iriscrypt.c	/^bool __owf(const char* ppasn, const char* to, const char* from, bool variant, const char *data )$/;"	f
+__ppid	iriscfg.c	/^void __ppid(char* ppid)$/;"	f
+__ppid_remove	iriscfg.c	/^void __ppid_remove(void)$/;"	f
+__ppid_update	iriscfg.c	/^void __ppid_update(const char *ppid)$/;"	f
+__print_cont	iris_io.c	/^char * __print_cont(const char * data,bool endflag)$/;"	f
+__print_err	iris_io.c	/^void __print_err(char *result)$/;"	f
+__pstn_connect	irispstn.c	/^char* __pstn_connect(const char *bufSize,const char *baud,const char *interCharTimeout,const char *timeout,const char *phoneNo,const char *pabx,const char *fastConnect,const char *blindDial,const char *dialType,const char *sync,const char *preDial,const char* header)$/;"	f
+__pstn_disconnect	irispstn.c	/^void __pstn_disconnect(void)$/;"	f
+__pstn_init	irispstn.c	/^void __pstn_init(void)$/;"	f
+__pstn_recv	irispstn.c	/^void __pstn_recv(char **pmsg,const char* interCharTimeout, const char *timeout, char * errmsg)$/;"	f
+__pstn_send	irispstn.c	/^void __pstn_send(const char* data,char*retMsg)$/;"	f
+__pstn_wait	irispstn.c	/^char * __pstn_wait(void)$/;"	f
+__remote	irisutil.c	/^bool __remote()$/;"	f
+__rsa_clear	iriscrypt.c	/^bool __rsa_clear(const char *rsa)$/;"	f
+__rsa_crypt	iriscrypt.c	/^char * __rsa_crypt(const char *data, const char *rsa)$/;"	f
+__rsa_store	iriscrypt.c	/^bool __rsa_store(const char *data, const char* rsa)$/;"	f
+__rsa_wrap_3des	iriscrypt.c	/^bool __rsa_wrap_3des(const char *rsa_key, const char *des_key,char * result)$/;"	f
+__sec_init	iriscfg.c	/^void __sec_init(void)$/;"	f
+__ser_connect	irisser.c	/^int __ser_connect(const char *header, const char *port,const char* timeout,const char* interCharTimeout, const char* baud, const char* dataBits, const char* parity, const char* stopBits, const char* bufSize)$/;"	f
+__ser_data	irisser.c	/^bool __ser_data(const char* port)$/;"	f
+__ser_init	irisser.c	/^void __ser_init(void)$/;"	f
+__ser_reconnect	irisser.c	/^int __ser_reconnect(int myPort)$/;"	f
+__ser_recv	irisser.c	/^char* __ser_recv(const char *port)$/;"	f
+__ser_send	irisser.c	/^int __ser_send(const char *port,const char* data)$/;"	f
+__serial_no	iriscfg.c	/^void __serial_no(char* sn)$/;"	f
+__shutdown	iris_io.c	/^void __shutdown(void)$/;"	f
+__store_objects	irisutil.c	/^void __store_objects(int unzip,char *objects,int* nextmsg,char **response)$/;"	f
+__tcp_connect	iristcp.c	/^void __tcp_connect(const char * bufSize, const char * interCharTimeout, const char * timeout, const char * port, const char * hip, const char *sdns, const char * pdns, const char *gw, const char* oip , const char * header, char **perrmsg)$/;"	f
+__tcp_disconnect	iristcp.c	/^void __tcp_disconnect(void)$/;"	f
+__tcp_disconnect_check	iristcp.c	/^int __tcp_disconnect_check(void)$/;"	f
+__tcp_disconnect_completely	iristcp.c	/^int __tcp_disconnect_completely(void)$/;"	f
+__tcp_disconnect_do	iristcp.c	/^void __tcp_disconnect_do(void)$/;"	f
+__tcp_disconnect_extend	iristcp.c	/^int __tcp_disconnect_extend(void)$/;"	f
+__tcp_disconnect_ip_only	iristcp.c	/^int __tcp_disconnect_ip_only(void)$/;"	f
+__tcp_disconnect_now	iristcp.c	/^void __tcp_disconnect_now(void)$/;"	f
+__tcp_gprs_sts	iristcp.c	/^void __tcp_gprs_sts(void)$/;"	f
+__tcp_recv	iristcp.c	/^void __tcp_recv(char **pmsg,const char* interCharTimeout, const char *timeout, char * errmsg)$/;"	f
+__tcp_send	iristcp.c	/^void __tcp_send(const char* data,char*retMsg)$/;"	f
+__text_table	irisutil.c	/^void __text_table(const char* search, const char* textTableObjectName, char** pfound)$/;"	f
+__time_real	iristime.c	/^char*  __time_real(const char* format,char *output)$/;"	f
+__time_set	iristime.c	/^void __time_set(const char *newTime,char* adjust)$/;"	f
+__timer_start	iristime.c	/^void __timer_start(int timer_idx)$/;"	f
+__timer_started	iristime.c	/^bool __timer_started(int timer_idx)$/;"	f
+__timer_stop	iristime.c	/^long __timer_stop(int timer_idx)$/;"	f
+__upload_msg	irisutil.c	/^void __upload_msg(const char *message)$/;"	f
+__upload_obj	irisutil.c	/^void __upload_obj(const char *objectName)$/;"	f
+_adjustForVarBCD	as2805.c	/^static void _adjustForVarBCD(char * temp)$/;"	f	file:
+_bcdToNumber	as2805.c	/^static ulong _bcdToNumber(uchar * bcd, uint * index, uint size, uchar format)$/;"	f	file:
+_bcdToString	as2805.c	/^static char * _bcdToString(uchar * bcd, uint * index, uint size, uchar format, char * string)$/;"	f	file:
+_emv_pack_tlv	irisemv.c	/^bool _emv_pack_tlv(const char* tag,char* results)$/;"	f
+_emvcfg_list	emv.c	/^static	struct _emvcfg_list {$/;"	s	file:
+_getVariant	security.c	/^int _getVariant(uchar * data, uchar keySize, uchar * variant)$/;"	f
+_halloc	zutil.c	271;"	d	file:
+_hfree	zutil.c	272;"	d	file:
+_ser_param	irisser.c	/^static void _ser_param(T_COMMS * myComms, const char * baud, const char * dataBits, const char * parity, const char * stopBits)$/;"	f	file:
+aORbFirst	Prtean128.c	/^static int aORbFirst(uchar * data)$/;"	f	file:
+abBarcode	printer.c	/^uchar abBarcode[100];$/;"	v
+active	input.c	/^	int active = -1;$/;"	v
+addField	as2805.c	/^static uint addField = 0;$/;"	v	file:
+adler32	adler32.c	/^uLong ZEXPORT adler32(uLong adler, const Bytef *buf, uInt len)$/;"	f
+ascii_to_binary	emvmisc.c	/^void ascii_to_binary(char *dest, const char *src, int length)$/;"	f
+bBarcodeIndex	printer.c	/^uchar bBarcodeIndex;$/;"	v
+bEscapeIndex	printer.c	/^uchar bEscapeIndex;$/;"	v
+bGraphicsMultiplier	printer.c	/^uchar bGraphicsMultiplier;$/;"	v
+bIsCardBlackListed	emv.c	/^EMVBoolean bIsCardBlackListed(byte * pan, unsigned short panLen, byte * panSeqNo, unsigned short panSeqLen)$/;"	f
+bKeyCode	input.c	/^	uchar bKeyCode;$/;"	m	struct:__anon11	file:
+banner	iris_io.c	/^static const char banner[] = "**** GRAPHICS START ****";$/;"	v	file:
+banner2	iris_io.c	/^static const char banner2[] = "**** GRAPHICS END   ****";$/;"	v	file:
+bcdLength	as2805.c	/^static bool bcdLength = true;$/;"	v	file:
+big_counter	malloc.c	/^int big_counter = 0;$/;"	v
+bufLen	irispstn.c	/^static int bufLen = 300;$/;"	v	file:
+bufLen	irisser.c	/^static int bufLen = 300;$/;"	v	file:
+bufLen	iristcp.c	/^static int bufLen = 300;$/;"	v	file:
+buffer	as2805.c	/^static uchar * buffer = NULL;$/;"	v	file:
+clearingrecindex	ctlsmod.c	/^	int clearingrecindex;$/;"	m	struct:__anon8	file:
+clearingreclen	ctlsmod.c	/^	int clearingreclen;$/;"	m	struct:__anon8	file:
+clearingrectag	ctlsmod.c	/^	EMV_TAG_REC clearingrectag[20];$/;"	m	struct:__anon8	file:
+command	ctlsmod.c	/^	char command;$/;"	m	struct:__anon5	file:
+command	ctlsmod.c	/^	int command;$/;"	m	struct:__anon10	file:
+comms	irispstn.c	/^static T_COMMS comms;$/;"	v	file:
+comms	irisser.c	/^static T_COMMS comms[2];$/;"	v	file:
+comms	iristcp.c	/^static T_COMMS comms;$/;"	v	file:
+conHandle	irismain.c	/^int conHandle = -1;$/;"	v
+crc32	crc32.c	/^unsigned long ZEXPORT crc32(unsigned long crc, const unsigned char FAR *buf, unsigned len)$/;"	f
+crc32_big	crc32.c	/^local unsigned long crc32_big(unsigned long crc, const unsigned char FAR *buf, unsigned len)$/;"	f
+crc32_little	crc32.c	/^local unsigned long crc32_little(unsigned long crc, const unsigned char FAR *buf, unsigned len)$/;"	f
+crc_table	crc32.c	/^local unsigned long FAR crc_table[TBLS][256];$/;"	v
+crc_table_empty	crc32.c	/^local volatile int crc_table_empty = 1;$/;"	v
+crctype	ctlsmod.c	/^	CRC_TYPE crctype;$/;"	m	struct:__anon5	file:
+createScriptFiles	emvmisc.c	/^int createScriptFiles(const byte *scriptBuf,short bufLen, char *data1, short *data1_len, char *data2, short *data2_len)$/;"	f
+cryptoHandle	security.c	/^int cryptoHandle = -2;$/;"	v
+ctlsCall	input.c	/^int ctlsCall( int acc, long amt, int nosaf, char *tr1,char *tr2,char *tlvs,char *emvres)$/;"	f
+ctlsCommand	ctlsmod.c	/^int ctlsCommand(int vivopay, int timeout, unsigned char *req, int reqlen, unsigned char *resp, int *resplen)$/;"	f
+ctlsDisable	ctlsmod.c	/^int ctlsDisable(void)$/;"	f
+ctlsEnable	ctlsmod.c	/^int ctlsEnable( int timeout, int trantype, unsigned long amount, ctls_read_cb callback)$/;"	f
+ctlsEnableCallback	ctlsmod.c	/^void ctlsEnableCallback(int timer)$/;"	f
+ctlsGetEMVTag	ctlsmod.c	/^int ctlsGetEMVTag(int EMVTag, unsigned char *data, int *datalen)$/;"	f
+ctlsGetLimit	ctlsmod.c	/^long ctlsGetLimit(int LimitType, char *AID)$/;"	f
+ctlsGetTrackData	ctlsmod.c	/^int ctlsGetTrackData(int trackno, unsigned char *trackdata, int *tracklen)$/;"	f
+ctlsInitialise	ctlsmod.c	/^int ctlsInitialise(int port)$/;"	f
+ctlsInitialising	Contactless.c	/^static int ctlsInitialising = 1;$/;"	v	file:
+ctlsOnlineAuthReq	ctlsmod.c	/^int ctlsOnlineAuthReq(void)$/;"	f
+ctlsParseData	ctlsmod.c	/^int ctlsParseData(unsigned int *cardtype, long amount, unsigned char *data, int datalen)$/;"	f
+ctlsPending	ctlsmod.c	/^int ctlsPending(void)$/;"	f
+ctlsRead	ctlsmod.c	/^int ctlsRead(int vivopay, unsigned char *resp, int *resplen)$/;"	f
+ctlsReset	ctlsmod.c	/^void ctlsReset(void)$/;"	f
+ctlsSend	ctlsmod.c	/^int ctlsSend(unsigned char *req, int reqlen)$/;"	f
+ctlsSetEMVTag	ctlsmod.c	/^int ctlsSetEMVTag(int EMVTag, unsigned char *data, int datalen)$/;"	f
+ctls_evo	ctlsmod.c	/^int ctls_evo = false;$/;"	v
+ctls_firsttime	ctlsmod.c	/^int ctls_firsttime = false;$/;"	v
+ctls_maxtranslimit	ctlsmod.c	/^int ctls_maxtranslimit = 100;$/;"	v
+ctls_on	ctlsmod.c	/^int ctls_on = false;$/;"	v
+ctls_online_auth_req	ctlsmod.c	/^int ctls_online_auth_req = false;$/;"	v
+ctls_port	ctlsmod.c	/^int ctls_port = 0;$/;"	v
+ctls_read_callback	ctlsmod.c	/^ctls_read_cb ctls_read_callback;$/;"	v
+ctls_read_timer	ctlsmod.c	/^int ctls_read_timer;$/;"	v
+ctls_reader	ctlsmod.c	/^int ctls_reader = false;$/;"	v
+ctls_seqnumber	ctlsmod.c	/^unsigned int ctls_seqnumber = 0;$/;"	v
+ctls_timeout	ctlsmod.c	/^int ctls_timeout = 100;$/;"	v
+ctls_ui_stop_handler	ctlsmod.c	/^void ctls_ui_stop_handler(void* notUsed)$/;"	f
+ctls_vivotech_cmd	ctlsmod.c	/^CTLS_VIVOTECH_CMD_VALUES ctls_vivotech_cmd[] =$/;"	v
+ctls_wait_tap	ctlsmod.c	/^int ctls_wait_tap = false;$/;"	v
+ctls_wave3_cmd	ctlsmod.c	/^CTLS_WAVE3_CMD_VALUES ctls_wave3_cmd[20] = $/;"	v
+currGateway	iristcp.c	/^static char currGateway[50]="";$/;"	v	file:
+currHandle	iristcp.c	/^static unsigned int currHandle=0xFFFF;$/;"	v	file:
+currHeader	iristcp.c	/^static char currHeader[5]="";$/;"	v	file:
+currIPAddress	iristcp.c	/^static char currIPAddress[50]="";$/;"	v	file:
+currOwnIPAddress	iristcp.c	/^static char currOwnIPAddress[50]="";$/;"	v	file:
+currPDNS	iristcp.c	/^static char currPDNS[50]="";$/;"	v	file:
+currPortNumber	iristcp.c	/^static unsigned int currPortNumber=0;$/;"	v	file:
+currSDNS	iristcp.c	/^static char currSDNS[50]="";$/;"	v	file:
+currentObject	irismain.c	/^char * currentObject = NULL;$/;"	v
+currentObjectData	irismain.c	/^char * currentObjectData = NULL;$/;"	v
+currentObjectGroup	irismain.c	/^char * currentObjectGroup = NULL;$/;"	v
+currentScreen	irismain.c	/^char * currentScreen( int getset, char* scrname)$/;"	f
+datalength	ctlsmod.c	/^	int datalength;$/;"	m	struct:__anon10	file:
+datalength	ctlsmod.c	/^	int datalength;$/;"	m	struct:__anon5	file:
+datatag	ctlsmod.c	/^	EMV_TAG_REC datatag[100];$/;"	m	struct:__anon8	file:
+datatagindex	ctlsmod.c	/^	int datatagindex;$/;"	m	struct:__anon8	file:
+dbprintf	ctlsmod.c	46;"	d	file:
+dbprintf_hexdump	ctlsmod.c	/^void  dbprintf_hexdump(char *prefix, unsigned char *data, int length)$/;"	f
+decompress	irisutil.c	/^static unsigned char * decompress(unsigned char * input, unsigned long outSize, unsigned long size)$/;"	f	file:
+dummy	zutil.c	/^struct internal_state      {int dummy;}; \/* for buggy compilers *\/$/;"	m	struct:internal_state	file:
+dwGraphicsIndex	printer.c	/^ulong dwGraphicsIndex;$/;"	v
+dwGraphicsSize	printer.c	/^ulong dwGraphicsSize;$/;"	v
+eState	printer.c	/^E_PRINT_STATE eState = E_PRINT_STATE_DEFAULT;$/;"	v
+ean128CharValue	Prtean128.c	/^const long ean128CharValue[108] =$/;"	v
+emv_tlv_replace	emvmisc.c	/^bool emv_tlv_replace( char *newtlvs,short* bufLen,unsigned short btag)$/;"	f
+emvcfg_list	emv.c	/^} emvcfg_list;$/;"	v	typeref:struct:_emvcfg_list	file:
+errno	zutil.c	/^    int errno = 0;$/;"	v
+fGraphicsStart	printer.c	/^bool fGraphicsStart = false;$/;"	v
+fieldType	as2805.c	/^static const T_FIELD_FORMAT fieldType[] =$/;"	v	file:
+fieldsIndex	as2805.c	/^static uint fieldsIndex;$/;"	v	file:
+fieldsStart	as2805.c	/^static uint fieldsStart;$/;"	v	file:
+fileName	iriscfg.c	/^static const char * fileName = "s2.dat";$/;"	v	file:
+fileName	security.c	/^static const char * fileName = "s1.dat";$/;"	v	file:
+filename	emv.c	/^		char *filename[15];$/;"	m	struct:_emvcfg_list	file:
+fillCodeAorB	Prtean128.c	/^static char fillCodeAorB(uchar data)$/;"	f	file:
+fillCodeC	Prtean128.c	/^static void fillCodeC(char * out, uchar * data, int size)$/;"	f	file:
+findTag	emvmisc.c	/^short findTag(unsigned short tag, byte *value, short *length, const byte *buffer,short bufLen)$/;"	f
+firstInit	input.c	/^	int firstInit = -1;$/;"	v
+fixedtables	inflate.c	/^local void fixedtables(struct inflate_state FAR *state)$/;"	f
+flush_touch	input.c	/^int flush_touch(void)$/;"	f
+format	as2805.c	/^	uchar format;$/;"	m	struct:__anon2	file:
+gEmv	emv.c	/^EMV_GLOBAL gEmv;$/;"	v
+gSocketHandle	IrisComm.c	/^static int gSocketHandle = -1;$/;"	v	file:
+gSocketHandle	gprs.c	/^static int gSocketHandle = -1;$/;"	v	file:
+g_LinkState	IrisComm.c	/^static int g_LinkState = LINK_DISCONNECTED;$/;"	v	file:
+g_LinkState	gprs.c	/^static int g_LinkState = LINK_DISCONNECTED;$/;"	v	file:
+g_StState	IrisComm.c	/^static int g_StState = -1;$/;"	v	file:
+g_StState	gprs.c	/^static int g_StState = -1;$/;"	v	file:
+g_ceEvent_cb	IrisComm.c	/^static ceEvent_t	g_ceEvent_cb;$/;"	v	file:
+g_ceEvent_cb	gprs.c	/^static ceEvent_t	g_ceEvent_cb;$/;"	v	file:
+g_currMediaInfo	IrisComm.c	/^static stNIInfo g_currMediaInfo;			\/\/ Current media stNIInfo$/;"	v	file:
+g_currMediaInfo	gprs.c	/^static stNIInfo g_currMediaInfo;			\/\/ Current media stNIInfo$/;"	v	file:
+g_gprsHandle	IrisComm.c	/^static int g_gprsHandle = -1;				\/\/ GPRS Handle$/;"	v	file:
+g_gprsHandle	gprs.c	/^static int g_gprsHandle = -1;				\/\/ GPRS Handle$/;"	v	file:
+g_reconnect	IrisComm.c	/^static int g_reconnect = -1;$/;"	v	file:
+g_reconnect	gprs.c	/^static int g_reconnect = -1;$/;"	v	file:
+g_signal	IrisComm.c	/^static int g_signal=0;$/;"	v	file:
+g_signal	gprs.c	/^static int g_signal=0;$/;"	v	file:
+getCtlsAIDlist	Contactless.c	/^AID_DATA* getCtlsAIDlist()$/;"	f
+getEMVAids	emv.c	/^void getEMVAids(int indx,char *sAID)$/;"	f
+getEvent	irismain.c	/^static bool getEvent(T_EVTBITMAP setEvtBitmap, T_KEYBITMAP keepKeyBitmap, T_INP_ENTRY inpEntry, ulong timeout, bool ignoreTimeout, bool largeFont, bool * flush,T_EVTBITMAP *pevtBitmap,T_KEYBITMAP *pkeyBitmap,uchar *pkey, char** pevent)$/;"	f	file:
+getLastKeyDesc	irismain.c	/^char * getLastKeyDesc(unsigned char key, T_KEYBITMAP * keyBitmap)$/;"	f
+getNextObject	irisutil.c	/^static uint getNextObject(char * objects, uint * index, uint objectsLength)$/;"	f	file:
+getNextRawTLVData	emvmisc.c	/^short getNextRawTLVData(unsigned short *tag, byte *data, const byte *buffer)$/;"	f
+getNextTLVObject	emvmisc.c	/^short getNextTLVObject(unsigned short *tag, short *length, byte *value, const byte *buffer)$/;"	f
+getTlv	Contactless.c	/^static void getTlv(char *tlv, TLV *tlvStruct)$/;"	f	file:
+get_crc_table	crc32.c	/^const unsigned long FAR * ZEXPORT get_crc_table()$/;"	f
+get_csv_str	irisutil.c	/^char* get_csv_str( char * line, char sep, int idx , char *result)$/;"	f
+getset_ivmode	security.c	/^bool getset_ivmode( int mode, bool iv_input)$/;"	f
+handle	iriscfg.c	/^static FILE_HANDLE handle = (FILE_HANDLE) -1;$/;"	v	file:
+handle	security.c	/^static int handle = -1;$/;"	v	file:
+heap	printer.c	/^static uchar heap[20000];$/;"	v	file:
+hex_to_ascii	ctlsmod.c	/^int hex_to_ascii(char c, char d){$/;"	f
+hex_to_int	ctlsmod.c	/^int hex_to_int(char c){$/;"	f
+highPAN	input.c	/^		char highPAN[20];$/;"	m	struct:__anon12	file:
+hotKey	input.c	/^	int hotKey = -1;$/;"	v
+hotKeyApp	input.c	/^	char hotKeyApp[30];$/;"	v
+hotKeyEvent	input.c	/^	int hotKeyEvent;$/;"	v
+inCEStartGPRSNetwork	IrisComm.c	/^static int inCEStartGPRSNetwork(char *sAPN)$/;"	f	file:
+inCEStartGPRSNetwork	gprs.c	/^static int inCEStartGPRSNetwork(char *sAPN)$/;"	f	file:
+inCEStopNetwork	IrisComm.c	/^static int inCEStopNetwork(void)$/;"	f	file:
+inCEStopNetwork	gprs.c	/^static int inCEStopNetwork(void)$/;"	f	file:
+inCeEvent	IrisComm.c	/^static int inCeEvent(int st_mode,int chkstate,int noloop)$/;"	f	file:
+inCeEvent	gprs.c	/^static int inCeEvent(int st_mode,int chkstate,int noloop)$/;"	f	file:
+inCeTcpConnect	IrisComm.c	/^int inCeTcpConnect(T_COMMS * psComms)$/;"	f
+inCeTcpConnect	gprs.c	/^int inCeTcpConnect(T_COMMS * psComms)$/;"	f
+inCeTcpDisConnect	IrisComm.c	/^int inCeTcpDisConnect(T_COMMS * psComms)$/;"	f
+inCeTcpDisConnect	gprs.c	/^int inCeTcpDisConnect(T_COMMS * psComms)$/;"	f
+inCeTcpDisConnectIP	IrisComm.c	/^int inCeTcpDisConnectIP(T_COMMS * psComms)$/;"	f
+inCeTcpDisConnectIP	gprs.c	/^int inCeTcpDisConnectIP(T_COMMS * psComms)$/;"	f
+inCheckGPRSStatus	IrisComm.c	/^int inCheckGPRSStatus(int x,int y)$/;"	f
+inCheckGPRSStatus	gprs.c	/^int inCheckGPRSStatus(int x,int y)$/;"	f
+inGetApplVer	irismain.c	/^int inGetApplVer(char* ver)$/;"	f
+inPrintCTLSEmvPrm	emv.c	/^int inPrintCTLSEmvPrm()$/;"	f
+inReceiveTCPCommunication	IrisComm.c	/^int inReceiveTCPCommunication(T_COMMS * psComms)$/;"	f
+inReceiveTCPCommunication	gprs.c	/^int inReceiveTCPCommunication(T_COMMS * psComms)$/;"	f
+inRecvNext	IrisComm.c	/^int inRecvNext(char *pchReceiveBuff, int len)$/;"	f
+inRecvNext	gprs.c	/^int inRecvNext(char *pchReceiveBuff, int len)$/;"	f
+inSendTCPCommunication	IrisComm.c	/^int inSendTCPCommunication(T_COMMS * psComms)$/;"	f
+inSendTCPCommunication	gprs.c	/^int inSendTCPCommunication(T_COMMS * psComms)$/;"	f
+inSendTcpRaw	IrisComm.c	/^int inSendTcpRaw( char *pchBuff,int ilen)$/;"	f
+inSendTcpRaw	gprs.c	/^int inSendTcpRaw( char *pchBuff,int ilen)$/;"	f
+inflate	inflate.c	/^int ZEXPORT inflate(z_streamp strm, int flush)$/;"	f
+inflateCopy	inflate.c	/^int ZEXPORT inflateCopy(z_streamp dest, z_streamp source)$/;"	f
+inflateEnd	inflate.c	/^int ZEXPORT inflateEnd(z_streamp strm)$/;"	f
+inflateGetHeader	inflate.c	/^int ZEXPORT inflateGetHeader(z_streamp strm, gz_headerp head)$/;"	f
+inflateInit2_	inflate.c	/^int ZEXPORT inflateInit2_(z_streamp strm, int windowBits, const char *version, int stream_size)$/;"	f
+inflateInit_	inflate.c	/^int ZEXPORT inflateInit_(z_streamp strm, const char *version, int stream_size)$/;"	f
+inflatePrime	inflate.c	/^int ZEXPORT inflatePrime(z_streamp strm, int bits, int value)$/;"	f
+inflateReset	inflate.c	/^int ZEXPORT inflateReset(z_streamp strm)$/;"	f
+inflateSetDictionary	inflate.c	/^int ZEXPORT inflateSetDictionary(z_streamp strm, const Bytef *dictionary, uInt dictLength)$/;"	f
+inflateSync	inflate.c	/^int ZEXPORT inflateSync(z_streamp strm)$/;"	f
+inflateSyncPoint	inflate.c	/^int ZEXPORT inflateSyncPoint(z_streamp strm)$/;"	f
+inflate_copyright	inftrees.c	/^const char inflate_copyright[] =$/;"	v
+inflate_fast	inffast.c	/^void inflate_fast(z_streamp strm, unsigned start \/* inflate()'s starting value for strm->avail_out *\/)$/;"	f
+inflate_table	inftrees.c	/^int inflate_table(codetype type, unsigned short FAR *lens, unsigned codes, code FAR * FAR *table, unsigned FAR *bits, unsigned short FAR *work)$/;"	f
+internal_state	zutil.c	/^struct internal_state      {int dummy;}; \/* for buggy compilers *\/$/;"	s	file:
+iphandle	comms.c	/^int iphandle = -1;$/;"	v
+irisCfgInit	iriscfg.c	/^static void irisCfgInit(void)$/;"	f	file:
+irisGroup	iris.c	/^char irisGroup[] = "iRIS";$/;"	v
+iris_big_heap	malloc.c	/^T_BIG_HEAP iris_big_heap[C_MAX_BIG_BLOCKS];$/;"	v
+iris_big_heap_used	malloc.c	/^int iris_big_heap_used[C_MAX_BIG_BLOCKS];$/;"	v
+iris_ktk3	security.c	/^uchar iris_ktk3[17] = "\\x00\\xFA\\x14\\x4D\\x82\\xB1\\x5A\\x47\\xE1\\xB7\\xB1\\x53\\xA0\\xFF\\x55\\x6C";$/;"	v
+iris_med_heap	malloc.c	/^T_MED_HEAP iris_med_heap[C_MAX_MED_BLOCKS];$/;"	v
+iris_med_heap_head	malloc.c	/^T_MED_HEAP * iris_med_heap_head;$/;"	v
+iris_realloc	realloc.c	/^static void * iris_realloc(void * ptr, unsigned int size, void * start_range, void * end_range, unsigned int block_size)$/;"	f	file:
+iris_tiny_heap	malloc.c	/^T_TINY_HEAP iris_tiny_heap[C_MAX_TINY_BLOCKS];$/;"	v
+iris_tiny_heap_head	malloc.c	/^T_TINY_HEAP * iris_tiny_heap_head;$/;"	v
+lastFaultyFileName	irisutil.c	/^char lastFaultyFileName[100];$/;"	v
+lastFaultyGroup	irisutil.c	/^char lastFaultyGroup[50];$/;"	v
+leftOver	as2805.c	/^static bool leftOver = false;$/;"	v	file:
+leftOverValue	as2805.c	/^static int leftOverValue = 0;$/;"	v	file:
+len	Contactless.c	/^	short len;$/;"	m	struct:TLV_	file:
+local	crc32.c	31;"	d	file:
+logicalName	input.c	/^		char logicalName[17];$/;"	m	struct:__anon12	file:
+lowPAN	input.c	/^		char lowPAN[20];$/;"	m	struct:__anon12	file:
+main	irismain.c	/^main(int argc, char * argv[])$/;"	f
+main	runmain.c	/^main(int argc, char * argv[])$/;"	f
+make_crc_table	crc32.c	/^local void make_crc_table()$/;"	f
+makefixed	inflate.c	/^void makefixed()$/;"	f
+maxField	as2805.c	/^static uint maxField = 53;$/;"	v	file:
+maxRedirectPAN	input.c	/^	int maxRedirectPAN = 0;$/;"	v
+max_big_counter	malloc.c	/^int max_big_counter = 0;$/;"	v
+max_med_counter	malloc.c	/^int max_med_counter = 0;$/;"	v
+max_tiny_counter	malloc.c	/^int max_tiny_counter = 0;$/;"	v
+mcrHandle	input.c	/^int mcrHandle = 0;$/;"	v
+med_counter	malloc.c	/^int med_counter = 0;$/;"	v
+model	comms.c	/^char model[13]="";$/;"	v
+monthDays	time.c	/^static const int monthDays[2][12] = {{31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365},$/;"	v	file:
+msg	Contactless.c	/^static char msg[CTLS_BUFF_SZ] = {0};$/;"	v	file:
+msgLength	Contactless.c	/^static int  msgLength = 0;$/;"	v	file:
+myTime	time.c	/^static struct tm myTime;$/;"	v	typeref:struct:tm	file:
+my_calloc	calloc.c	/^void * my_calloc(unsigned int size)$/;"	f
+my_free	malloc.c	/^void my_free(void * block)$/;"	f
+my_gmtime	time.c	/^struct tm * my_gmtime(time_t_ris * someTime) \/\/KK changed$/;"	f
+my_malloc	malloc.c	/^void * my_malloc(unsigned int size)$/;"	f
+my_mktime	time.c	/^time_t_ris my_mktime(struct tm * someTime) \/\/kk changed$/;"	f
+my_realloc	realloc.c	/^void * my_realloc(void * ptr, unsigned int size)$/;"	f
+my_time	time.c	/^time_t_ris my_time(time_t_ris * now)	\/\/KK changed$/;"	f
+nProcessESTFile	ctlsmod.c	/^int nProcessESTFile(void)$/;"	f
+new_ptr	zutil.c	/^    voidpf new_ptr;$/;"	m	struct:ptr_table_s	file:
+nextObject	irismain.c	/^char * nextObject = NULL;$/;"	v
+next_ptr	zutil.c	/^local int next_ptr = 0;$/;"	v
+null	ctlsmod.c	44;"	d	file:
+numDigits	Prtean128.c	/^static int numDigits(uchar * data)$/;"	f	file:
+numberEntry	input.c	/^bool numberEntry = false;$/;"	v
+org_ptr	zutil.c	/^    voidpf org_ptr;$/;"	m	struct:ptr_table_s	file:
+p_ctls	Contactless.c	/^_ctlsStru * p_ctls = NULL;$/;"	v
+partNo	comms.c	/^char partNo[13];$/;"	v
+processCfgAidTlv	Contactless.c	/^static int processCfgAidTlv(char *tlv)$/;"	f	file:
+processCfgGroupTlv	Contactless.c	/^static int processCfgGroupTlv(char *tlv)$/;"	f	file:
+processDisplayObject	irismain.c	/^static void processDisplayObject()$/;"	f	file:
+processEmvTlv	Contactless.c	/^static int processEmvTlv(char *tlv)$/;"	f	file:
+processObjectLoop	irismain.c	/^static void processObjectLoop()$/;"	f	file:
+prtHandle	printer.c	/^int prtHandle = -1;$/;"	v
+ptr_table	zutil.c	/^} ptr_table;$/;"	t	typeref:struct:ptr_table_s	file:
+ptr_table_s	zutil.c	/^typedef struct ptr_table_s {$/;"	s	file:
+readCtlsRecord	ctlsmod.c	/^int readCtlsRecord(int fHandle , char *buf, int AllowNewLine)$/;"	f
+redirectPAN	input.c	/^	typeRedirectPAN * redirectPAN = NULL;$/;"	v
+remoteTms	iris.c	/^bool remoteTms()$/;"	f
+rename_file	runmain.c	/^int rename_file(char *oldname,char *newname,int flashflag)$/;"	f
+replace	iris_io.c	/^	char * replace;$/;"	m	struct:__anon13	file:
+retVal	irispstn.c	/^static int retVal = ERR_COMMS_NONE;$/;"	v	file:
+retVal	irisser.c	/^static int retVal = ERR_COMMS_NONE;$/;"	v	file:
+retVal	iristcp.c	/^static int retVal;$/;"	v	file:
+rsp	Contactless.c	/^static char rsp[CTLS_BUFF_SZ] = {0};$/;"	v	file:
+rspLength	Contactless.c	/^static int  rspLength = 0;$/;"	v	file:
+sCodeSets	Prtean13.c	/^const uchar sCodeSets[10][6] = {$/;"	v
+sFontEAN13Table	Prtean13.c	/^static const uchar sFontEAN13Table[] =$/;"	v	file:
+sKey	input.c	/^} sKey[] = $/;"	v	typeref:struct:__anon11
+sPrntBuff	ctlsmod.c	/^char sPrntBuff[200];$/;"	v
+search	iris_io.c	/^	char * search;$/;"	m	struct:__anon13	file:
+ser_line0	input.c	/^int ser_line0;$/;"	v
+ser_line1	input.c	/^int ser_line1;$/;"	v
+set_nextObj	irismain.c	/^int set_nextObj( const char* nextObj)$/;"	f
+sha1_finish	sha1.c	/^void sha1_finish( sha1_context *ctx, uint8 digest[20] )$/;"	f
+sha1_padding	sha1.c	/^static uint8 sha1_padding[64] =$/;"	v	file:
+sha1_process	sha1.c	/^void sha1_process( sha1_context *ctx, uint8 data[64] )$/;"	f
+sha1_starts	sha1.c	/^void sha1_starts( sha1_context *ctx )$/;"	f
+sha1_update	sha1.c	/^void sha1_update( sha1_context *ctx, uint8 *input, uint32 length )$/;"	f
+size	as2805.c	/^	int size;$/;"	m	struct:__anon2	file:
+special	iris_io.c	/^} special[5] = {	{"**** COMMA ****", ","}, {"**** WIGGLY ****", "{"}, {"**** YLGGIW ****", "}"}, {"**** BRACKET ****", "["}, {"**** TEKCARB ****", "]"}	};$/;"	v	typeref:struct:__anon13	file:
+subcommand	ctlsmod.c	/^	char subcommand;$/;"	m	struct:__anon5	file:
+syncsearch	inflate.c	/^local unsigned syncsearch(unsigned FAR *have, unsigned char FAR *buf, unsigned len)$/;"	f
+systicks	time.c	/^unsigned long systicks()$/;"	f
+tKeyBitmap	input.c	/^	T_KEYBITMAP	tKeyBitmap;$/;"	m	struct:__anon11	file:
+table	zutil.c	/^local ptr_table table[MAX_PTR];$/;"	v
+tag	Contactless.c	/^	short tag;$/;"	m	struct:TLV_	file:
+tag	ctlsmod.c	/^	int tag;$/;"	m	struct:__anon7	file:
+tag50_appLbl	Contactless.c	/^	char tag50_appLbl[18];$/;"	m	struct:TlvCollection_	file:
+tag56_trk1EqData	Contactless.c	/^	char tag56_trk1EqData[81];$/;"	m	struct:TlvCollection_	file:
+tag57_trk2EqData	Contactless.c	/^	char tag57_trk2EqData[21];$/;"	m	struct:TlvCollection_	file:
+tag5a_pan	Contactless.c	/^	char tag5a_pan[12]; $/;"	m	struct:TlvCollection_	file:
+tag5f20_cardHldrName	Contactless.c	/^	char tag5f20_cardHldrName[29];$/;"	m	struct:TlvCollection_	file:
+tag5f24_expDate	Contactless.c	/^	char tag5f24_expDate[6];		$/;"	m	struct:TlvCollection_	file:
+tag5f25_appEftDate	Contactless.c	/^	char tag5f25_appEftDate[6];$/;"	m	struct:TlvCollection_	file:
+tag5f2a_currCode	Contactless.c	/^	char tag5f2a_currCode[7];$/;"	m	struct:TlvCollection_	file:
+tag5f34_appPanSeqNo	Contactless.c	/^	char tag5f34_appPanSeqNo[4];		$/;"	m	struct:TlvCollection_	file:
+tag82_aip	Contactless.c	/^	char tag82_aip[4];$/;"	m	struct:TlvCollection_	file:
+tag8e_cvmList	Contactless.c	/^	char tag8e_cvmList[252];$/;"	m	struct:TlvCollection_	file:
+tag95_tvr	Contactless.c	/^	char tag95_tvr[7];$/;"	m	struct:TlvCollection_	file:
+tag97_tdol	Contactless.c	/^	char tag97_tdol[67];$/;"	m	struct:TlvCollection_	file:
+tag9a_txnDate	Contactless.c	/^	char tag9a_txnDate[5];$/;"	m	struct:TlvCollection_	file:
+tag9b_tsi	Contactless.c	/^	char tag9b_tsi[4];$/;"	m	struct:TlvCollection_	file:
+tag9c_txnType	Contactless.c	/^	char tag9c_txnType[5];		$/;"	m	struct:TlvCollection_	file:
+tag9f02_amtAuthNum	Contactless.c	/^	char tag9f02_amtAuthNum[9];$/;"	m	struct:TlvCollection_	file:
+tag9f03_otherAmtNo	Contactless.c	/^	char tag9f03_otherAmtNo[9];$/;"	m	struct:TlvCollection_	file:
+tag9f06_appId	Contactless.c	/^	char tag9f06_appId[20];$/;"	m	struct:TlvCollection_	file:
+tag9f07_appUsgCtrl	Contactless.c	/^	char tag9f07_appUsgCtrl[5];$/;"	m	struct:TlvCollection_	file:
+tag9f09_appVerNo	Contactless.c	/^	char tag9f09_appVerNo[5];$/;"	m	struct:TlvCollection_	file:
+tag9f0d_iacDef	Contactless.c	/^	char tag9f0d_iacDef[8];	$/;"	m	struct:TlvCollection_	file:
+tag9f0e_iacDen	Contactless.c	/^	char tag9f0e_iacDen[8];$/;"	m	struct:TlvCollection_	file:
+tag9f0f_iacOnl	Contactless.c	/^	char tag9f0f_iacOnl[8];$/;"	m	struct:TlvCollection_	file:
+tag9f10_iad	Contactless.c	/^	char tag9f10_iad[35];$/;"	m	struct:TlvCollection_	file:
+tag9f1a_termCountryCode	Contactless.c	/^	char tag9f1a_termCountryCode[5];$/;"	m	struct:TlvCollection_	file:
+tag9f1b_termFloorLmt	Contactless.c	/^	char tag9f1b_termFloorLmt[7];$/;"	m	struct:TlvCollection_	file:
+tag9f21_txnTime	Contactless.c	/^	char tag9f21_txnTime[6];$/;"	m	struct:TlvCollection_	file:
+tag9f26_appCrypto	Contactless.c	/^	char tag9f26_appCrypto[11];$/;"	m	struct:TlvCollection_	file:
+tag9f27_cid	Contactless.c	/^	char tag9f27_cid[4];	$/;"	m	struct:TlvCollection_	file:
+tag9f33_termCap	Contactless.c	/^	char tag9f33_termCap[6];	$/;"	m	struct:TlvCollection_	file:
+tag9f34_cvmRes	Contactless.c	/^	char tag9f34_cvmRes[6];$/;"	m	struct:TlvCollection_	file:
+tag9f35_termType	Contactless.c	/^	char tag9f35_termType[4];$/;"	m	struct:TlvCollection_	file:
+tag9f36_atc	Contactless.c	/^	char tag9f36_atc[5];$/;"	m	struct:TlvCollection_	file:
+tag9f37_unpredNo	Contactless.c	/^	char tag9f37_unpredNo[7];	$/;"	m	struct:TlvCollection_	file:
+tag9f40_addTermCap	Contactless.c	/^	char tag9f40_addTermCap[7];$/;"	m	struct:TlvCollection_	file:
+tag9f45_dataAuthCode	Contactless.c	/^	char tag9f45_dataAuthCode[5];$/;"	m	struct:TlvCollection_	file:
+tag9f4c_iccDynNo	Contactless.c	/^	char tag9f4c_iccDynNo[11];		$/;"	m	struct:TlvCollection_	file:
+tag9f5d_avOflnSpendAmt	Contactless.c	/^	char tag9f5d_avOflnSpendAmt[9];	$/;"	m	struct:TlvCollection_	file:
+tag9f66_txnQual	Contactless.c	/^	char tag9f66_txnQual[7];							$/;"	m	struct:TlvCollection_	file:
+tag9f6c_cardTxnQual	Contactless.c	/^	char tag9f6c_cardTxnQual[5];		$/;"	m	struct:TlvCollection_	file:
+tag9f74_vlpIac	Contactless.c	/^	char tag9f74_vlpIac[9];					$/;"	m	struct:TlvCollection_	file:
+tagdata	ctlsmod.c	/^	char tagdata[100];$/;"	m	struct:__anon7	file:
+tage300_authCode	Contactless.c	/^	char tage300_authCode[9];$/;"	m	struct:TlvCollection_	file:
+tagffe0_appProviderId	Contactless.c	/^	char tagffe0_appProviderId[8];$/;"	m	struct:TlvCollection_	file:
+tagffe1_prtlSelAllow	Contactless.c	/^	char tagffe1_prtlSelAllow[4];$/;"	m	struct:TlvCollection_	file:
+tagffe2_appFlow	Contactless.c	/^	char tagffe2_appFlow[4];		$/;"	m	struct:TlvCollection_	file:
+tagffe3_ppseDisabled	Contactless.c	/^	char tagffe3_ppseDisabled[4];$/;"	m	struct:TlvCollection_	file:
+tagffe4_groupNo	Contactless.c	/^	char tagffe4_groupNo[4];			$/;"	m	struct:TlvCollection_	file:
+tagffe5_maxAidLen	Contactless.c	/^	char tagffe5_maxAidLen[4];$/;"	m	struct:TlvCollection_	file:
+tagffe6_AidDisabled	Contactless.c	/^	char tagffe6_AidDisabled[4];$/;"	m	struct:TlvCollection_	file:
+tagfff1_txnLmt	Contactless.c	/^	char tagfff1_txnLmt[9];$/;"	m	struct:TlvCollection_	file:
+tagfff4_statusChk	Contactless.c	/^	char tagfff4_statusChk[6];$/;"	m	struct:TlvCollection_	file:
+tagfff5_cvmReqLmt	Contactless.c	/^	char tagfff5_cvmReqLmt[9];$/;"	m	struct:TlvCollection_	file:
+tagfff8_uiScheme	Contactless.c	/^	char tagfff8_uiScheme[4];$/;"	m	struct:TlvCollection_	file:
+tagfffb_lcdLangOpt	Contactless.c	/^	char tagfffb_lcdLangOpt[4];$/;"	m	struct:TlvCollection_	file:
+tagfffc_forceMag	Contactless.c	/^	char tagfffc_forceMag[4];$/;"	m	struct:TlvCollection_	file:
+tagfffd_tacOther	Contactless.c	/^	char tagfffd_tacOther[8];$/;"	m	struct:TlvCollection_	file:
+tagfffe_tacDefault	Contactless.c	/^	char tagfffe_tacDefault[8];$/;"	m	struct:TlvCollection_	file:
+tagffff_tacDenial	Contactless.c	/^	char tagffff_tacDenial[8];	$/;"	m	struct:TlvCollection_	file:
+taglen	ctlsmod.c	/^	int taglen;$/;"	m	struct:__anon7	file:
+ticks	iristime.c	/^static unsigned long ticks[10]={0,0,0,0,0,0,0,0,0,0};$/;"	v	file:
+timeFromString	time.c	/^struct tm * timeFromString(char * string)$/;"	f
+timeSet	time.c	/^void timeSet(struct tm * newTime)$/;"	f
+timeoutMs	Contactless.c	/^	int timeoutMs;$/;"	m	struct:AcquireCardParams_	file:
+timerID	input.c	/^	int timerID = -1;$/;"	v
+tiny_counter	malloc.c	/^int tiny_counter = 0;$/;"	v
+total	emv.c	/^		int total;$/;"	m	struct:_emvcfg_list	file:
+track1	ctlsmod.c	/^	unsigned char track1[100];$/;"	m	struct:__anon8	file:
+track1len	ctlsmod.c	/^	int track1len;$/;"	m	struct:__anon8	file:
+track2	ctlsmod.c	/^	unsigned char track2[100];$/;"	m	struct:__anon8	file:
+track2len	ctlsmod.c	/^	int track2len;$/;"	m	struct:__anon8	file:
+typeRedirectPAN	input.c	/^	} typeRedirectPAN;$/;"	t	typeref:struct:__anon12	file:
+u4	crc32.c	/^           typedef unsigned short u4;$/;"	t	file:
+u4	crc32.c	/^         typedef unsigned long u4;$/;"	t	file:
+u4	crc32.c	/^       typedef unsigned int u4;$/;"	t	file:
+uart_open	comms.c	/^bool uart_open[2] = {false, false};$/;"	v
+updatewindow	inflate.c	/^local int updatewindow(z_streamp strm, unsigned out)$/;"	f
+upload	iris.c	/^static char * upload = NULL;$/;"	v	file:
+vPrintEMVAllAids	emv.c	/^void vPrintEMVAllAids(void)$/;"	f
+vSetPinParams	emvCallback.c	/^int vSetPinParams(bool pinbypass) \/\/SECURE_PIN_MODULE changes$/;"	f
+val	Contactless.c	/^	char val[1000];$/;"	m	struct:TLV_	file:
+vdDisplayGPRSSignalStrength	IrisComm.c	/^void vdDisplayGPRSSignalStrength(int inSignalStatus, int inNetStatus,int x,int y)$/;"	f
+vdDisplayGPRSSignalStrength	gprs.c	/^void vdDisplayGPRSSignalStrength(int inSignalStatus, int inNetStatus,int x,int y)$/;"	f
+verbose	zutil.c	119;"	d	file:
+wGraphicsHeight	printer.c	/^uint wGraphicsHeight;$/;"	v
+wGraphicsWidth	printer.c	/^uint wGraphicsWidth;$/;"	v
+wSerialPortHandle	comms.c	/^static uint wSerialPortHandle[2] = {0xFFFF, 0xFFFF};$/;"	v	file:
+waitForRsp	Contactless.c	/^	char waitForRsp;$/;"	m	struct:AcquireCardParams_	file:
+waitSize	printer.c	/^uint waitSize = 0;$/;"	v
+wait_10003	input.c	/^	int wait_10003 = -1;$/;"	v
+write_table	crc32.c	/^local void write_table(out, table)$/;"	f
+zError	zutil.c	/^const char * ZEXPORT zError(int err)$/;"	f
+z_errmsg	zutil.c	/^const char * const z_errmsg[10] = {$/;"	v
+z_error	zutil.c	/^void z_error (m)$/;"	f
+z_verbose	zutil.c	/^int z_verbose = verbose;$/;"	v
+zcalloc	zutil.c	/^voidpf zcalloc (voidpf opaque, unsigned items, unsigned size)$/;"	f
+zcfree	zutil.c	/^void  zcfree (voidpf opaque, voidpf ptr)$/;"	f
+zlibCompileFlags	zutil.c	/^uLong ZEXPORT zlibCompileFlags()$/;"	f
+zlibVersion	zutil.c	/^const char * ZEXPORT zlibVersion()$/;"	f
+zmemcmp	zutil.c	/^int zmemcmp(s1, s2, len)$/;"	f
+zmemcpy	zutil.c	/^void zmemcpy(dest, source, len)$/;"	f
+zmemzero	zutil.c	/^void zmemzero(dest, len)$/;"	f
