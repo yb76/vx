@@ -13,6 +13,7 @@
 **-----------------------------------------------------------------------------
 */
 
+#include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <svc.h>
@@ -24,9 +25,8 @@
 
 #include "auris.h"
 #include "iris.h"
+#include "irisfunc.h"
 #include "Contactless.h"
-//#include "global.h"
-//#include "system.h"
 #include "date.h"
 #include "emvtags.hpp"
 #include "emvcwrappers.h"
@@ -145,7 +145,6 @@ enum
 	TLV_TYPE_CONSTRUCTED = 1
 };
 
-static int ctlsInitialising = 1;
 static char *sCfgData = NULL;
 static long sCfgLength = 0;
 static AID_DATA AIDlist[10];
@@ -224,8 +223,11 @@ static int GetRspStatus(void);
 static char GetFrameType(void);
 static int HandleRTCNFrame(void);
 static int HandleKeyMgtNFrame(void);
+static int BuildGeneralMsg(char cmd,char subcmd,char *data,short datalen);
 
 static void BuildRawMsg(char* tlv,int tlvlen);
+static int SendRestoreRawMsg(void);
+
 
 /*******************************************************
  * <<EMV4.2 Book3 Annex B>>
@@ -365,7 +367,7 @@ static int InitComPort(char comPortNumber)
 		char *objvalue = NULL;
 
 		strcpy(jsonobj,"RIS_PARAM");
-  		objdata = (char*)IRIS_GetObjectData( jsonobj, &objlength);
+  		objdata = (char*)IRIS_GetObjectData( jsonobj,(unsigned int *) &objlength);
         if(objdata) objvalue = (char*)IRIS_GetObjectTagValue( (const char *)objdata, "CTLS_RESTORE" );
 		if(objvalue && strlen(objvalue) && strcmp(objvalue,"FACTORY")==0) {
 			SVC_WAIT(100);
@@ -540,7 +542,6 @@ static int AcquireRsp(char waitForRsp, int timeout)
 	extern int mcrHandle ;
 	extern int conHandle;
 	int cardinput = 0;
-	char temp[6];
 
 	if(p_ctls) cardinput = 1;
 
@@ -569,7 +570,7 @@ static int AcquireRsp(char waitForRsp, int timeout)
 				return(-1002);
 			} else
 			if( (evt & EVT_KBD) ) {
-				if(read(conHandle, &key,1) == 1 ) {
+				if(read(conHandle, (char *)&key,1) == 1 ) {
 						key &= 0x7F;
 						if(key == KEY_CNCL)
 						{
@@ -863,7 +864,7 @@ static long getTlv(char *tlv, TLV *tlvStruct)
 	memset(tlvStruct, 0, sizeof(TLV));
 	
 	//LOG_PRINTFF(0x00000001L,"getTlv...2");
-	BER_parseTag(pIdx, &lTag, &iLenTag, &iTagType);
+	BER_parseTag(pIdx, &lTag, (long *)&iLenTag, &iTagType);
 	
 	for(i=0;i<iLenTag;i++) {sprintf(&tlvStruct->sTag[strlen(tlvStruct->sTag)],"%02X",*(tlv+i));}
 	//LOG_PRINTFF(0x00000001L,"getTlv...3,%ld,%ld",lTag,iLenTag);
@@ -1164,7 +1165,7 @@ static int SendRestoreRawMsg()
 	char restoremsg[6] = "\xf8\x00\x00\x00\xf1\x00";
 	BuildRawMsg(restoremsg,5);
 	SendRxMsg(0);
-	
+	return(0);
 }
 
 static void BuildRawMsg(char* tlv,int tlvlen)
@@ -1240,6 +1241,7 @@ static int BuildGeneralMsg(char cmd,char subcmd,char *data,short datalen)
 	AddToMsg(fields, sizeof(fields));
 	AddToMsg(data, datalen);
 	AppendCRC();
+	return(0);
 }
 
 
@@ -1289,7 +1291,6 @@ static void BuildSetDateMsgDF()
 static void BuildSetTimeMsgCF()
 {
 	char fields[2] = {0x25, 0x01};	
-	char dataLen = 0x03;	
 	char dateTime[15] = {0};
 	char hexTime[3] = {0};
 
@@ -1411,7 +1412,6 @@ static int GetPayment(char waitForRsp, int timeout)
 static int CancelTransaction(int reason)
 {
 	int res;
-	int notgood = 0;
 
 	if(strlen(p_ctls->TxnStatus) && atoi(p_ctls->TxnStatus)== V2_REQ_OL_AUTH)
 	{// set online response
@@ -1430,10 +1430,8 @@ static int CancelTransaction(int reason)
 			char rspcode = *(rsp+idx);
 
 			if(rspcode != 0x00) {
-				char sCmdHex[32];
-				char sCmd[64];
-				int iHexLen = 0;
-
+				//char sCmdHex[32];
+				//char sCmd[64];
 				//DebugPrint("boyang....cancel = %02x", rspcode );
 
 				}
@@ -1561,8 +1559,7 @@ static int SetCAPubKey(char *keyFile)
 	
 	ulmodlen = (unsigned long)modlen + explen + 6;
 	memset(chk,0x00,sizeof(chk));
-	RetVal = 0;
-	RetVal = SHA1(NULL,Modata,ulmodlen,chk);
+	SHA1(NULL,Modata,ulmodlen,chk);
 	
 	memset(tmpdata,0x00,sizeof(tmpdata));
 	ptr=tmpdata;
@@ -1611,7 +1608,7 @@ static int SetCAPubKey(char *keyFile)
 	{
 		return res;		
 	}
-	BuildSetCAPubKeyMsgDF(capkdata, dataLen1);
+	BuildSetCAPubKeyMsgDF((char *)capkdata, dataLen1);
 	res = SendRxMsg(0);	
 	if(res != CTLS_SUCCESS)
 	{
@@ -1632,7 +1629,7 @@ static int SetCAPubKey(char *keyFile)
 		return CTLS_SUCCESS;	
 	}
 
-	BuildSetCAPubKeyMsgDF(&capkdata[dataLen1], dataLen2);
+	BuildSetCAPubKeyMsgDF((char *)(&capkdata[dataLen1]), dataLen2);
 	res = SendRxMsg(0);	
 
 	if(res != CTLS_SUCCESS) 
@@ -1766,11 +1763,10 @@ int ProcessCard()
 
 void CancelAcquireCard(int reason)
 {	
-	int res = -1;
 	void *params = 0;
 
 	if(p_ctls->nosaf) {
-		char lcdMsg[] = "%F2%Pcc00Approved\n%Pcc15Thank you";
+		//char lcdMsg[] = "%F2%Pcc00Approved\n%Pcc15Thank you";
 		//StoreLCDMsg(0x0d, lcdMsg, "", "", "");
 	}
 
@@ -1782,7 +1778,7 @@ void CancelAcquireCard(int reason)
 	}
 	*(int*)params = reason;
 	LOG_PRINTFF(0x00000001L,"CancelAcquireCard 1");
-	res = CbCancelAcquireCard(params);
+	CbCancelAcquireCard(params);
 	free(params);
 }
 
@@ -1797,7 +1793,7 @@ static int CbAcquireCard(void *pParams)
 static int CbProcessCard(void *pParams)
 {
 	int ret = -1;
-	int txnRsp , statusCode;
+	int statusCode;
 	
 	statusCode = GetRspStatus();
 	if(strlen(p_ctls->TxnStatus)==0) sprintf(p_ctls->TxnStatus,"%2d",statusCode);
@@ -1872,7 +1868,7 @@ static void InitRdr(char comPortNumber)
 	static int  hCtlsRdr = -1;
 	
 	UtilStrDup(&sCfgData, NULL);
-	sCfgData = IRIS_GetObjectData_all("CTLSEMVCFG.TXT", &sCfgLength, 0);
+	sCfgData = IRIS_GetObjectData_all("CTLSEMVCFG.TXT", (unsigned int *)&sCfgLength, 0);
 
 	//	LOG_PRINTFF(0x00000001L,"InitRdr");
 	if(hCtlsRdr < 0) 
@@ -1963,7 +1959,7 @@ static void InitRdr(char comPortNumber)
 		ctlsInitRes = SetCAPubKeys();
 	}
 
-	if(true) {
+	if(CTLSDEBUG) {
 		int iret = 0;
 		LOG_PRINTFF(0x00000001L,"Get Configurable AID (GCA) 41010");
 		SendGeneralMsg(0x03,0x04,"\x9f\x06\x07\xa0\x00\x00\x00\x04\x10\x10",10);
@@ -1991,7 +1987,6 @@ static void InitRdr(char comPortNumber)
 		//SendGeneralMsg(0xF6,0x01,"\x00",0);
 	}
 
-	ctlsInitialising = 0;
 	LOG_PRINTFF(0x00000001L,"InitRdr out");
 }
 
@@ -2010,7 +2005,7 @@ int GetCtlsTxnLimit(char *aid,  int *p_translimit, int *p_cvmlimit,int *p_floorl
 
 		for(i=0;;i++){
 			if( AIDlist[i].GroupNo==0) break;
-			strnlwr (aid_chk2 , AIDlist[i].AID ,strlen(AIDlist[i].AID));
+			strnlwr (aid_chk2 , (const char *)(AIDlist[i].AID) ,strlen(AIDlist[i].AID));
 
 			if( strncmp( aid_chk,aid_chk2,strlen(aid_chk2))==0) {
 					*p_floorlimit = 0;//TODO
@@ -2035,11 +2030,11 @@ int CTLSEmvGetTac(char *tac_df,char *tac_dn,char *tac_ol, const char *AID)
 		strnlwr (aid_chk,AID ,strlen(AID));
 		for(i=0;;i++){
 			if( AIDlist[i].GroupNo==0) break;
-			strnlwr (aid_chk2 , AIDlist[i].AID ,strlen(AIDlist[i].AID));
+			strnlwr (aid_chk2 , (const char *)(AIDlist[i].AID) ,strlen(AIDlist[i].AID));
 			if( strncmp( aid_chk,aid_chk2,strlen(aid_chk2))==0) {
-				UtilHexToString( AIDlist[i].TACDefault , 5 , tac_df);
-				UtilHexToString( AIDlist[i].TACDenial , 5 , tac_dn);
-				UtilHexToString( AIDlist[i].TACOnline , 5 , tac_ol);
+				UtilHexToString( (const char *)AIDlist[i].TACDefault , 5 , tac_df);
+				UtilHexToString( (const char *)AIDlist[i].TACDenial , 5 , tac_dn);
+				UtilHexToString( (const char *)AIDlist[i].TACOnline , 5 , tac_ol);
 			}
 		}
 

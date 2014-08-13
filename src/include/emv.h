@@ -31,7 +31,6 @@ typedef struct {
 	char tac_denial[11] ;
 	char tac_default[11] ;
 	char tac_online[11] ;
-	bool gpo_noneed; // offline
 } EMV_GLOBAL;
 extern EMV_GLOBAL gEmv;
 

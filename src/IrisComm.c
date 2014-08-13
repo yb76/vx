@@ -149,7 +149,8 @@ int inCheckGPRSStatus(int x,int y)
 	inManageCEEvents ();
 	
 	strcpy(stmp,chSignalRSSI);
-	if((p = strchr(stmp,'R'))) {
+	p = strchr(stmp, 'R');
+	if(p) {
 		*p = 0;
 	}
 	g_signal = atoi(stmp);
@@ -242,7 +243,7 @@ int inStartCE_NETWORK (void)
 {
     int inRetVal = RET_FAILED;
     unsigned long ulTime, ulTimeOut;
-    unsigned int event;
+    unsigned int event=0;
 	int retryCounter;
 	unsigned int uiValueLength;
 	stNI_NWIFState ceNWIF;
@@ -934,7 +935,7 @@ int inSendTCPCommunication(T_COMMS * psComms)
     
 	char sHOSTIP[18];
 	int nPort;
-	char *pchSendBuff = psComms->pbData;
+	char *pchSendBuff =(char*) psComms->pbData;
 	int inSendSize = psComms->wLength;
 
 	memset(szTransmitBuffer, 0x00, sizeof(szTransmitBuffer));
@@ -968,7 +969,7 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
     int  retVal = 0;
     struct timeval  mytimeval;
     char   szReceiveBuffer[4096];
-	char *pchReceiveBuff = psComms->pbData;
+	char *pchReceiveBuff = (char *)psComms->pbData;
     
 	errno = 0;
     mytimeval.tv_sec = psComms->bResponseTimeout;
@@ -995,7 +996,7 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
 static int DebugPrint2 (const char*template,...) 
 {
     va_list ap;
-	char stmp[128];
+	char stmp[200];
 	static int debugflag = -1;
 
 	if(debugflag == -1) {
@@ -1011,15 +1012,15 @@ static int DebugPrint2 (const char*template,...)
     memset(stmp,0,sizeof(stmp));
     va_start (ap, template);
     vsnprintf (stmp,128, template, ap);
-  PrtPrintBuffer(strlen(stmp), stmp, 2);
-  PrtPrintBuffer(2, "\n\n", 2);//E_PRINT_END
+    strcat(stmp,"\n");
+  PrtPrintBuffer(strlen(stmp), stmp, E_PRINT_END);
   return(0);
 }
 
 static int DebugPrint (const char*template,...) {
 
     va_list ap;
-    char stmp[128];
+    char stmp[1024];
 	char s_debug[30] = "\033k042GPRS_DEBUG:";
 	stNI_NWIFState nwState;
 	int pLen;
@@ -1047,11 +1048,11 @@ static int DebugPrint (const char*template,...) {
   ceGetNWParamValue (g_currMediaInfo.niHandle, NWIF_STATE, &nwState, sizeof (stNI_NWIFState), &pLen);
   PrtPrintBuffer(strlen(s_debug), s_debug, 0);
   PrtPrintBuffer(strlen(stmp), stmp, 2);//E_PRINT_END
-  PrtPrintBuffer(1, "\n", 2);//E_PRINT_END
+  PrtPrintBuffer(1, "\n", E_PRINT_END);//E_PRINT_END
 
   sprintf(stmp,"current_state=%d,newstate=%d,event=%d,errorcode=%d %s,time=%s",nwState.nsCurrentState,nwState.nsTargetState,nwState.nsEvent,nwState.nsErrorCode,nwState.nsErrorString,now);
+  strcat(stmp,"\n");
   PrtPrintBuffer(strlen(stmp), stmp, 2);//E_PRINT_END
-  PrtPrintBuffer(2, "\n\n", 2);//E_PRINT_END
   return 0;
 }
 

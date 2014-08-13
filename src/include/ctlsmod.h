@@ -57,7 +57,7 @@ typedef struct
 
 } AID_DATA;
 
-AID_DATA* getCtlsAIDlist();
+AID_DATA* getCtlsAIDlist(void);
 typedef void (*ctls_read_cb)(int timeout, int firsttime, unsigned char *data, int length);
 
 ////////////////////////////////////////////////////////////////////////////////

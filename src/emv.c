@@ -1125,7 +1125,7 @@ int EmvUseHostData(int hostDecision,const char *hexdata,short len)
             usEMVUpdateTLVInCollxn(0x9100, buffer, taglen); 
 	}
  
-    if(len) numScripts = createScriptFiles((const byte *)hexdata,len,buffer1,&len1,buffer2,&len2);
+    if(len) numScripts = createScriptFiles((byte *)hexdata,len,buffer1,&len1,buffer2,&len2);
 	iret = inVXEMVAPUseHostData(hostDecision, issuerScriptResults, &numScripts,buffer1,len1,buffer2,len2);
 	if(iret) return(iret);
 	

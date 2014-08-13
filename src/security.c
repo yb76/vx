@@ -509,9 +509,10 @@ bool SecurityCrypt(char * appName, uchar location, uchar keySize, int eDataSize,
 	// Setup the input parameters
 	data[0] = location;
 
-	//ivmode = getset_ivmode( 0,true );
+	ivmode = getset_ivmode( 0,true );
 	for (i = 0; i < eDataSize; i += 8)
 	{
+		if(!ivmode) SecuritySetIV(NULL);
 		// Place the encrypted data in the input parameters buffer
 		memset(&data[1], 0, 8);
 		memcpy(&data[1], &eData[i], (eDataSize-i) < 8? (eDataSize-i):8);
@@ -523,7 +524,7 @@ bool SecurityCrypt(char * appName, uchar location, uchar keySize, int eDataSize,
 			memcpy(&eData[i], &data[1], (eDataSize-i) < 8? (eDataSize-i):8);
 	}
 
-	//if(!ivmode) getset_ivmode(1,true);
+	if(!ivmode) getset_ivmode(1,true);
 	return ret;
 }
 
@@ -1084,7 +1085,7 @@ bool SecurityPINBlock(char * appName, uchar location, uchar keySize, char * pan,
 	UtilStringToHex(myPan, 16, &data[1]);
 
 	// Perform the instruction
-	if (iret = iPS_ExecuteScript( C_SCRIPT_ID, keySize == 8?M_PIN:M_PIN_3DES, sizeof(data), data, 8, &outLen, ePinBlock)) {
+	if ((iret = iPS_ExecuteScript( C_SCRIPT_ID, keySize == 8?M_PIN:M_PIN_3DES, sizeof(data), data, 8, &outLen, ePinBlock))!=0) {
 		return false;
 	}
 
@@ -1225,7 +1226,7 @@ bool SecurityPINBlockCba(uchar* location_1, uchar *location_2,char * pan, bool e
 		data[0] = (unsigned char)atoi((const char*)location_1);
 
 		SecuritySetIV(NULL);
-		if ( iret = iPS_ExecuteScript( C_SCRIPT_ID, M_ENC_3DES, 9, data, 8, &outLen, &data[1]))  ok = false;
+		if (( iret = iPS_ExecuteScript( C_SCRIPT_ID, M_ENC_3DES, 9, data, 8, &outLen, &data[1]))!=0)  ok = false;
 
 		if(ok) {
 			data[0] = (unsigned char)atoi((const char*)location_2);
@@ -1250,7 +1251,7 @@ bool SecurityPINBlockCba(uchar* location_1, uchar *location_2,char * pan, bool e
 			LOG_PRINTFF(0x00000001L,"pinblock step1 = [%02x%02x%02x%02x%02x%02x%02x%02x]",data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8]);
 			data[0] = (unsigned char)atoi((const char*)location_2);
 			SecuritySetIV(NULL);
-			if ( iret = iPS_ExecuteScript( C_SCRIPT_ID, M_ENC_3DES, 9, data, 8, &outLen, &data[1]))  ok = false;
+			if ( (iret = iPS_ExecuteScript( C_SCRIPT_ID, M_ENC_3DES, 9, data, 8, &outLen, &data[1]))!=0)  ok = false;
 			if(ok) UtilHexToString((const char *)&data[1],8,(char *)ePinBlock);
 			LOG_PRINTFF(0x00000001L,"pinblock step2 = [%02x%02x%02x%02x%02x%02x%02x%02x]",data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8]);
 		}

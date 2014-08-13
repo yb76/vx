@@ -1438,7 +1438,8 @@ void __lowPower(int event,int tcpcheck, long timeout, long timeout_fail,long shu
 		while(1) {
 			if (timerID >= 0) clr_timer(timerID);
 			timerID = set_timer(20*6000,EVT_TIMER);
-			evt = wait_evt(EVT_KBD|EVT_TIMER);
+			evt = wait_evt(EVT_KBD|EVT_TIMER|EVT_PIPE);
+			if(evt & EVT_PIPE) inManageCEEvents();
 			if(evt & EVT_KBD) break;
 			if(evt & EVT_TIMER) {
 				__ip_connect_check("10",&retmsg);
@@ -1446,7 +1447,11 @@ void __lowPower(int event,int tcpcheck, long timeout, long timeout_fail,long shu
 		}
 	} else {
 		while(1) {
-			if(read(conHandle, (char *) &keyCode, 1) == 1) break;
+			int	evt = wait_evt(EVT_PIPE|EVT_KBD);
+			if(evt & EVT_PIPE) { inManageCEEvents(); continue; }
+			if(evt & EVT_KBD) break;
+
+			if(read(conHandle, (char *) &keyCode, 1) >0) break;
 			SVC_WAIT(interval);
 			if(shutdowntm) {
 				tm_total += interval;

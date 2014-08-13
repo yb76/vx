@@ -774,6 +774,7 @@ int createScriptFiles(byte *scriptBuf, short bufLen, byte* pScript71, unsigned s
     numScripts = 0;
     do
     {
+		memset(data,0x00,sizeof(data));
         bytes = getNextRawTLVData(&tag, data, ptr + bytesRead);
 	    bytesRead += bytes;
 

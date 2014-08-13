@@ -559,13 +559,12 @@ unsigned short EmvFnOnlinePin(void)
 int	EmvCallbackFnInit(void)
 {
 
-	//inVxEMVAPSetFunctionality(GET_LAST_TXN_AMT, (void*)&EmvFnLastAmtEntry);
+	inVxEMVAPSetFunctionality(GET_LAST_TXN_AMT, (void*)&EmvFnLastAmtEntry);
 	inVxEMVAPSetFunctionality(GET_USER_PIN, (void*)&EmvFnOfflinePin);
 	inVxEMVAPSetFunctionality(DISPLAY_ERROR_PROMPT, (void*)&EmvCallbackFnPromptManager);
 	inVxEMVAPSetFunctionality(PERFORM_SIGNATURE, (void*)&EmvSignature);
 	inVxEMVAPSetFunctionality(PERFORM_ONLINE_PIN, (void*)&EmvFnOnlinePin);
 
-	inVxEMVAPSetFunctionality(GET_LAST_TXN_AMT, NULL);
 	inVxEMVAPSetFunctionality(PERFORM_ISS_ACQ_CVM, NULL);
 	inVxEMVAPSetFunctionality(IS_PARTIAL_SELECT_ALLOWED, NULL);
 	inVxEMVAPSetFunctionality(GET_CAPK_DATA, NULL);

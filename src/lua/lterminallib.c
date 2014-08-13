@@ -483,6 +483,24 @@ static int terminal_DesRandom (lua_State *L) {
   return 2;  /*  number of results */
 }
 
+static int terminal_PinBlockCba (lua_State *L) {
+  unsigned char result[128];
+  char string[256];
+  const char * key1 = lua_tostring(L,1);
+  const char * key2 = lua_tostring(L,2);
+  const char * pan = lua_tostring(L,3);
+  const char * emvflag = lua_tostring(L,4);
+  bool emv = emvflag && (*emvflag == '1');
+  bool ok = false;
+
+  ok = SecurityPINBlockCba((unsigned char*)key1, (unsigned char*) key2, (char *)pan, emv,result);
+  if( !ok ) lua_pushstring(L,"");
+  else {
+  	lua_pushstring(L, result);  /*  push result */
+  }
+  return 1;  /*  number of results */
+}
+
 static int terminal_PinBlock (lua_State *L) {
   unsigned char result[128];
   char string[256];
@@ -1129,6 +1147,18 @@ static int terminal_IvClr (lua_State *L) {
   return 1;  /*  number of results */
 }
 
+static int terminal_SetIvMode (lua_State *L) {
+  const char* ivmode = lua_tostring(L,1);
+  bool iv = true;
+  bool result;
+
+  if(strcmp(ivmode,"0")==0) iv = false;
+
+  result = getset_ivmode(1,iv);
+  lua_pushboolean(L, result);  /*  push result */
+  return 1;  /*  number of results */
+}
+
 static int terminal_PrinterStatus (lua_State *L) {
   char result[30];
   __print_err(result);
@@ -1544,9 +1574,7 @@ static int terminal_EmvTLVReplace(lua_State *L) {
 static int terminal_InitCommEng (lua_State *L) {
   const char *initType = lua_tostring(L,1);
   if(initType == NULL || strlen(initType) == 0 || strcmp(initType,"COMM") == 0) InitComEngine();
-#ifdef __CTLS
   if(initType == NULL || strlen(initType) == 0 || strcmp(initType,"CTLS") == 0) InitCtlsPort();
-#endif
   return 1;  /*  number of results */
 }
 
@@ -1633,12 +1661,14 @@ static const luaL_Reg terminallib[] = {
 
   {"DesRandom",terminal_DesRandom},
   {"PinBlock",terminal_PinBlock},
+  {"PinBlockCba",terminal_PinBlockCba},
   {"Kvc",terminal_Kvc},
   {"Owf",terminal_Owf},
   {"Dec",terminal_Dec},
   {"Enc",terminal_Enc},
   {"Mac",terminal_Mac},
   {"IvClr",terminal_IvClr},
+  {"SetIvMode",terminal_SetIvMode},
   {"Derive3Des",terminal_Derive3Des},
   {"DesStore",terminal_DesStore},
   {"RsaStore",terminal_RsaStore},
@@ -1675,7 +1705,6 @@ static const luaL_Reg terminallib[] = {
   {"StringToHex",terminal_StringToHex},
   {"DisplayArray",terminal_DisplayArray},
   {"PowerSaveMode",terminal_PowerSaveMode},
-//Dwarika .. Westpack .. Vx680 -->
   {"InitCommEng",terminal_InitCommEng},
   {"CtlsCall",terminal_CtlsCall},	  
   {"SysEnv",terminal_SysEnv},

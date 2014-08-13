@@ -420,7 +420,6 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 								nWideLbl = 1;
 							}
 							else if (strncmp(value, "BUTTON",6) == 0) {
-								//if(strncmp(value,"BUTTONL",7)==0) largeFont = true;
 								button = true;
 								strcpy(sBMPEVT, value);
 							}

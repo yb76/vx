@@ -150,7 +150,6 @@ void DispText(const char * text, uint row, uint col, bool clearLine, bool largeF
 	else
 	{
 		inverse?setfont("f:ir8x16i.vft"):setfont("f:ir8x16.vft");
-		//inverse?setfont("f:ir8x16i.vft"):setfont("f:timesnr16.vft");
 		if (row == 9999)
 			write(conHandle, text, strlen(text));
 		else

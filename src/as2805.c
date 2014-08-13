@@ -68,8 +68,7 @@ static uint fieldsIndex;
 static bool leftOver = false;
 static int leftOverValue = 0;
 
-//static bool bcdLength = false;
-static bool bcdLength = true;
+static bool bcdLength = true; // false;
 
 static uint maxField = 53;
 static uint addField = 0;
@@ -79,7 +78,7 @@ static const T_FIELD_FORMAT fieldType[] =
 	{	C_BCD,		4},		// 0, Message ID
 
 	{	C_BITMAP,	64},	// 1, Secondary bitmap (b64)
-	{	C_LLVAR,	19},	// 2, Primary account number (PAN) (LLVAR n..19)
+	{	C_LLNVAR,	19},	// 2, Primary account number (PAN) (LLVAR n..19)
 	{	C_BCD,		6},		// 3, Processing code (n6)
 	{	C_BCD,		12},		// 4, Amount, transaction (n12)
 
@@ -124,11 +123,11 @@ static const T_FIELD_FORMAT fieldType[] =
 	{	C_AMOUNT,	8},		// 29, Amount, settlement fee (x + n8)
 	{	C_AMOUNT,	8},		// 30, Amount, transaction processing fee (x + n8)
 	{	C_AMOUNT,	8},		// 31, Amount, settlement processing fee (x + n8)
-	{	C_LLVAR,	11},	// 32, AIIC (LLVAR n..11)
+	{	C_LLNVAR,	11},	// 32, AIIC (LLVAR n..11)
 
-	{	C_LLVAR,	11},	// 33, FIIC (LLVAR n..11)
-	{	C_LLVAR,	28},	// 34, PAN extended (LLVAR ns..28)
-	{	C_LLVAR,	37},	// 35, Track 2 (LLVAR z..37)
+	{	C_LLNVAR,	11},	// 33, FIIC (LLVAR n..11)
+	{	C_LLAVAR,	28},	// 34, PAN extended (LLVAR ns..28)
+	{	C_LLNVAR,	37},	// 35, Track 2 (LLVAR z..37)
 	{	C_LLLNVAR,	104},	// 36, Track 3 (LLLVAR z...104)
 
 	{	C_STRING,	12},	// 37, RRN (an12)
@@ -139,9 +138,9 @@ static const T_FIELD_FORMAT fieldType[] =
 	{	C_STRING,	8},		// 41, CATID (ans8)
 	{	C_STRING,	15},	// 42, CAIC (ans15)
 	{	C_STRING,	40},	// 43, Card Acceptor Name/Location (ans40)
-	{	C_LLVAR,	25},	// 44, Additional response data (LLVAR ans..25)
+	{	C_LLNVAR,	25},	// 44, Additional response data (LLVAR ans..25)
 
-	{	C_LLVAR,	76},	// 45, Track 1 (LLVAR ans..76)
+	{	C_LLAVAR,	76},	// 45, Track 1 (LLVAR ans..76)
 	{	C_LLLVAR,	0},		// 46, Additional data - ISO (LLLVAR ans...999)
 	{	C_LLLVAR,	0},		// 47, Additional data - National (LLLVAR ans...999)
 	{	C_LLLVAR,	0},		// 48, Additional data - Private (LLLVAR ans...999)
@@ -210,13 +209,13 @@ static const T_FIELD_FORMAT fieldType[] =
 	{	C_BITMAP,	64},	// 96, Message Security Code (b64)
 
 	{	C_AMOUNT,	16},	// 97, Amount, net settlement (x + n16)
-	{	C_LLVAR,	25},	// 98, Payee (LLVAR ans..25)
-	{	C_LLVAR,	11},	// 99, SIIC (LLVAR n..11)
-	{	C_LLVAR,	11},	// 100, RIIC (LLVAR n..11)
+	{	C_LLAVAR,	25},	// 98, Payee (LLVAR ans..25)
+	{	C_LLNVAR,	11},	// 99, SIIC (LLVAR n..11)
+	{	C_LLNVAR,	11},	// 100, RIIC (LLVAR n..11)
 
-	{	C_LLVAR,	17},	// 101, File Name (LLVAR ans..17)
-	{	C_LLVAR,	28},	// 102, Account Identification 1 (LLVAR ans..28)
-	{	C_LLVAR,	28},	// 103, Account Identification 2 (LLVAR ans..28)
+	{	C_LLAVAR,	17},	// 101, File Name (LLVAR ans..17)
+	{	C_LLAVAR,	28},	// 102, Account Identification 1 (LLVAR ans..28)
+	{	C_LLAVAR,	28},	// 103, Account Identification 2 (LLVAR ans..28)
 	{	C_LLLVAR,	100},	// 104, Transaction description (LLLVAR ans...100)
 
 	{	C_LLLVAR,	0},		// 105, Reserved for ISO use (LLLVAR ans...999)
@@ -723,9 +722,10 @@ void AS2805BufferUnpack(char * data, uchar format, uint size, uchar * buffer, ui
 			break;
 		case C_LLAVAR:
 			size = (buffer[*index] - '0') * 10 + buffer[*index+1] - '0';
+			*index += 2;
 			memcpy(data, &buffer[*index+2], size);
 			data[size] = '\0';
-			*index += size + 2;
+			*index += size ;
 			break;
 		case C_LLLVAR:
 			if (bcdLength)

@@ -243,6 +243,7 @@ char* __mac(const char* data, const char* variant, const char *key , int length,
 	uchar hexVariant[2];
 	uchar hexMAC[8];
 	char mac[17];
+	static maclen = 0;
 
 	strcpy(mac, "0000000000000000");
 
@@ -272,9 +273,26 @@ char* __mac(const char* data, const char* variant, const char *key , int length,
 		my_free(hex);
 
 		// Clear the last 4 bytes since this is a MAC
-		//WBC hexMAC[4] = hexMAC[5] = hexMAC[6] = hexMAC[7] = 0;
-		//CBA //hexMAC[4] = hexMAC[5] = hexMAC[6] = hexMAC[7] = 0;
-		hexMAC[4] = hexMAC[5] = hexMAC[6] = hexMAC[7] = 0;
+		//WBC  4bytes len
+		//CBA  8bytes len
+		if (maclen == 0)
+		{
+			unsigned int objlength = 0;
+			char *objdata = NULL;
+			char *tagvalue = NULL;
+			
+			objdata = IRIS_GetObjectData( "IRIS_CFG",&objlength);
+			if(objdata) {
+				tagvalue = IRIS_GetObjectTagValue( objdata,"MAC_LEN");
+			}
+		
+			if(tagvalue && *tagvalue == '4') maclen = 4;
+			else maclen = 8;
+			UtilStrDup(&tagvalue,NULL);
+			UtilStrDup(&objdata,NULL);				
+		}
+		if (maclen==4)
+			hexMAC[4] = hexMAC[5] = hexMAC[6] = hexMAC[7] = 0;
 
 		// Change back to ASCII data
 		UtilHexToString((const char*)hexMAC, sizeof(hexMAC), mac);

@@ -258,6 +258,7 @@ void DoTmsCmd(const char *jsonobj)
 	}
 
 	_remove(jsonfile);
+	//it might SHUTDOWN() in the following store process
 	__store_objects(0,objects,NULL,NULL);
 
 	if(jsonobj == NULL || strlen(jsonobj)==0) {
