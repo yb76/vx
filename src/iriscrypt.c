@@ -243,7 +243,7 @@ char* __mac(const char* data, const char* variant, const char *key , int length,
 	uchar hexVariant[2];
 	uchar hexMAC[8];
 	char mac[17];
-	static maclen = 0;
+	static int maclen = 0;
 
 	strcpy(mac, "0000000000000000");
 

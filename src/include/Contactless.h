@@ -1,5 +1,4 @@
 
-#pragma region Defines_returnVals
 
 #define CTLS_FAILED 0x00
 #define CTLS_SUCCESS 0x01
@@ -31,7 +30,6 @@
 #define CTLS_TLV_ERR_T -19
 #define CTLS_TERM_TIMED_OUT -20
 
-#pragma endregion
 
 typedef struct _ctlsStru_
 {

@@ -100,12 +100,6 @@ static bool getEvent(T_EVTBITMAP setEvtBitmap, T_KEYBITMAP keepKeyBitmap, T_INP_
 {
 	int i;
 	bool keyPress = false;
-	char sPrntBuff[50];
-	int nCount = 0;
-	//Dwarika.. for touch screen
-		char sTmpBuff[100];
-		int nloopct = 0;
-	//Dwarika.. for touch screen
 
 	static struct
 	{
@@ -303,19 +297,12 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 	int color_darkblue = 4523;
 	int color_button = 10998;//45,93,181
 
-	//Dwarika.. for touch screen
-		char sPrntBuff[50];
 	char fEndcCol[40];
-	char sBMPFileNm[20];
 	char sBMPEVT[20];
 	char sDispBMPFile[30];
-	int CTLS_Handle = -1;
 	int lastrow = 0;
 
-	int ret;
 	int nWideLbl = 0;
-	int nCoord;
-	//Dwarika.. for touch screen
 
 	// Initialisation
 	memset(&inpEntry, 0, sizeof(inpEntry));
@@ -324,7 +311,6 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 	memset(&MenuTch,0x00,sizeof(MenuTch));
 	memset(fEndcCol,0x00,sizeof(fEndcCol));
 
-	//Dwarika .. Vx680 ..Change the coordinate mode
 	if(get_display_coordinate_mode() == CHARACTER_MODE)
 		set_display_coordinate_mode(PIXEL_MODE);
 
@@ -333,10 +319,6 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 	set_display_color(CURRENT_PALETTE,1);
 	set_display_color(BACKGROUND_COLOR,color_background );//61695  255
 	set_display_color(FOREGROUND_COLOR,65535);//61695  255
-
-
- 
-
 
 	strcpy(liness,lines);
 	while(*str) {
@@ -357,7 +339,6 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 		  if(endc == '\0') break;
 		} else if(endc == ',')  
 			{
-			//Dwarika .. for Vx 680
 			//if(j==8){ i++;j=0;}
 			if(j==9)
 			{ 
@@ -718,7 +699,7 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 					if (operation == 0)
 					{
 						{
-							int nRetVal,nTmpCol;
+							int nTmpCol;
 							int len=0;
 							int button_type = 0;
 							int button_w= 0;

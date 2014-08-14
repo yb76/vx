@@ -621,7 +621,7 @@ static int AcquireRsp(char waitForRsp, int timeout)
 					idx = 11;
 				}
 				if(rsp[idx] != 0x00 && rsp[idx]!=V2_REQ_OL_AUTH) {
-					DebugPrint(" boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
+					//DebugPrint(" boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
 					LOG_PRINTFF(0x00000001L, "boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
 				}
 				SVC_WAIT(50);

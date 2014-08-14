@@ -109,10 +109,6 @@ void DispClearScreen(void)
 */
 void DispText(const char * text, uint row, uint col, bool clearLine, bool largeFont, bool inverse)
 {
-	char sPrntBuff[50];
-	int nColorCode;
-	char sColorVal[5];
-
 	const char * emptyLine = "                     ";
 	int len = 0;
 
@@ -261,7 +257,8 @@ int	DispArray(int timeout,char **pcMenuItems, int iMenuItemsTotal)
 	}
 	if(selected > 0) return(selected);
 	else if(!strcmp(outevent,"TIME")) {
-		return( -1 * EVT_TIMEOUT);
+		long iret = - EVT_TIMEOUT;
+		return(iret);
 	} else
 		return(0);
 }
@@ -283,10 +280,7 @@ int	DispArray(int timeout,char **pcMenuItems, int iMenuItemsTotal)
 */
 void DispSignal(uint row, uint col)
 {
-	char data[18];
 	int value;
-	int index;
-	uchar line;
 
 	// Get the signal value
 	value = Comms(E_COMMS_FUNC_SIGNAL_STRENGTH, NULL);
@@ -353,9 +347,8 @@ void GetBatteryRemaining(uint* battcharing,uint *batt)
 {
 	long fullcharge;
 	long remainingcharge;
-	long charging;
 
-	charging = get_battery_value(CHARGERSTATUS);
+	get_battery_value(CHARGERSTATUS);
 
 	if ((fullcharge = get_battery_value(FULLCHARGE)) != -1 &&
 		(remainingcharge = get_battery_value(REMAININGCHARGE)) != -1 &&
@@ -405,17 +398,16 @@ char DebugDisp (const char *template, ...)
 int DebugPrint (const char*template,...) {
 
     va_list ap;
-    char stmp[128];
+    char stmp[200];
 	char s_debug[30] = "\033k042DEBUG:";
-	int pLen;
 
     memset(stmp,0,sizeof(stmp));
     va_start (ap, template);
     vsnprintf (stmp,128, template, ap);
 
-	PrtPrintBuffer(strlen(s_debug), s_debug, 0);
-	PrtPrintBuffer(strlen(stmp), stmp, 2);//E_PRINT_END
-	PrtPrintBuffer(2, "\n\n", 2);//E_PRINT_END
+    strcat(stmp,"\n");
+	PrtPrintBuffer(strlen(s_debug), (uchar *)s_debug, E_PRINT_START);
+	PrtPrintBuffer(strlen(stmp), (uchar *)stmp, E_PRINT_END);//E_PRINT_END
 	return 0;
 }
 
