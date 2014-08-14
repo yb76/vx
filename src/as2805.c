@@ -138,7 +138,7 @@ static const T_FIELD_FORMAT fieldType[] =
 	{	C_STRING,	8},		// 41, CATID (ans8)
 	{	C_STRING,	15},	// 42, CAIC (ans15)
 	{	C_STRING,	40},	// 43, Card Acceptor Name/Location (ans40)
-	{	C_LLNVAR,	25},	// 44, Additional response data (LLVAR ans..25)
+	{	C_LLAVAR,	25},	// 44, Additional response data (LLVAR ans..25)
 
 	{	C_LLAVAR,	76},	// 45, Track 1 (LLVAR ans..76)
 	{	C_LLLVAR,	0},		// 46, Additional data - ISO (LLLVAR ans...999)
@@ -794,7 +794,7 @@ void AS2805Unpack(uchar field, char * data, uchar * buffer, uint length)
 					case C_LLLNVAR:
 						{
 							int len = _bcdToNumber(buffer, &fieldsIndex, (format == C_LLNVAR)?2:3, format);
-							//if (len & 0x01) len = len / 2 + 1; else len /= 2;
+							if (len & 0x01) len = len / 2 + 1; else len /= 2;
 							fieldsIndex = fieldsIndex + len ;
 						}
 						break;
