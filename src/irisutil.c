@@ -567,10 +567,10 @@ void __store_objects(int unzip,char *objects,int* nextmsg,char **response)
 							close(handle);
 							_remove(temp);
 
-							if(data && strncmp(data,"{TYPE",5)==0) {
-								char *sData = IRIS_GetStringValue(data,len,"DATA");
-								char *sIndex = IRIS_GetStringValue(data,len,"INDEX");
-								char *sEncode = IRIS_GetStringValue(data,len,"ENCODE");
+							if(data && strncmp((const char *)data,"{TYPE",5)==0) {
+								char *sData = IRIS_GetStringValue((const char *)data,len,"DATA");
+								char *sIndex = IRIS_GetStringValue((const char *)data,len,"INDEX");
+								char *sEncode = IRIS_GetStringValue((const char *)data,len,"ENCODE");
 
 								if(sEncode == NULL) {
 									write(whandle, (char *) data, len);
@@ -578,7 +578,7 @@ void __store_objects(int unzip,char *objects,int* nextmsg,char **response)
 									write(whandle, (char *) data, len);
 								} else if(strcmp(sEncode ,"HEX")==0) {
 									char *sData_x = my_malloc( strlen(sData) / 2 + 1 );
-									int hexlen = UtilStringToHex( sData,strlen(sData), sData_x);
+									int hexlen = UtilStringToHex( sData,strlen(sData), (uchar *)sData_x);
 								   	write(whandle, (char *) sData_x, hexlen);
 									my_free(sData_x);
 								} else if(strcmp(sEncode ,"PUREASCII")==0) {
@@ -745,19 +745,20 @@ void __store_objects(int unzip,char *objects,int* nextmsg,char **response)
 			char respfile_name[] = "TMS_RESPFILE";
 
 			if(s_start && s_end ) {
+				int luaDoString( char *slua);
 				char *stmp = NULL;
-				int iret = 0;
+
 				s_start = s_start + strlen(tag_start);
 				stmp = my_malloc( s_end-s_start + 1 );
 				strncpy(stmp,s_start,s_end-s_start);
 				stmp[s_end-s_start] = '\0';
 
-				iret = luaDoString(stmp);
+				luaDoString(stmp);
 				my_free(stmp);
 			}
 
 			if( response ) {
-					respfile = IRIS_GetObjectData( respfile_name, &respfile_len);
+					respfile = IRIS_GetObjectData( respfile_name,(uint *) &respfile_len);
 					if(respfile) {
 							int max_len = 4096;
 							char stmp[4096];

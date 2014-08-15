@@ -339,10 +339,8 @@ void	EmvCallbackFnPromptManager(unsigned short usPromptId)
 */
 unsigned short	EmvFnAmtEntry(unsigned long *pulTxnAmt)
 {
-	unsigned long	dwAmtAuth=*pulTxnAmt;
 	char AccountType = 0x00;
 	int cashamt= 0;
-	int iret = 0,iLen = 0;
 	char tmp[13];
 
 	EmvSetAmt(gEmv.amt,cashamt);
@@ -816,9 +814,6 @@ unsigned short	EmvFnLastAmtEntry(unsigned long *pulTxnAmt)
 int vSetPinParams(bool pinbypass) //SECURE_PIN_MODULE changes
 {
     short   shRetVal                =   0;
-    char    chFirstKeyTimeout[20]   =   {0};
-    char    chInterKeyTimeout[20]   =   {0};
-    char    chTotalTimeOutVal[20]   =   {0};
     srPINParams psParams;
 
     psParams.ucMin = 4;

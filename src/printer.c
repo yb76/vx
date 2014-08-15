@@ -447,7 +447,7 @@ char * PrtGetErrorText(E_PRT_ERR eError)
 **				NOERROR if receipt printed OK.
 **-----------------------------------------------------------------------------
 */
-E_PRT_ERR PrtPrintBuffer(uint wLength, uchar * pbData, E_PRINT ePrintCommand)
+E_PRT_ERR PrtPrintBuffer(uint wLength, uchar * pbData, int ePrintCommand)
 {
 	static uchar printBuffer[700];
 	static uint printBufferIndex;

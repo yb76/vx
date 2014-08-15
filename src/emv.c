@@ -82,8 +82,6 @@ int	EMVPowerOn(void)
 	char	acAidEst[20]="";
 	char	emvCfgfile[40]="";
 	srAIDList aidList;
-	unsigned short aidCnt = 30;
-	unsigned short blockAidCount;
 	int i = 0;
 
 	if( started ) return(0);
@@ -131,9 +129,9 @@ int	EMVPowerOn(void)
 	for(i=0;i<aidList.countAID;i++) {
 			if(aidList.arrAIDList[i].lenOfAID) {
 				memset(acAidEst,0,sizeof(acAidEst));
-				strncpy(acAidEst,aidList.arrAIDList[i].stAID,aidList.arrAIDList[i].lenOfAID);
+				strncpy(acAidEst,(const char *)aidList.arrAIDList[i].stAID,aidList.arrAIDList[i].lenOfAID);
 
-				UtilHexToString(aidList.arrAIDList[i].stAID, aidList.arrAIDList[i].lenOfAID, acAidEst);
+				UtilHexToString((const char*)aidList.arrAIDList[i].stAID, aidList.arrAIDList[i].lenOfAID, acAidEst);
 				sprintf(emvCfgfile,"EMVCFG%s", acAidEst);
 				if(FileExist(emvCfgfile)) {
 					emvcfg_list.filename[emvcfg_list.total] = malloc ( strlen(emvCfgfile) +5 );
@@ -249,11 +247,10 @@ int	EMVSelectApplication(const long amt, const long acc)
 		{
 			unsigned short cnt = 21;
 			unsigned short	usAidBlockedTotal=0;
-			int iret = 0;
 			srAIDListStatus	sAidListStatus[21];
 
 			if(gEmv.appsTotal >0) cnt = gEmv.appsTotal;
-			iret = usEMVGetAllAIDStatus(sAidListStatus, &cnt, &usAidBlockedTotal);
+			usEMVGetAllAIDStatus(sAidListStatus, &cnt, &usAidBlockedTotal);
 			if (usAidBlockedTotal > 0)
 			{
 				iStatus = APPL_BLOCKED;
@@ -272,28 +269,15 @@ int	EMVSelectApplication(const long amt, const long acc)
 
 void getEMVAids(int indx,char *sAID)
 {
-	int retval = 0;
 	int i;
 	long flrlimit = 0L;
 	long flrlimit_I = 0L;
-	char			acDdolTmp[(2 * EMV_MAX_DEFAULT_DOL_LENGTH) + 1];
-	char			acTdolTmp[(2 * EMV_MAX_DEFAULT_DOL_LENGTH) + 1];
-	char			acCntCodeTmp[(2 * EMV_COUNTRY_CODE_LENGTH) + 1];
-	char			acCurCodeTmp[(2 * EMV_CURRENCY_CODE_LENGTH) + 1];
 	char			acTacOnTmp[(2 * EMV_TAC_LENGTH) + 1];
 	char			acTacDfTmp[(2 * EMV_TAC_LENGTH) + 1];
 	char			acTacDnTmp[(2 * EMV_TAC_LENGTH) + 1];
 	char			acTacOnTmp_I[(2 * EMV_TAC_LENGTH) + 1];
 	char			acTacDfTmp_I[(2 * EMV_TAC_LENGTH) + 1];
 	char			acTacDnTmp_I[(2 * EMV_TAC_LENGTH) + 1];
-	char			acTrmCapTmp[(2 * EMV_TERMCAP_LENGTH) + 1];
-	char			acAddTrmCapTmp[(2 * EMV_ADD_TERMCAP_LENGTH) + 1];
-	char			acTrmTypeTmp[(2 * EMV_TERM_TYPE_LENGTH) + 1];
-	char			acMerCatCdTmp[(2 * EMV_MERCHANT_CAT_CODE_LENGTH) + 1];
-	char			acTrmCatCdTmp[(2 * EMV_MERCHANT_CAT_CODE_LENGTH) + 1];
-	char			acAidEst[(2 * EMV_MAX_AID_LENGTH) + 1];
-	char flrlmt[10];
-	char flrlmt_I[10];
 	char PrntBuff[150];
 
 	ushort	iLen;
@@ -315,7 +299,7 @@ void getEMVAids(int indx,char *sAID)
 		char tag2[128]="";
 		i = indx;
 		//MVT
-		retval = inLoadMVTRec(i);
+		inLoadMVTRec(i);
 		
 		flrlimit = lnGetEMVFloorLimit();
 		flrlimit_I = flrlimit;
@@ -486,21 +470,7 @@ void vPrintEMVAllAids(void)
 {
 	int retval = 0;
 	int i;
-	long flrlimit = 0L;
-	char			acDdolTmp[(2 * EMV_MAX_DEFAULT_DOL_LENGTH) + 1];
-	char			acTdolTmp[(2 * EMV_MAX_DEFAULT_DOL_LENGTH) + 1];
-	char			acCntCodeTmp[(2 * EMV_COUNTRY_CODE_LENGTH) + 1];
-	char			acCurCodeTmp[(2 * EMV_CURRENCY_CODE_LENGTH) + 1];
-	char			acTacOnTmp[(2 * EMV_TAC_LENGTH) + 1];
-	char			acTacDfTmp[(2 * EMV_TAC_LENGTH) + 1];
-	char			acTacDnTmp[(2 * EMV_TAC_LENGTH) + 1];
-	char			acTrmCapTmp[(2 * EMV_TERMCAP_LENGTH) + 1];
-	char			acAddTrmCapTmp[(2 * EMV_ADD_TERMCAP_LENGTH) + 1];
-	char			acTrmTypeTmp[(2 * EMV_TERM_TYPE_LENGTH) + 1];
-	char			acMerCatCdTmp[(2 * EMV_MERCHANT_CAT_CODE_LENGTH) + 1];
-	char			acTrmCatCdTmp[(2 * EMV_MERCHANT_CAT_CODE_LENGTH) + 1];
 	char			acAidEst[(2 * EMV_MAX_AID_LENGTH) + 1];
-	char flrlmt[10];
 	char PrntBuff[50];
 	char sAID[10][50];
 	
@@ -669,7 +639,7 @@ int inPrintCTLSEmvPrm()
 
 		if(AIDlist[i].GroupNo == 0|| AIDlist[i].AID[0] == 0x00) break;
 
-		strcpy(stmp,AIDlist[i].AID);
+		strcpy(stmp,(const char *)AIDlist[i].AID);
 		stmp[0] = 'A';
 		sprintf(PrntBuff,"AID : \\R%s\n",stmp);
   		__print_cont( PrntBuff, 0 );
@@ -689,40 +659,40 @@ int inPrintCTLSEmvPrm()
 		sprintf(PrntBuff,"MAX TARGET PERCENTAGE:\\R%s\n",AIDlist[i].MaxTargetD);
   		__print_cont( PrntBuff, 0 );
 
-		UtilHexToString( AIDlist[i].TACOnline , 5 , stmp);
+		UtilHexToString( (const char *)AIDlist[i].TACOnline , 5 , stmp);
 		sprintf(PrntBuff,"TAC ONLINE :\\R%s\n",stmp);
   		__print_cont( PrntBuff, 0 );
 
-		UtilHexToString( AIDlist[i].TACDefault , 5 , stmp);
+		UtilHexToString( (const char *)AIDlist[i].TACDefault , 5 , stmp);
 		sprintf(PrntBuff,"TAC DEFAULT:\\R%s\n",stmp);
   		__print_cont( PrntBuff, 0 );
 
-		UtilHexToString( AIDlist[i].TACDenial , 5 , stmp);
+		UtilHexToString( (const char *)AIDlist[i].TACDenial , 5 , stmp);
 		sprintf(PrntBuff,"TAC DENIAL :\\R%s\n",stmp);
   		__print_cont( PrntBuff, 0 );
 
 		sprintf(PrntBuff,"TXN LIMIT :\\R %.2f\n",AIDlist[i].TranLimitExists/100.0);
   		__print_cont( PrntBuff, 0 );
 
-		UtilHexToString(AIDlist[i].FloorLimit,4,stmp);
+		UtilHexToString((const char *)AIDlist[i].FloorLimit,4,stmp);
 		sprintf(PrntBuff,"FLOOR LIMIT:\\R %.2f\n",Hex_To_Dec(stmp)/100.0);
   		__print_cont( PrntBuff, 0 );
 
 		sprintf(PrntBuff,"CVM LIMIT:\\R %.2f\n",AIDlist[i].CVMReqLimitExists/100.0);
   		__print_cont( PrntBuff, 0 );
 
-		UtilHexToString(AIDlist[i].TermCapNoCVMReq,3,stmp);
+		UtilHexToString((const char *)AIDlist[i].TermCapNoCVMReq,3,stmp);
 		sprintf(PrntBuff,"TCC NO CVM REQ:\\R %s\n",stmp);
   		__print_cont( PrntBuff, 0 );
 
-		UtilHexToString(AIDlist[i].TermCapCVMReq,3,stmp);
+		UtilHexToString((const char *)AIDlist[i].TermCapCVMReq,3,stmp);
 		sprintf(PrntBuff,"TCC CVM REQ:\\R%s\n\n",stmp);
   		__print_cont( PrntBuff, 0 );
 		
 	}	
 	sprintf(PrntBuff,"----------------------\n\n\n");
   	__print_cont( PrntBuff, 1 );
-	
+	return(0);
 }
 
 
@@ -1239,11 +1209,10 @@ int EmvSetAmt(long emvAmount,long emvCash)
 	if( emvAmount >= 0 )  {
 		char tmp[13];
 		char ucharBuf[7];
-		int iret = 0;
 
 		usEMVUpdateTLVInCollxn(TAG_81_AMOUNT_AUTH, (byte *) &emvAmount, 4);
 
-		iret = usEMVAddAmtToCollxn( emvAmount); //9F02
+		usEMVAddAmtToCollxn( emvAmount); //9F02
 
 		if ( emvCash >= 0 ) 
 		{
@@ -1251,7 +1220,7 @@ int EmvSetAmt(long emvAmount,long emvCash)
 			memset(tmp,0x00,sizeof(tmp));
 			sprintf(tmp, "%012lu", emvCash);
 			ascii_to_binary(ucharBuf, (const char *) tmp, 12);
-			iret = usEMVUpdateTLVInCollxn(TAG_9F03_AMT_OTHER_NUM, ucharBuf, 6);
+			usEMVUpdateTLVInCollxn(TAG_9F03_AMT_OTHER_NUM, ucharBuf, 6);
 		}
 	}
 	return 0;
@@ -1269,8 +1238,8 @@ long Hex_To_Dec(char *s )
    int i,a[20];
    unsigned long int h=0,m=1;
   // char s[20]={"000001F4"};
-   char buff[20]={0};
-  // clrscr();
+
+   // clrscr();
    for(i=0;s[i]!='\0';i++)
    {
     switch(s[i])

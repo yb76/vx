@@ -566,12 +566,8 @@ static int inCEStartGPRSNetwork(char *sAPN)
 int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout)
 {
 	int res; 
-	long arg; 
-	//fd_set myset; 
-	//struct timeval tv; 
 	int valopt; 
 	int result;
-	//socklen_t lon; 
 	unsigned long ulTimeout;
 
 	result = socketerrno(SOCKET_ERROR);
@@ -579,7 +575,7 @@ int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout)
 
 	// Set non-blocking 
 	valopt = 1; 
-	if( (arg = socketioctl(sockHandle, FIONBIO, &valopt)) < 0) { 
+	if( (res = socketioctl(sockHandle, FIONBIO, &valopt)) < 0) {
 		LOG_PRINTF( "connect_nonblock  errno%d", errno );
 		return(-1); 
 	}
@@ -742,15 +738,11 @@ int inCeTcpConnect(T_COMMS * psComms, stNI_NWIFState *ptrceNWIF)
 	static char sAPN[20] = "";
 	static char sHOSTIP[30] = "";
 	static int nPort=0;
-	bool change = false;
-	bool changeAPN = false;
+	bool changeAPN = false,change = false;
 	int inRetVal = -1;
-	char stmp[64];
 	int NWParamValue;
 	unsigned int uiValueLength;
 	stNI_NWIFState ceNWIF;
-	unsigned long ulTime, ulTimeOut;
-	unsigned int event;
     unsigned long ulStartTime;
     unsigned long ulTotalTime;
 	char chBuffer [21 + 1];
@@ -778,6 +770,8 @@ int inCeTcpConnect(T_COMMS * psComms, stNI_NWIFState *ptrceNWIF)
 		change = false;
 		changeAPN = false;
 	}
+
+	if (change) {}
 
 	if (gSocketHandle > 0) 
 		socketclose (gSocketHandle);
@@ -934,7 +928,6 @@ int inSendTCPCommunication(T_COMMS * psComms)
 	char szTransmitBuffer[4096+1];
     
 	char sHOSTIP[18];
-	int nPort;
 	char *pchSendBuff =(char*) psComms->pbData;
 	int inSendSize = psComms->wLength;
 
@@ -942,7 +935,7 @@ int inSendTCPCommunication(T_COMMS * psComms)
 	memcpy(szTransmitBuffer, pchSendBuff, inSendSize);
 
 	strcpy(sHOSTIP, psComms->ipAddress);
-	nPort = psComms->wPortNumber;
+	//nPort = psComms->wPortNumber;
 	
 	retVal = send(gSocketHandle, szTransmitBuffer, inSendSize, 0);
 	return(retVal);
@@ -968,7 +961,6 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
 {
     int  retVal = 0;
     struct timeval  mytimeval;
-    char   szReceiveBuffer[4096];
 	char *pchReceiveBuff = (char *)psComms->pbData;
     
 	errno = 0;
@@ -1013,7 +1005,7 @@ static int DebugPrint2 (const char*template,...)
     va_start (ap, template);
     vsnprintf (stmp,128, template, ap);
     strcat(stmp,"\n");
-  PrtPrintBuffer(strlen(stmp), stmp, E_PRINT_END);
+  PrtPrintBuffer(strlen(stmp), (uchar *)stmp, E_PRINT_END);
   return(0);
 }
 
@@ -1045,14 +1037,14 @@ static int DebugPrint (const char*template,...) {
     va_start (ap, template);
     vsnprintf (stmp,128, template, ap);
 
-  ceGetNWParamValue (g_currMediaInfo.niHandle, NWIF_STATE, &nwState, sizeof (stNI_NWIFState), &pLen);
-  PrtPrintBuffer(strlen(s_debug), s_debug, 0);
-  PrtPrintBuffer(strlen(stmp), stmp, 2);//E_PRINT_END
+  ceGetNWParamValue (g_currMediaInfo.niHandle, NWIF_STATE, &nwState, sizeof (stNI_NWIFState), (unsigned int *)&pLen);
+  PrtPrintBuffer(strlen(s_debug), (uchar *)s_debug, 0);
+  PrtPrintBuffer(strlen(stmp), (uchar *)stmp, 2);//E_PRINT_END
   PrtPrintBuffer(1, "\n", E_PRINT_END);//E_PRINT_END
 
   sprintf(stmp,"current_state=%d,newstate=%d,event=%d,errorcode=%d %s,time=%s",nwState.nsCurrentState,nwState.nsTargetState,nwState.nsEvent,nwState.nsErrorCode,nwState.nsErrorString,now);
   strcat(stmp,"\n");
-  PrtPrintBuffer(strlen(stmp), stmp, 2);//E_PRINT_END
+  PrtPrintBuffer(strlen(stmp),(uchar *)stmp, 2);//E_PRINT_END
   return 0;
 }
 
@@ -1066,7 +1058,6 @@ unsigned int inManageCEEvents (void)
 	int evtDataLen =0;
 	char chBuffer [MAX_EVENT_NAME_SIZE + 1];
 	char chDispBuffer [100 + 1];
-    char chEventName [20 + 1];
 
 	memset (&ceEvt, 0, sizeof (stceNWEvt));
 	memset (g_ucExtEventData, 0, CEIF_EVT_DATA_SZ);
@@ -1098,7 +1089,7 @@ unsigned int inManageCEEvents (void)
 
 					switch(ceEvt.neEvt)
 					{
-							char chCEEvent [21 + 1] = {0};
+							char chCEEvent [22] ;
 							// Following events will trigger an UI update but will continue
 							// waiting for further event notifications
 							case CE_EVT_NET_OUT:		

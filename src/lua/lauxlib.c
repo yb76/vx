@@ -86,6 +86,8 @@ LUALIB_API void luaL_where (lua_State *L, int level) {
 LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...) {
 #include "inputmacro.h"
   char DebugDisp (const char *template, ...);
+  int  remoteTms(void);
+
   char stmp[128];
   va_list argp;
   char key = 0;
@@ -99,6 +101,7 @@ LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...) {
   vsnprintf (stmp,128, fmt, argp);
   va_end (ap);
   key = DebugDisp(stmp);
+
   if(key== KEY_FUNC) remoteTms();
 
   return lua_error(L);

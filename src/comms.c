@@ -202,7 +202,6 @@ static uint CommsSetSerial(T_COMMS * psComms)
 */
 uint CommsConnect(T_COMMS * psComms)
 {
-	short retVal = 0;
 	int serialPort = -1;
 
 	switch (psComms->eConnectionType)
@@ -247,7 +246,7 @@ uint CommsConnect(T_COMMS * psComms)
 				} else return ERR_COMMS_GENERAL;
 
 			}
-			break;
+
 
 		default:
 			return ERR_COMMS_CONNECT_NOT_SUPPORTED;
@@ -284,42 +283,6 @@ uint CommsSend( T_COMMS * psComms )
 	if (psComms->eConnectionType == E_CONNECTION_TYPE_IP)
 	{
 		char * data = (char *) psComms->pbData;
-		char *pdata = data;
-		unsigned length = psComms->wLength;
-
-		pdata = data;
-
-		//Dwarika .. not used for CE Lib
-			/*
-		while(1) {
-		  int bytes_sent = send(psComms->wHandle, pdata, length, 0);
-		  if(bytes_sent >0 ) {
-		  	pdata = pdata + bytes_sent;	
-		  	length = length - bytes_sent;
-		  }
-		  if(length <= 0 ) break;
-		  if(bytes_sent <0)
-		  {
-			if (data != (char *) psComms->pbData) my_free(data);
-
-			if (closesocket(psComms->wHandle))
-			{
-				SVC_WAIT(50);
-				shutdown(psComms->wHandle, 3);
-			}
-
-			iphandle = -1;
-			SVC_WAIT(100);
-			netdisconnect(1);
-//			SVC_WAIT(100);
-			yield();
-		
-			
-			return CommsTranslateError(errno);
-			
-		  }
-		}
-		*/
 
 			nRetVal = inSendTCPCommunication(psComms);
 			if(nRetVal > 0)
@@ -477,11 +440,6 @@ uint Comms(E_COMMS_FUNC eFunc, T_COMMS * psComms)
 	uchar * data;
 	uint dataLength;
 	uint msgLength = 0;
-	int nRetVal = -1;
-//	int row = 1;
-	int i;
-	char sBuff[300];
-	char * pBuff;
 
 	if (model[0] == '\0')
 	{

@@ -2005,7 +2005,7 @@ int GetCtlsTxnLimit(char *aid,  int *p_translimit, int *p_cvmlimit,int *p_floorl
 
 		for(i=0;;i++){
 			if( AIDlist[i].GroupNo==0) break;
-			strnlwr (aid_chk2 , (const char *)(AIDlist[i].AID) ,strlen(AIDlist[i].AID));
+			strnlwr (aid_chk2 , (char *)(AIDlist[i].AID) ,strlen(AIDlist[i].AID));
 
 			if( strncmp( aid_chk,aid_chk2,strlen(aid_chk2))==0) {
 					*p_floorlimit = 0;//TODO
@@ -2030,7 +2030,7 @@ int CTLSEmvGetTac(char *tac_df,char *tac_dn,char *tac_ol, const char *AID)
 		strnlwr (aid_chk,AID ,strlen(AID));
 		for(i=0;;i++){
 			if( AIDlist[i].GroupNo==0) break;
-			strnlwr (aid_chk2 , (const char *)(AIDlist[i].AID) ,strlen(AIDlist[i].AID));
+			strnlwr (aid_chk2 , (char *)(AIDlist[i].AID) ,strlen(AIDlist[i].AID));
 			if( strncmp( aid_chk,aid_chk2,strlen(aid_chk2))==0) {
 				UtilHexToString( (const char *)AIDlist[i].TACDefault , 5 , tac_df);
 				UtilHexToString( (const char *)AIDlist[i].TACDenial , 5 , tac_dn);

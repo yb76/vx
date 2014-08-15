@@ -70,7 +70,7 @@ typedef enum
 void PrtInit(void);
 char * PrtGetErrorText(E_PRT_ERR eError);
 
-E_PRT_ERR PrtPrintBuffer(uint wLength, uchar * pbData, E_PRINT ePrintCommand);
+E_PRT_ERR PrtPrintBuffer(uint wLength, uchar * pbData, int ePrintCommand);
 E_PRT_ERR PrtPrintFormFeed(void);
 E_PRT_ERR PrtPrintGraphics(uint wWidth, uint wHeight, uchar * pbData, bool fCenter, uchar bMultiplier);
 
