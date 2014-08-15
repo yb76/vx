@@ -138,6 +138,7 @@ static const T_FIELD_FORMAT fieldType[] =
 	{	C_STRING,	8},		// 41, CATID (ans8)
 	{	C_STRING,	15},	// 42, CAIC (ans15)
 	{	C_STRING,	40},	// 43, Card Acceptor Name/Location (ans40)
+	//{	C_LLNVAR,	25},	// 44, Additional response data (LLVAR ans..25)
 	{	C_LLAVAR,	25},	// 44, Additional response data (LLVAR ans..25)
 
 	{	C_LLAVAR,	76},	// 45, Track 1 (LLVAR ans..76)
@@ -586,8 +587,13 @@ void AS2805BufferPack(char * data, uchar format, uint size, uchar * buffer, uint
 			*index += UtilStringToHex(temp, strlen(temp), &buffer[*index]);
 			break;
 		case C_LLAVAR:
-			sprintf((char *) &buffer[*index], "%02d%s", strlen(data), data);
-			*index += strlen(data) + 2;
+			if (bcdLength) {
+				*index += UtilStringToHex(ltoa(strlen(data)/2, temp, 10), 2, &buffer[*index]);
+				sprintf((char *) &buffer[*index], "%s", data);
+			} else {
+				sprintf((char *) &buffer[*index], "%02d%s", strlen(data), data);
+				*index += strlen(data) + 2;
+			}
 			break;
 		case C_LLLVAR:
 			if (bcdLength)
@@ -717,13 +723,20 @@ void AS2805BufferUnpack(char * data, uchar format, uint size, uchar * buffer, ui
 				else
 					data[i] = (buffer[(*index)] >> 4) + 0x30;
 			}
+
 			if (size & 0x01) (*index)++;
 			data[i] = '\0';
 			break;
 		case C_LLAVAR:
-			size = (buffer[*index] - '0') * 10 + buffer[*index+1] - '0';
-			*index += 2;
-			memcpy(data, &buffer[*index+2], size);
+			//bcdLength
+			if (bcdLength) {
+				length = 2;
+				size = _bcdToNumber(buffer,index,length,C_BCD);
+			}else{
+				size = (buffer[*index] - '0') * 10 + buffer[*index+1] - '0';
+				*index += 2;
+			}
+			memcpy(data, &buffer[*index], size);
 			data[size] = '\0';
 			*index += size ;
 			break;
