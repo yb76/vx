@@ -345,7 +345,6 @@ unsigned short	EmvFnAmtEntry(unsigned long *pulTxnAmt)
 
 	EmvSetAmt(gEmv.amt,cashamt);
 
-	EMVCheckLocalCfgFile();
 	if(strlen(gEmv.acct)) {
 		if(strcmp(gEmv.acct,"SAVINGS")==0) {
 			AccountType = 0x10;
@@ -409,7 +408,7 @@ unsigned short	EmvGetUsrPin(unsigned char *ucPin)
 
 		if(strcmp(outevent,"KEY_OK")==0) {
 			if( strlen(outpin) == 0) {
-				if( gEmv.pinbypass_disable ) {
+				if( !gEmv.pinbypass_enable ) {
 					char * nopinbypass = "WIDELBL,THIS,PIN BYPASS,2,C;WIDELBL,THIS,NOT ALLOWED,3,C;";
 					DisplayObject(nopinbypass,KEY_OK_BIT+KEY_CNCL_BIT,EVT_TIMEOUT,2000,outevent,outpin);
 					continue;
@@ -445,7 +444,7 @@ void EmvDispUsrPin()
 	
 	sprintf(sAmt, "$%.2f", gEmv.amt/100.0);
 	sprintf( scrlines, "WIDELBL,THIS,TOTAL:           %9s,2,3;", sAmt);
-	strcat( scrlines,gEmv.pinbypass_disable?"LARGE,THIS,ENTER PIN AND OK,5,C;":"LARGE,THIS,ENTER PIN OR OK,5,C;");
+	strcat( scrlines,gEmv.pinbypass_enable?"LARGE,THIS,ENTER PIN OR OK,5,C;":"LARGE,THIS,ENTER PIN AND OK,5,C;");
 	
 	DisplayObject(scrlines,0,0,0,outevent,outpin);
 
@@ -502,7 +501,7 @@ unsigned short EmvFnOfflinePin(unsigned char *pin)
 	gEmv.offlinepin = false;
 	gEmv.pinentry = true;
 
-	vSetPinParams(!gEmv.pinbypass_disable);//SECURE_PIN_MODULE changes
+	vSetPinParams(gEmv.pinbypass_enable);//SECURE_PIN_MODULE changes
 	inVXEMVAPSetDisplayPINPrompt(&EmvDispUsrPin);
 
 	return(E_PERFORM_SECURE_PIN);
@@ -520,7 +519,7 @@ unsigned short EmvFnOnlinePin(void)
 	gEmv.offlinepin = false;
 	gEmv.pinentry = false;
 
-	vSetPinParams(!gEmv.pinbypass_disable);//SECURE_PIN_MODULE changes
+	vSetPinParams(gEmv.pinbypass_enable);//SECURE_PIN_MODULE changes
 	inVXEMVAPSetDisplayPINPrompt(NULL);
 
 	{
@@ -529,8 +528,8 @@ unsigned short EmvFnOnlinePin(void)
 	
 	sprintf(sAmt, "$%.2f", gEmv.amt/100.0);
 	sprintf( scrlines, "WIDELBL,THIS,TOTAL:           %9s,2,3;", sAmt);
-	strcat( scrlines,gEmv.pinbypass_disable?"PIN,,,P5,P11,1;":"PIN,,,P5,P11,0;");
-	DisplayObject(scrlines,KEY_OK_BIT+KEY_CNCL_BIT+( gEmv.pinbypass_disable?0:KEY_NO_PIN_BIT),EVT_SCT_OUT+EVT_TIMEOUT,30000,outevent,outpin);
+	strcat( scrlines,gEmv.pinbypass_enable?"PIN,,,P5,P11,0;":"PIN,,,P5,P11,1;");
+	DisplayObject(scrlines,KEY_OK_BIT+KEY_CNCL_BIT+( gEmv.pinbypass_enable?KEY_NO_PIN_BIT:0),EVT_SCT_OUT+EVT_TIMEOUT,30000,outevent,outpin);
 	}
 
 	if (strcmp(outevent ,"KEY_NO_PIN")==0) {

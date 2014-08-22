@@ -215,7 +215,7 @@ int	EMVSelectApplication(const long amt, const long acc)
 	int				iAutoSelect=inGetAutoSelectApplnFlag();
 	unsigned int 	usDefaultRecordRFU1 = inGetShortRFU1();
 	int				iStatus;
-
+	unsigned long 	pullTxnAmt=0;
 
 	/*************************************************************
 	** Application selection
@@ -237,8 +237,7 @@ int	EMVSelectApplication(const long amt, const long acc)
 	}
 
 	if (iStatus != SUCCESS)
-	{
-		/*
+	{	/*
 		** No applications being available can either mean that there are actually
 		** no applications on the card, or that there are one or more applications
 		** on the card but they're blocked
@@ -263,6 +262,9 @@ int	EMVSelectApplication(const long amt, const long acc)
 			gEmv.techfallback = true ;
 		return(iStatus);
 	}
+
+	EmvFnAmtEntry(&pullTxnAmt);
+	EMVCheckLocalCfgFile();
 
 	return SUCCESS;
 }
@@ -438,8 +440,8 @@ void getEMVAids(int indx,char *sAID)
 		
 		memset(tag, 0, sizeof(tag));
 		memset(tag2, 0, sizeof(tag2));
-		strcpy(tag,"YES");
-		strcpy(tag2,"YES");
+		strcpy(tag,"NO");
+		strcpy(tag2,"NO");
 		if(emvcfg) {
         	char *stmp = (char*)IRIS_GetObjectTagValue( cfgdata, "D_PINBYPASS" );
 			if(stmp) strcpy( tag, stmp);
@@ -764,10 +766,15 @@ int EMVCheckLocalCfgFile()
 		usEMVGetTLVFromColxn(TAG_4F_AID, aid_hex, &iLen);
 		UtilHexToString((const char *)aid_hex,iLen,aid);
 		sprintf(emvCfgfile,"EMVCFG%s", aid);
+
 		for(i=0;i<emvcfg_list.total;i++) {
 			if(emvcfg_list.filename[i] ==NULL) break;
 			// compare EMVCFGA0000002501 and AID A00000002501nnnn
-			if(strncmp(emvCfgfile, emvcfg_list.filename[i],strlen(emvcfg_list.filename[i]))==0) { found = true ; break;}
+			if(strncmp(emvCfgfile, emvcfg_list.filename[i],strlen(emvcfg_list.filename[i]))==0)
+			{
+				found = true ;
+				break;
+			}
 		}
 
 		if(found) {
@@ -865,7 +872,7 @@ int EMVProcessingRestrictions (void)
     				UtilStrDup(&s_tac_on , NULL);
 			}
 			sPinBypass= (char*)IRIS_GetObjectTagValue(cfgdata,"D_PINBYPASS");
-			if(sPinBypass && strcmp(sPinBypass,"NO")==0) gEmv.pinbypass_disable = true;
+			if(sPinBypass && strcmp(sPinBypass,"YES")==0) gEmv.pinbypass_enable = true;
 		} else {
         	sfloorlimit = (char*)IRIS_GetObjectTagValue( cfgdata, "I_FLOORLIMIT" );
         	sRSThreshold = (char*)IRIS_GetObjectTagValue( cfgdata, "I_RSTHRESHOLD" );
@@ -892,7 +899,7 @@ int EMVProcessingRestrictions (void)
     				UtilStrDup(&s_tac_on , NULL);
 			}
 			sPinBypass= (char*)IRIS_GetObjectTagValue(cfgdata,"I_PINBYPASS");
-			if(sPinBypass && strcmp(sPinBypass,"NO")==0) gEmv.pinbypass_disable = true;
+			if(sPinBypass && strcmp(sPinBypass,"YES")==0) gEmv.pinbypass_enable = true;
 		}
 		if(sfloorlimit) {
 			if(sfloorlimit && sRSThreshold && sRSTarget && sRSMax) {

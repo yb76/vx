@@ -790,7 +790,6 @@ int createScriptFiles(byte *scriptBuf, short bufLen, byte* pScript71, unsigned s
 		        numScripts++;						
 				memcpy((char *)pScript72,(char *) data, bytes); 						
 				*usScript72Len += bytes;				
-				//DebugDisp("boyang %d,%02x%02x%02x%02x", *usScript72Len, pScript72[0],pScript72[1],pScript72[2],pScript72[3]);
 				pScript72 += bytes;
 			}
     } while (bytesRead < bufLen);

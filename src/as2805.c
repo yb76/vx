@@ -18,6 +18,7 @@
 //-----------------------------------------------------------------------------
 //
 
+
 //
 // Standard include files.
 //
@@ -680,7 +681,7 @@ void AS2805BufferUnpack(char * data, uchar format, uint size, uchar * buffer, ui
 			break;
 		case C_YYMM:
 		case C_YYMMDD:
-			myTime.tm_year = _bcdToNumber(buffer, index, 2, C_BCD) + 100;
+			myTime.tm_year = _bcdToNumber(buffer, index, 2, C_BCD) + 100; /*go through*/
 		case C_MMDD:
 		case C_MMDDhhmmss:
 			myTime.tm_mon = _bcdToNumber(buffer, index, 2, C_BCD) - 1;

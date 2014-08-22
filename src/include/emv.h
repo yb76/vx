@@ -19,7 +19,7 @@ typedef struct {
 	bool pinentry;
 	bool onlinepin;
 	bool offlinepin;
-	bool pinbypass_disable;
+	bool pinbypass_enable;
 	bool cracct_disable;
 	long amt ;
 	unsigned short termDesicion;
