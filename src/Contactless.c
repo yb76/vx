@@ -162,6 +162,43 @@ typedef struct TLV_
 	int tagtype;
 } TLV;
 
+//////////////////////////////////
+
+
+typedef struct CfgTlv_ CfgAidTlv;
+struct CfgTlv_
+{
+	long tag;
+	int len;
+	char *val;
+	CfgAidTlv * next;
+};
+
+typedef struct CfgAid_ CfgAid;
+struct CfgAid_
+{
+	char sAid[20];
+	CfgAidTlv * TLVs;
+	CfgAid * next;
+};
+
+typedef struct CfgGroup_ CfgGroup;
+struct CfgGroup_
+{
+	short groupno;
+	CfgAid * AIDs;
+	CfgAidTlv * TLVs;
+	CfgGroup * next;
+};
+
+CfgGroup *g_cfgGroups = NULL;
+CfgAid* CfgAidFind(char *sAid,int *grpno);
+CfgAidTlv * CfgTLVAdd(CfgAidTlv *pAidTlv, long Tag, char* sValue);
+
+//CfgAid g_cfgAIDs = NULL;
+//CfgAidTlv g_cfgAidTLVs = NULL;
+//////////////////////////////////
+
 static int InitComPort(char comPortNumber);
 static void ResetMsg(void);
 static void ResetRsp(void);
@@ -282,6 +319,9 @@ static unsigned long Verifone_parseTag(char *pTLVs, unsigned long *plTag, long *
 	if( *pIdx ==0xdf && *(pIdx+1) ==0x81) {
 		lenTag = 3;
 		lTag = (unsigned char)*pIdx * 256 * 256 + (unsigned char) *(pIdx+1) * 256 + (unsigned char) *(pIdx+2);
+	}else if((*pIdx & 0x1F) != 0x1F ) { // TAG number
+		lenTag = 1;
+		lTag = (unsigned char) *pIdx;
 	} else {
 		lenTag = 2;
 		lTag = (unsigned char) *(pIdx) * 256 + (unsigned char) *(pIdx+1);
@@ -346,6 +386,7 @@ static int InitComPort(char comPortNumber)
 
 	//set debug flag
 	{
+
 		char flag[30] = "";
 		memset(flag,0,sizeof(flag));
 		get_env("*DEBUG", flag, sizeof(flag));
@@ -515,11 +556,9 @@ static int SendRxMsg(int timeout)
 static int GetRsp(char waitForRsp, int timeout)
 {		 	
 	int bytes;
-	//LOG_PRINTFF(0x00000001L,"GetRsp");
-	ResetMsg();
-	//LOG_PRINTFF(0x00000001L,"GetRsp 1");
 	bytes = AcquireRsp(waitForRsp, timeout);
 	//LOG_PRINTFF(0x00000001L,"BYTes :%d",bytes);
+	ResetMsg();
 	if(!bytes) 
 	{
 	//	//LOG_PRINTFF(0x00000001L,"GetRsp 2");
@@ -542,10 +581,13 @@ static int AcquireRsp(char waitForRsp, int timeout)
 	extern int mcrHandle ;
 	extern int conHandle;
 	int cardinput = 0;
+	int respok = 0;
 
 	if(p_ctls) cardinput = 1;
 
 	ResetRsp();
+
+	CtlsResp(1, &respok);
 
 	if(!timeout) timeout = 20000; //default
 
@@ -623,6 +665,8 @@ static int AcquireRsp(char waitForRsp, int timeout)
 				if(rsp[idx] != 0x00 && rsp[idx]!=V2_REQ_OL_AUTH) {
 					//DebugPrint(" boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
 					LOG_PRINTFF(0x00000001L, "boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
+					respok = -1;
+					CtlsResp(1, &respok);
 				}
 				SVC_WAIT(50);
 				}
@@ -1044,6 +1088,9 @@ static int GetRspStatus()
 static int ExtractCtlsRsp(char* cmd)
 {
 	int dataRead = 0;	
+	unsigned int groupno = 0;
+	CfgAid *pAid = NULL;
+	CfgAidTlv *pCurr = NULL;
 	
 	if(GetRspStatus() == V2_FAILED_NAK) return CTLS_FAILED;		
 
@@ -1054,9 +1101,121 @@ static int ExtractCtlsRsp(char* cmd)
 		int readLen = Verifone_parseTag(rsp+V2_DATA_OFS+dataRead, &lTag, NULL, sValue);		
 		if(readLen > 0) {
 			LOG_PRINTFF(0x00000001L,"extract ctls rsp , tag = %ld, sValue = %s", lTag,sValue);
-			
-			if(strcmp(cmd,"F000")==0) {
+
+			//get configurable aid
+			if(strncmp(cmd,"\x03\x04",2)==0) {
+				switch(lTag)
+				{
+				case 0xffe4:
+					if( strlen(sValue)) {
+						groupno = atoi(sValue);
+						CfgGroupAdd(&groupno);
+					}
+					break;
+				case 0x9f06:
+					CfgAidAdd(&groupno,sValue);
+					break;
+				default:
+					break;
+				}
 			}
+
+			//get configurable group
+			if(strncmp(cmd,"\x03\x06",2)==0) {
+
+				switch(lTag)
+				{
+				case 0xffe4:
+					if( strlen(sValue)) {
+						groupno = atoi(sValue);
+						DebugDisp("0306 group=%d,%s",groupno,sValue);
+						CfgGroupAdd(&groupno);
+					}
+					break;
+				case 0x5f28:
+				case 0x9c:
+				case 0x9f1a:
+				case 0x9f1b:
+				case 0x9f33:
+				case 0x9f35:
+				case 0x9f40:
+				case 0x9f66:
+				case 0xfff1:
+				case 0xfff4:
+				case 0xfff5:
+				case 0xfffb:
+				case 0xfffc:
+				case 0xfffd:
+				case 0xfffe:
+				case 0xffff:
+				case 0x97:
+				default:
+					DebugDisp("group[%d],tag[%ld],value[%s]",groupno,lTag,sValue);
+					CfgAidTLVAdd(&groupno,NULL,lTag,sValue);
+					break;
+				}
+			}
+			
+			//get additional aid parameters
+			//must call after 03/04
+			if(strncmp(cmd,"\xF0\x00",2)==0) {
+				unsigned int grp=0;
+				switch(lTag)
+				{
+				case 0x9f06:
+					pAid = CfgAidFind(sValue,&grp);
+					break;
+				case 0x1ff2:
+				case 0x1ff3:
+				case 0x1ff4:
+				case 0x1ff5:
+				case 0x1ff6:
+				case 0x1ff7:
+				case 0x1ff8:
+				case 0x1ff9:
+				case 0x9f09:
+				case 0x9f15:
+				case 0x9f53:
+				case 0x1ffc:
+				case 0x5f36:
+				case 0x1ffd:
+				case 0x1ffe:
+				case 0xdf03:
+				case 0xdf04:
+				case 0x1ff1:
+				case 0x9f6d:
+				case 0x9f58:
+				case 0x9f59:
+				case 0x9f5a:
+				case 0x9f5e:
+				case 0x1f51:
+				case 0x9f01:
+				case 0xdf8124:
+				case 0xdf8125:
+				case 0x9f7e:
+				case 0xdf811e:
+				case 0xdf812c:
+				case 0xdf8119:
+				case 0xdf8118:
+				case 0xdf811b:
+				case 0xdf8117:
+				case 0xdf811f:
+				case 0xdf811a:
+				case 0xdf810c:
+				case 0x1fb0:
+				case 0x9f5d:
+					if(pAid && pAid->TLVs ==NULL){
+						pAid->TLVs = CfgTLVAdd(NULL,lTag, sValue);
+						pCurr = pAid->TLVs;
+					} else {
+						pCurr =  CfgTLVAdd(pCurr,lTag, sValue);
+					}
+					break;
+				default:
+					break;
+				}
+			}
+
 			dataRead += readLen;
 		} else return readLen;
 	}
@@ -1406,7 +1565,6 @@ static int GetPayment(char waitForRsp, int timeout)
 {	
 	LOG_PRINTFF(0x00000001L,"GetPayment");
 	return ActivateTransaction(waitForRsp, timeout);
-	LOG_PRINTFF(0x00000001L,"GetPayment 1");
 }
 
 static int CancelTransaction(int reason)
@@ -1416,7 +1574,6 @@ static int CancelTransaction(int reason)
 	if(strlen(p_ctls->TxnStatus) && atoi(p_ctls->TxnStatus)== V2_REQ_OL_AUTH)
 	{// set online response
 		BuildRawMsg("\xfc\x01\x00\x00\x8a\x02\x30\x30",8);
-		//BuildRawMsg("\xfc\x01\x00\x00\x8a\x02\x30\x30\x91\x00",10);
 		SendRxMsg(0);
 		SVC_WAIT(50);
 	}
@@ -1691,23 +1848,46 @@ static int SendCfgLine()
 
 	memset(sLine,0,sizeof(sLine));
 	if(sCfgData==NULL||sCfgLength<=0) return(CTLS_SUCCESS); //no file
+
 	for(i=0;i<sCfgLength;i++)
 	{
 		char buff = sCfgData[i];
 		if( buff=='\n' || buff =='\r' || i==sCfgLength-1) { // END of line
-			if(strlen(sLine) > 5 && sLine[0] == 'R') { // R+command +subcommand + data
+			if(sLine[0] =='#')
+				LOG_PRINTFF(0x00000001L,"cfg comment = %.100s", sLine);
+			else if(strlen(sLine) > 5 && sLine[0] == 'R') { // R+command +subcommand + data
 				char *psLine = &sLine[1];
 				int iHexLen = strlen(psLine)/2;
+				int result=0;
 				
 				LOG_PRINTFF(0x00000001L,"cfg line = %.100s", psLine);
 				memset(sLineHex,0,sizeof(sLineHex));
 				SVC_DSP_2_HEX(psLine, sLineHex, iHexLen);
 				BuildRawMsg(sLineHex,iHexLen);
 				SendRxMsg(0);
+				if(CtlsResp(0,&result)!=0 && sLineHex[0]==0xf1 && sLineHex[1] == 0x00) {
+					//send additional aid parameters
+					// F1/00:SET EXIST ADDITIONAL AID PARAM
+					// F1/01:SET NEW   ADDITIONAL AID PARAM
+					LOG_PRINTFF(0x00000001L,"cfg line F1/00->F1/01");
+					sLineHex[1] = 0x01;
+					BuildRawMsg(sLineHex,iHexLen);
+					SendRxMsg(0);
+				}
+
+				// check the response
+				if(		(result==0 && sLineHex[0] ==0x03 && sLineHex[1] == 0x04)
+					||	(result==0 && sLineHex[0] ==0x03 && sLineHex[1] == 0x06)
+					||	(result==0 && sLineHex[0] ==0xf0 && sLineHex[1] == 0x00)
+						)
+				{
+					DebugDisp("ExtractCtlsRsp %02x%02x", sLineHex[0],sLineHex[1]);
+					ExtractCtlsRsp(sLineHex);
+				}
 			}
 			memset(sLine,0,sizeof(sLine));
 		} else
-		if(buff == 'R' || isxdigit(buff)) {
+		if(buff == 'R' || buff == '#' || isxdigit(buff)) {
 			sLine[strlen(sLine)] =  buff;
 		}
 	}
@@ -1828,10 +2008,10 @@ static int CbProcessCard(void *pParams)
 			
 			if(extRes < 0)
 			{	
-				LOG_PRINTFF(0x00000001L,"V2_OK 1", );
+				LOG_PRINTFF(0x00000001L,"V2_OK 1");
 				return CTLS_BAD_CARD_READ;
 			}			
-			LOG_PRINTFF(0x00000001L,"V2_OK 2", );
+			LOG_PRINTFF(0x00000001L,"V2_OK 2" );
 			return extRes | CTLS_AUTHD;
 		}
 
@@ -1961,6 +2141,7 @@ static void InitRdr(char comPortNumber)
 
 	if(CTLSDEBUG) {
 		int iret = 0;
+		/*
 		LOG_PRINTFF(0x00000001L,"Get Configurable AID (GCA) 41010");
 		SendGeneralMsg(0x03,0x04,"\x9f\x06\x07\xa0\x00\x00\x00\x04\x10\x10",10);
 		LOG_PRINTFF(0x00000001L,"Get Configurable AID (GCA) 31010");
@@ -1985,8 +2166,11 @@ static void InitRdr(char comPortNumber)
 		//SVC_WAIT(100);
 		LOG_PRINTFF(0x00000001L,"Get Additional Reader Parameters ");
 		//SendGeneralMsg(0xF6,0x01,"\x00",0);
+		 *
+		 */
 	}
 
+	CfgPrint();
 	LOG_PRINTFF(0x00000001L,"InitRdr out");
 }
 
@@ -2046,3 +2230,276 @@ AID_DATA* getCtlsAIDlist()
 	return (AIDlist);
 }
 
+int CtlsResp(int setget, int *ret)
+{
+	static int result = 0;
+
+	if(setget == 0) //get
+		*ret = result;
+	if(setget ==1) //set
+		result = *ret;
+
+	return(result);
+}
+
+
+int CfgGroupAdd(unsigned int *pGroup)
+{
+	CfgGroup *ptr = g_cfgGroups;
+	CfgGroup *prev = ptr;
+	CfgGroup *newGrp = NULL;
+
+	DebugDisp("insert group %d", *pGroup);
+	while(ptr) {
+		if(ptr->groupno == *pGroup) return(1);
+		else {
+			prev = ptr;
+			ptr = ptr->next;
+		}
+	}
+
+	newGrp = (CfgGroup *)malloc(sizeof(CfgGroup));
+	newGrp->groupno = *pGroup;
+	newGrp->AIDs = NULL;
+	newGrp->TLVs = NULL;
+	newGrp->next = NULL;
+
+	if(g_cfgGroups==NULL) {
+		DebugDisp("insert group new");
+		g_cfgGroups = newGrp;
+	}
+	else {
+		DebugDisp("insert group ok", *pGroup);
+		prev->next = newGrp;
+
+	}
+
+	return(0);
+}
+
+int CfgAidAdd(int *pGroupno,char *sAid)
+{
+	CfgGroup *ptr = g_cfgGroups;
+	CfgAid *pAid = NULL;
+	CfgAid *prev = NULL;
+	CfgAid *newAid = NULL;
+	int found = 0;
+
+	if(pGroupno ==NULL ) return(-1);
+
+	while(ptr && !found) {
+		if(ptr->groupno == *pGroupno) found = 1;
+		else ptr = ptr->next;
+	}
+
+	if(!found) return(-1);	//Group not found
+
+	if(ptr->AIDs) {
+		pAid = ptr->AIDs;
+		while(pAid) {
+			if(strcmp(pAid->sAid,sAid)==0) return(1); //AID exists in this group
+			else {
+				prev = pAid;
+				pAid = pAid->next;
+			}
+		}
+	}
+
+	newAid = (CfgAid *)malloc(sizeof(CfgAid));
+	strcpy(newAid->sAid, sAid);
+	newAid->TLVs = NULL;
+	newAid->next = NULL;
+
+	if(ptr->AIDs){
+		DebugDisp("insert grp[%d],AID [%s] add",ptr->groupno,sAid);
+		prev->next = newAid;
+	} else {
+		DebugDisp("insert grp[%d], AID [%s] new",ptr->groupno,sAid);
+		ptr->AIDs = newAid;
+	}
+	return(0);
+}
+
+CfgAid* CfgAidFind(char *sAid,int *grpno)
+{
+	CfgGroup *ptr = g_cfgGroups;
+	CfgAid *pAid = NULL;
+	int found = 0;
+
+	if(sAid ==NULL || strlen(sAid)== 0 ) return(NULL);
+
+	while(ptr && !found) {
+		if(ptr->AIDs) {
+			pAid = ptr->AIDs;
+			while(pAid && !found) {
+				if(strcmp(pAid->sAid,sAid)==0) {
+					*grpno = ptr->groupno;
+					found = 1;
+				}
+				else {
+					DebugDisp("compare aid[%s]",pAid->sAid);
+					pAid = pAid->next;
+				}
+			}
+		}
+		ptr = ptr->next;
+	}
+
+	return(pAid);
+}
+
+CfgAidTlv * CfgTLVAdd(CfgAidTlv *pAidTlv, long Tag, char* sValue)
+{
+	CfgAidTlv *pTLV = NULL;
+	CfgAidTlv *prev = NULL;
+	CfgAidTlv *newTlv = NULL;
+
+	//if(pAidTlv==NULL) return(NULL);
+
+	pTLV = pAidTlv;
+
+	while(pTLV) {
+		if(pTLV->tag==Tag)
+			return(NULL); //found
+		else {
+			prev = pTLV;
+			pTLV = pTLV->next;
+		}
+	}
+
+	newTlv = malloc(sizeof(CfgAidTlv));
+	newTlv->next = NULL;
+	newTlv->tag = Tag;
+	newTlv->val = malloc(strlen(sValue)+1);
+	strcpy(newTlv->val,sValue);
+
+	if(prev==NULL) {
+		prev = newTlv;
+	}
+	else {
+		prev->next = newTlv;
+	}
+
+	return(prev);
+}
+
+int CfgAidTLVAdd(int* pGroupno, char *sAid, long Tag, char* sValue)
+{
+	CfgGroup *pGrp = g_cfgGroups;
+	CfgAid *pAid = NULL;
+	CfgAidTlv *pTLV = NULL;
+	int found = 0;
+
+	if(pGroupno ==NULL) return(0);
+
+	pGrp = (CfgGroup *) g_cfgGroups;
+	while(pGrp) {
+		if(*pGroupno == ((CfgGroup *)pGrp)->groupno) {
+			found = 1;
+			break;
+		}
+		pGrp = pGrp->next;
+	}
+
+	if(!found) return(0);
+
+	if(sAid && strlen(sAid)) {
+		found = 0;
+		pAid = pGrp->AIDs;
+		while(pAid) {
+			if(pAid->sAid && strcmp(sAid,pAid->sAid)==0) {
+				found = 1; break;
+			}
+			else pAid = pAid->next;
+		}
+		if(!found) return(0);
+	}
+
+
+	if(pAid==NULL) {
+		pTLV = CfgTLVAdd(pGrp->TLVs, Tag, sValue);
+		if(pGrp->TLVs == NULL)	pGrp->TLVs = pTLV;
+	}
+	else {
+		pTLV = CfgTLVAdd(pAid->TLVs, Tag, sValue);
+		if(pAid->TLVs == NULL)	pAid->TLVs = pTLV;
+	}
+
+	CfgTLVAdd(pTLV, Tag, sValue);
+	return(0);
+}
+
+int CfgAidTLVFind(char *sAid, long Tag, char* sValue)
+{
+	CfgGroup *pGrp = NULL;
+	CfgAid *pAid = NULL;
+	CfgAidTlv *pTLV = NULL;
+	unsigned int grpno = 0;
+
+	if(sAid==NULL||strlen(sAid)==0) return(0);
+
+	pAid = CfgAidFind(sAid, &grpno);
+	if(pAid == NULL) {
+		DebugDisp("pAID[%s] not found",sAid);
+		return(-1);
+	}
+	pTLV = pAid->TLVs;
+
+	if(pTLV==NULL) return(-1);
+
+	while(pTLV) {
+		if(pTLV->tag==Tag)
+			break; //found
+		else pTLV = pTLV->next;
+	}
+	if(pTLV != NULL) {
+		strcpy(sValue,pTLV->val);
+		return(0);
+	} else {
+		DebugDisp("pAID found,tag[%ld] not found",Tag);
+	}
+
+	pGrp = g_cfgGroups;
+	pTLV = NULL;
+	while(pGrp) {
+		if(pGrp->groupno == grpno) {
+			pTLV = pGrp->TLVs;
+			break;
+		} else {
+			pGrp = pGrp->next;
+		}
+	}
+
+	while(pTLV) {
+		if(pTLV->tag==Tag)
+			break; //found
+		else pTLV = pTLV->next;
+	}
+	if(pTLV != NULL) {
+		strcpy(sValue,pTLV->val);
+		return(0);
+	} else {
+		DebugDisp("pAID found2,tag[%ld] not found",Tag);
+	}
+
+	return(0);
+}
+
+int CfgPrint()
+{
+	CfgGroup *pGrp = g_cfgGroups;
+	CfgAid *pAid = NULL;
+
+	char sValue[1024] = "";
+
+	DebugDisp("cfgprint...0");
+
+	CfgAidTLVFind("A00000002501", 0xfffd, sValue);
+	DebugDisp("svalue 0 = [%s]",sValue);
+	CfgAidTLVFind("A00000002501", 0xfffe, sValue);
+	DebugDisp("svalue 1= [%s]",sValue);
+	CfgAidTLVFind("A00000002501", 0xffff, sValue);
+	DebugDisp("svalue 2= [%s]",sValue);
+
+
+}
