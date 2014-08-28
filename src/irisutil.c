@@ -661,7 +661,13 @@ void __store_objects(int unzip,char *objects,int* nextmsg,char **response)
 
 				if((ptmp2 = strstr(ptr, delete_f))!=NULL) {
 					ptmp = (char*)IRIS_GetObjectTagValue(ptr, delete_f);
-					if(ptmp) del_cnt = atol(ptmp);
+					if(ptmp && strcmp(ptmp,"ALL")==0){
+						long fsize = 0;
+						get_file_size(handle,&fsize);
+						del_cnt = fsize;
+					}
+					else if(ptmp) del_cnt = atol(ptmp);
+
 					my_free(ptmp);
 					if(del_cnt) delete_(handle,del_cnt);
 					ptr = ptmp2 + strlen( delete_f);
@@ -673,7 +679,9 @@ void __store_objects(int unzip,char *objects,int* nextmsg,char **response)
 						insertend_ptr = ptmp2;
 						keep = *insertend_ptr ; // should be '<'
 						*insertend_ptr = '\0';
-						if(!hex) insert(handle, insert_ptr, strlen(insert_ptr));
+						if(!hex) {
+							insert(handle, insert_ptr, strlen(insert_ptr));
+						}
 						else{
 							uchar *hex_s = my_malloc(strlen(insert_ptr)/2 + 1);
 							int len = UtilStringToHex( insert_ptr, strlen(insert_ptr),hex_s);

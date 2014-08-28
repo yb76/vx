@@ -97,7 +97,7 @@ static int SocketConnect (int* pSocketHandle,char * tHIP, int tPort, int conn_ti
 	//int maxTCPRT = 10;
 	//char now[30];
 
-	//struct linger myLinger;
+	struct linger myLinger;
 	struct sockaddr_in	sockHost;
 	struct timeval timeout;
 
@@ -133,8 +133,8 @@ static int SocketConnect (int* pSocketHandle,char * tHIP, int tPort, int conn_ti
 	//memset(now,0,sizeof(now));
 	LOG_PRINTF ("[%s] Socket handle is: %d", __FUNCTION__, sockHandle);
 
-	//myLinger.l_onoff = true;
-	//myLinger.l_linger = 0;
+	myLinger.l_onoff = true;
+	myLinger.l_linger = 3;
 	//setsockopt(sockHandle, SOL_SOCKET, SO_LINGER, (char*)&myLinger, sizeof(myLinger));
 	//setsockopt(sockHandle, IP_PROTOTCP, TCP_MAXRT, &maxTCPRT, sizeof(maxTCPRT));
 
@@ -909,7 +909,7 @@ int inCeTcpConnect(T_COMMS * psComms, stNI_NWIFState *ptrceNWIF)
 }
 
 
-int inCeTcpDisConnectIP(T_COMMS * psComms)
+int inCeTcpDisConnectIP()
 {
 	if(gSocketHandle>0) socketclose (gSocketHandle);
 	gSocketHandle = -1;

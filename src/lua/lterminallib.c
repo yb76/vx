@@ -432,6 +432,11 @@ static int terminal_PstnDisconnect (lua_State *L) {
   return 0;  /*  number of results */
 }
 
+static int terminal_TcpDisconnect (lua_State *L) {
+  inCeTcpDisConnectIP();
+  return 0;  /*  number of results */
+}
+
 static int terminal_SerConnect (lua_State *L) {
   const char* header = lua_tostring(L,1);
   const char* port = lua_tostring(L,2);
@@ -1529,6 +1534,18 @@ static int terminal_CTLSEmvGetTac (lua_State *L) {
   return 3;  /*  number of results */
 }
 
+static int terminal_CTLSEmvGetCfg (lua_State *L) {
+  const char *AID = lua_tostring(L,1);
+  unsigned long Tag = lua_tonumber(L,2);
+  int ret = 0;
+  char sValue[1024] = "";
+
+  CtlsGetCfg(AID,Tag,sValue);
+  lua_pushstring(L,sValue);
+
+  return 1;  /*  number of results */
+}
+
 static int terminal_CTLSEmvGetLimit (lua_State *L) {
   const char *aid = lua_tostring(L,1);
   int ret = 0;
@@ -1654,6 +1671,7 @@ static const luaL_Reg terminallib[] = {
   {"TcpRecv",terminal_TcpRecv},
   {"PstnRecv",terminal_PstnRecv},
   {"PstnDisconnect",terminal_PstnDisconnect},
+  {"TcpDisconnect",terminal_TcpDisconnect},
   {"SerConnect",terminal_SerConnect},
   {"SerData",terminal_SerData},
   {"SerSend",terminal_SerSend},
@@ -1709,6 +1727,7 @@ static const luaL_Reg terminallib[] = {
   {"CtlsCall",terminal_CtlsCall},	  
   {"SysEnv",terminal_SysEnv},
   {"CTLSEmvGetTac",terminal_CTLSEmvGetTac},
+  {"CTLSEmvGetCfg",terminal_CTLSEmvGetCfg},
   {"CTLSEmvGetLimit",terminal_CTLSEmvGetLimit},
   
 #ifdef __EMV

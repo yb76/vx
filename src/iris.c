@@ -652,9 +652,7 @@ bool remoteTms()
 
 
 	if(iConnectType == 1) {
-#ifdef __VX670
-			__tcp_disconnect_completely();
-#endif
+		inCeTcpDisConnectIP(); //close socket
 	} else {
 		__pstn_disconnect();
 	}

@@ -32,6 +32,7 @@
 #include "emvcwrappers.h"
 #include "ctlsmod.h"
 #include "inputmacro.h"
+#include "printer.h"
 
 #define VIVO_HDR_STR "ViVOtech"
 #define VIVO2_HDR_STR "ViVOtech2"
@@ -423,7 +424,7 @@ static int InitComPort(char comPortNumber)
 	
 	// configure the CTLS app
 	CTLSClientUIParamHandler(UI_LED_STYLE_PARAM, &ret, sizeof(ret));
-	CTLSClientUISetCardLogoBMP("N:/CTLSMV.bmp");
+	CTLSClientUISetCardLogoBMP("N:/CTLSAMV.bmp");
 
 	return ret;
 }
@@ -663,7 +664,7 @@ static int AcquireRsp(char waitForRsp, int timeout)
 					idx = 11;
 				}
 				if(rsp[idx] != 0x00 && rsp[idx]!=V2_REQ_OL_AUTH) {
-					//DebugPrint(" boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
+					DebugPrint(" boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
 					LOG_PRINTFF(0x00000001L, "boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
 					respok = -1;
 					CtlsResp(1, &respok);
@@ -1128,7 +1129,6 @@ static int ExtractCtlsRsp(char* cmd)
 				case 0xffe4:
 					if( strlen(sValue)) {
 						groupno = atoi(sValue);
-						DebugDisp("0306 group=%d,%s",groupno,sValue);
 						CfgGroupAdd(&groupno);
 					}
 					break;
@@ -1150,7 +1150,6 @@ static int ExtractCtlsRsp(char* cmd)
 				case 0xffff:
 				case 0x97:
 				default:
-					DebugDisp("group[%d],tag[%ld],value[%s]",groupno,lTag,sValue);
 					CfgAidTLVAdd(&groupno,NULL,lTag,sValue);
 					break;
 				}
@@ -1881,7 +1880,6 @@ static int SendCfgLine()
 					||	(result==0 && sLineHex[0] ==0xf0 && sLineHex[1] == 0x00)
 						)
 				{
-					DebugDisp("ExtractCtlsRsp %02x%02x", sLineHex[0],sLineHex[1]);
 					ExtractCtlsRsp(sLineHex);
 				}
 			}
@@ -2170,7 +2168,6 @@ static void InitRdr(char comPortNumber)
 		 */
 	}
 
-	CfgPrint();
 	LOG_PRINTFF(0x00000001L,"InitRdr out");
 }
 
@@ -2203,24 +2200,18 @@ int GetCtlsTxnLimit(char *aid,  int *p_translimit, int *p_cvmlimit,int *p_floorl
 int CTLSEmvGetTac(char *tac_df,char *tac_dn,char *tac_ol, const char *AID)
 {
 
-		int i =0;
-		char aid_chk[30];
-		char aid_chk2[30];
+		char sValue[40];
 
 		strcpy(tac_df,"");
 		strcpy(tac_dn,"");
 		strcpy(tac_ol,"");
 
-		strnlwr (aid_chk,AID ,strlen(AID));
-		for(i=0;;i++){
-			if( AIDlist[i].GroupNo==0) break;
-			strnlwr (aid_chk2 , (char *)(AIDlist[i].AID) ,strlen(AIDlist[i].AID));
-			if( strncmp( aid_chk,aid_chk2,strlen(aid_chk2))==0) {
-				UtilHexToString( (const char *)AIDlist[i].TACDefault , 5 , tac_df);
-				UtilHexToString( (const char *)AIDlist[i].TACDenial , 5 , tac_dn);
-				UtilHexToString( (const char *)AIDlist[i].TACOnline , 5 , tac_ol);
-			}
-		}
+		CfgAidTLVFind(AID, 0xfffe, sValue);
+		strcpy(tac_df,sValue);
+		CfgAidTLVFind(AID, 0xffff, sValue);
+		strcpy(tac_dn,sValue);
+		CfgAidTLVFind(AID, 0xfffd, sValue);
+		strcpy(tac_ol,sValue);
 
 		return(0);
 }
@@ -2249,7 +2240,6 @@ int CfgGroupAdd(unsigned int *pGroup)
 	CfgGroup *prev = ptr;
 	CfgGroup *newGrp = NULL;
 
-	DebugDisp("insert group %d", *pGroup);
 	while(ptr) {
 		if(ptr->groupno == *pGroup) return(1);
 		else {
@@ -2265,13 +2255,10 @@ int CfgGroupAdd(unsigned int *pGroup)
 	newGrp->next = NULL;
 
 	if(g_cfgGroups==NULL) {
-		DebugDisp("insert group new");
 		g_cfgGroups = newGrp;
 	}
 	else {
-		DebugDisp("insert group ok", *pGroup);
 		prev->next = newGrp;
-
 	}
 
 	return(0);
@@ -2297,7 +2284,7 @@ int CfgAidAdd(int *pGroupno,char *sAid)
 	if(ptr->AIDs) {
 		pAid = ptr->AIDs;
 		while(pAid) {
-			if(strcmp(pAid->sAid,sAid)==0) return(1); //AID exists in this group
+			if(strlen(pAid->sAid)&& strncmp(pAid->sAid,sAid,strlen(pAid->sAid))==0) return(1); //AID exists in this group
 			else {
 				prev = pAid;
 				pAid = pAid->next;
@@ -2311,10 +2298,10 @@ int CfgAidAdd(int *pGroupno,char *sAid)
 	newAid->next = NULL;
 
 	if(ptr->AIDs){
-		DebugDisp("insert grp[%d],AID [%s] add",ptr->groupno,sAid);
+		//DebugDisp("insert grp[%d],AID [%s] add",ptr->groupno,sAid);
 		prev->next = newAid;
 	} else {
-		DebugDisp("insert grp[%d], AID [%s] new",ptr->groupno,sAid);
+		//DebugDisp("insert grp[%d], AID [%s] new",ptr->groupno,sAid);
 		ptr->AIDs = newAid;
 	}
 	return(0);
@@ -2332,12 +2319,11 @@ CfgAid* CfgAidFind(char *sAid,int *grpno)
 		if(ptr->AIDs) {
 			pAid = ptr->AIDs;
 			while(pAid && !found) {
-				if(strcmp(pAid->sAid,sAid)==0) {
+				if(strlen(pAid->sAid) && strncmp(pAid->sAid,sAid,strlen(pAid->sAid))==0) {
 					*grpno = ptr->groupno;
 					found = 1;
 				}
 				else {
-					DebugDisp("compare aid[%s]",pAid->sAid);
 					pAid = pAid->next;
 				}
 			}
@@ -2407,7 +2393,7 @@ int CfgAidTLVAdd(int* pGroupno, char *sAid, long Tag, char* sValue)
 		found = 0;
 		pAid = pGrp->AIDs;
 		while(pAid) {
-			if(pAid->sAid && strcmp(sAid,pAid->sAid)==0) {
+			if(pAid->sAid && strlen(pAid->sAid) && strncmp(sAid,pAid->sAid,strlen(pAid->sAid))==0) {
 				found = 1; break;
 			}
 			else pAid = pAid->next;
@@ -2440,7 +2426,6 @@ int CfgAidTLVFind(char *sAid, long Tag, char* sValue)
 
 	pAid = CfgAidFind(sAid, &grpno);
 	if(pAid == NULL) {
-		DebugDisp("pAID[%s] not found",sAid);
 		return(-1);
 	}
 	pTLV = pAid->TLVs;
@@ -2456,7 +2441,7 @@ int CfgAidTLVFind(char *sAid, long Tag, char* sValue)
 		strcpy(sValue,pTLV->val);
 		return(0);
 	} else {
-		DebugDisp("pAID found,tag[%ld] not found",Tag);
+
 	}
 
 	pGrp = g_cfgGroups;
@@ -2479,27 +2464,125 @@ int CfgAidTLVFind(char *sAid, long Tag, char* sValue)
 		strcpy(sValue,pTLV->val);
 		return(0);
 	} else {
-		DebugDisp("pAID found2,tag[%ld] not found",Tag);
+
 	}
 
 	return(0);
 }
 
-int CfgPrint()
+int CfgParseTag(unsigned long lTag,char *sTag,char *sTagDesc)
+{
+	unsigned long tag = lTag;
+	unsigned char *p = (unsigned char *)&tag;
+	unsigned char sDesc[1024]="";
+	unsigned char stmp[10];
+
+	sprintf(stmp,"%2.2x%2.2x%2.2x%2.2x", *p,*(p+1),*(p+2),*(p+3));
+	p= stmp;
+	while(*p =='0') p++;
+	strcpy(sTag,p);
+
+	switch(lTag) {
+	case	0x5f2a:
+				strcpy(sDesc,"Trans Currency Code");
+				break;
+	case	0x9f1a:
+				strcpy(sDesc,"Trans country Code");
+				break;
+	case	0xFFFD:
+				strcpy(sDesc,"Term ActionCode-Online ");
+				break;
+	case	0xFFFE:
+				strcpy(sDesc,"Term ActionCode-Default");
+				break;
+	case	0xFFFF:
+				strcpy(sDesc,"Term ActionCode-Denial ");
+				break;
+	case	0x9f35:
+				strcpy(sDesc,"Terminal type");
+				break;
+	case	0x9f33:
+				strcpy(sDesc,"Terminal capabilities");
+				break;
+	case	0x9f40:
+				strcpy(sDesc,"Addi Terminal capa");
+				break;
+	case	0x1ff5:
+				strcpy(sDesc,"Floor limit Domes-HEX");
+				break;
+	case	0x1ff9:
+				strcpy(sDesc,"Floor limit inter-HEX");
+				break;
+	case	0xfff1:
+				strcpy(sDesc,"CTLS Transaction Limit");
+				break;
+	default:
+			break;
+	}
+
+	if(strlen(sDesc))	sprintf(sTagDesc,"(%s)",sDesc);
+	else strcpy(sTagDesc,"");
+	return(0);
+}
+
+int CfgPrtCfg(char *sAid)
 {
 	CfgGroup *pGrp = g_cfgGroups;
 	CfgAid *pAid = NULL;
+	CfgAidTlv *pTLV = NULL;
+	unsigned int grpno = 0;
+	char stmp[10240];
 
+	strcpy(stmp,"\033k042CTLS config\n");
+	if(true) {
+		while(pGrp){
+			pAid = pGrp->AIDs;
+			while(pAid) {
+				if(sAid && strlen(sAid) && strcmp(sAid,pAid->sAid)!=0) {
+					pAid = pAid ->next;
+					continue;
+				}
+				sprintf(&stmp[strlen(stmp)],"\nAID=%s\n",pAid->sAid);
+				//print Group TLVs
+				pTLV = pGrp->TLVs;
+				while(pTLV) {
+					char sTag[10],sDesc[100];
+					CfgParseTag(pTLV->tag,sTag,sDesc);
+					sprintf(&stmp[strlen(stmp)]," %s%s=%s\n",sTag,sDesc,pTLV->val);
+					pTLV=pTLV->next;
+				}
+
+				//print AID TLVs
+				pTLV = pAid->TLVs;
+				while(pTLV) {
+					char sTag[10],sDesc[100];
+					CfgParseTag(pTLV->tag,sTag,sDesc);
+					sprintf(&stmp[strlen(stmp)]," %s%s=%s\n",sTag,sDesc,pTLV->val);
+					pTLV=pTLV->next;
+				}
+				pAid = pAid->next;
+			}
+			pGrp = pGrp->next;
+		}
+		strcat(stmp,"\n\n\n\n");
+		PrtPrintBuffer(strlen(stmp), (uchar *)stmp, E_PRINT_END);//E_PRINT_END
+	}
+
+}
+
+int CtlsGetCfg(char *sAid,unsigned long lTag,char *sVal)
+{
+	CfgGroup *pGrp = g_cfgGroups;
+	CfgAid *pAid = NULL;
 	char sValue[1024] = "";
 
-	DebugDisp("cfgprint...0");
-
-	CfgAidTLVFind("A00000002501", 0xfffd, sValue);
-	DebugDisp("svalue 0 = [%s]",sValue);
-	CfgAidTLVFind("A00000002501", 0xfffe, sValue);
-	DebugDisp("svalue 1= [%s]",sValue);
-	CfgAidTLVFind("A00000002501", 0xffff, sValue);
-	DebugDisp("svalue 2= [%s]",sValue);
-
-
+	if(sAid && strlen(sAid) && lTag ) {
+		CfgAidTLVFind(sAid, lTag, sValue);
+		strcpy(sVal,sValue);
+	} else {
+		//CfgPrtCfg(NULL);
+		CfgPrtCfg(NULL);
+		//print all
+	}
+	return(0);
 }
