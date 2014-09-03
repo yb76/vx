@@ -381,7 +381,7 @@ static int InitComPort(char comPortNumber)
 	}
 	if (ret != 0)
 	{
-		LOG_PRINTFF(0x00000001L,"error Opening CTLS reader");
+		LOG_PRINTFF(0x00000001L,"error initialising CTLS reader");
 		return -1;
 	}
 
@@ -2110,7 +2110,10 @@ static void InitRdr(char comPortNumber)
 		ctlsInitRes = StoreLCDMsg(0x06, lcdMsg, "", "", "");
 	}	
 	if(ctlsInitRes > 0) 
-	{     
+	{
+		strcpy(lcdMsg, "%F2%Pcc15Thank you");
+		StoreLCDMsg(0x0D, lcdMsg, "", "", "");
+
 		strcpy(lcdMsg, "%F2%Pcc22Not Authorised");
 		ctlsInitRes = StoreLCDMsg(0x0E, lcdMsg, "", "", "");
 
