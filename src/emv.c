@@ -779,6 +779,7 @@ int EMVCheckLocalCfgFile()
 
 		if(found) {
 			emvcfg_list.current = i+1;
+
 			strcpy(emvCfgfile, emvcfg_list.filename[i]);
   			cfgdata = (char*)IRIS_GetObjectData( emvCfgfile, (unsigned int*)&iLen);
 			if(cfgdata) {
@@ -844,6 +845,7 @@ int EMVProcessingRestrictions (void)
 		char *sPinBypass = NULL;
 		char *sAcct = NULL;
 
+
 		usEMVGetTLVFromColxn(TAG_9F1A_TERM_COUNTY_CODE, termCtry, &iLen);
 		usEMVGetTLVFromColxn(TAG_5F28_ISSUER_COUNTY_CODE, cardCtry, &iLen);
 		if(memcmp( termCtry, cardCtry, 2 ) == 0 ) {
@@ -907,7 +909,9 @@ int EMVProcessingRestrictions (void)
 				ulRSThreshold = atol( sRSThreshold);
 	   			inRSTarget = atoi( sRSTarget);
 				inRSMax = atoi(sRSMax);
-				if (ulFloorLimit > 0) inVXEMVAPSetROSParams(ulFloorLimit,ulRSThreshold,inRSTarget,inRSMax);
+				if (ulFloorLimit > 0) {
+					iStatus = inVXEMVAPSetROSParams(ulFloorLimit,ulRSThreshold,inRSTarget,inRSMax);
+				}
 			}
 		}
 

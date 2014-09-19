@@ -91,6 +91,47 @@ void DispClearScreen(void)
 
 }
 
+int parse_display_line(const char *intext, char *newline, int *color )
+{
+	//eg. "<color_red>EFG"
+	int i = 0;
+	int j = 0;
+	char text[256];
+	char *p= text;
+	char *q = NULL;
+	char curr_t[64];
+	char *color_tag = "<color_";
+	int skip = 0;
+	unsigned int color_red = 0xf800; //255,0,0
+	unsigned int color_yellow = 0xffe0; //255,255,0
+	unsigned int color_green = 2016; //0,255,0
+
+	*color = 0;
+	strcpy(text,intext);
+	strcpy(newline,intext);
+
+	p = strstr(text,color_tag) ;
+	if(p!=NULL) q = strstr(p+1,">");
+	if(p ==NULL || q==NULL) return 0;
+
+	p = p+strlen(color_tag);
+
+	if(strncmp(p,"red",3)==0) {
+		*color = color_red;
+	}else	if(strncmp(p,"yellow",6)==0) {
+		*color = color_yellow;
+	}else	if(strncmp(p,"green",3)==0) {
+		*color = color_green;
+	}else	if(*p >='0' && *p<='9') {
+		*q = 0;
+		*color = atoi(p);
+	}
+
+	p = q+1;
+	strcpy(newline,p);
+	return(1);
+}
+
 /*
 **-----------------------------------------------------------------------------
 ** FUNCTION   : DispText
@@ -107,17 +148,20 @@ void DispClearScreen(void)
 **
 **-----------------------------------------------------------------------------
 */
-void DispText(const char * text, uint row, uint col, bool clearLine, bool largeFont, bool inverse)
+void DispText(const char * intext, uint row, uint col, bool clearLine, bool largeFont, bool inverse)
 {
 	const char * emptyLine = "                     ";
 	int len = 0;
+    long color,old_color;
+    char text[256];
 
-	if(text == NULL) return;
+	if(intext == NULL) return;
 
-	len = strlen(text);
 
 	// Initialisation
 	DispInit();
+	parse_display_line(intext, text, &color );
+	len = strlen(text);
 
 	// If centre requested
 	//if (col == 255) col = ((largeFont?MAX_COL_LARGE_FONT:MAX_COL) - (len * 7)) / 2;
@@ -130,6 +174,11 @@ void DispText(const char * text, uint row, uint col, bool clearLine, bool largeF
 	{
 		//col = (largeFont?MAX_COL_LARGE_FONT:MAX_COL) - (len * 7);
 		col = MAX_COL - (len * 8);
+	}
+
+	if(color) {
+		old_color = get_display_color(FOREGROUND_COLOR);
+		if(color!= old_color) set_display_color(FOREGROUND_COLOR,color);
 	}
 
 	if (!largeFont)
@@ -154,6 +203,9 @@ void DispText(const char * text, uint row, uint col, bool clearLine, bool largeF
 			write_at(text, strlen(text), col+1, row+1);
 		}
 	}
+
+	if(color!= old_color) set_display_color(FOREGROUND_COLOR,old_color);
+
 }
 
 /*

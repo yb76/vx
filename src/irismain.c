@@ -294,8 +294,15 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 	//char *scrfield[40][9];
 	char *scrfield[40][10];
 	int color_background = 40575; //153,204,255
-	int color_darkblue = 4523;
-	int color_button = 10998;//45,93,181
+	//R 153 Bin	10011001->10011 ( most significant 5 bits)
+	//G 204 Bin	11001100->110011( most significant 6 bits)
+	//B 255 Bin 11111111->11111 ( 5 bits)
+	// New bin: 1001111001111111 = 40575
+	unsigned int color_darkblue = 4523;
+	unsigned int color_button = 10998;//45,93,181
+	unsigned int color_red = 0xf800; //255,0,0
+	unsigned int color_yellow = 0xffe0; //255,255,0
+	unsigned int color_green = 2016; //0,255,0
 
 	char fEndcCol[40];
 	char sBMPEVT[20];

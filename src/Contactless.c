@@ -981,7 +981,7 @@ static int processEmvTlv(char *tlv)
 			memcpy(&p_ctls->sTLvData[p_ctls->nTLvLen],string,strlen(string));
 		}
 		
-		//LOG_PRINTFF(0x00000001L,"processEMVTlv V[%.100s]", string);
+		LOG_PRINTFF(0x00000001L,"processEMVTlv V[%.100s]", string);
 		p_ctls->nTLvLen = p_ctls->nTLvLen + strlen(string);
 		
 		return iIdx;
@@ -1101,7 +1101,9 @@ static int ExtractCtlsRsp(char* cmd)
 		char sValue[1024]="";
 		int readLen = Verifone_parseTag(rsp+V2_DATA_OFS+dataRead, &lTag, NULL, sValue);		
 		if(readLen > 0) {
-			LOG_PRINTFF(0x00000001L,"extract ctls rsp , tag = %ld, sValue = %s", lTag,sValue);
+			unsigned char *pTag = (unsigned char *)&lTag;
+			LOG_PRINTFF(0x00000001L,"extract ctls rsp , tag = %02.2x%02.2x%02.2x%02.2x,%ld, sValue = %s",
+					*pTag,*(pTag+1),*(pTag+2),*(pTag+3),lTag,sValue);
 
 			//get configurable aid
 			if(strncmp(cmd,"\x03\x04",2)==0) {
@@ -1852,9 +1854,9 @@ static int SendCfgLine()
 	{
 		char buff = sCfgData[i];
 		if( buff=='\n' || buff =='\r' || i==sCfgLength-1) { // END of line
-			if(sLine[0] =='#')
+			if(sLine[0] =='#'){
 				LOG_PRINTFF(0x00000001L,"cfg comment = %.100s", sLine);
-			else if(strlen(sLine) > 5 && sLine[0] == 'R') { // R+command +subcommand + data
+			} else if(strlen(sLine) > 5 && sLine[0] == 'R') { // R+command +subcommand + data
 				char *psLine = &sLine[1];
 				int iHexLen = strlen(psLine)/2;
 				int result=0;
@@ -1885,7 +1887,7 @@ static int SendCfgLine()
 			}
 			memset(sLine,0,sizeof(sLine));
 		} else
-		if(buff == 'R' || buff == '#' || isxdigit(buff)) {
+		if(buff == 'R' || buff == '#' || isxdigit(buff) || sLine[0] == '#') {
 			sLine[strlen(sLine)] =  buff;
 		}
 	}
