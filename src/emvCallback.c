@@ -117,9 +117,9 @@ int	EmvCallbackFnSelectAppMenu(char **pcMenuItems, int iMenuItemsTotal)
 	} else {
 		int iTo = 30000;
 		if(itemtotal == 1) iTo = 5000;
-		//gEmv.appsTotal = iMenuItemsTotal;
 		selected = DispArray(iTo, pcMenuItems,iMenuItemsTotal);
 	}
+	gEmv.appsTotal = iMenuItemsTotal;
 
 	if(selected > 0) return(selected);
 	else if(itemtotal == 1 && (selected == -1 * EVT_TIMEOUT)) return(1);

@@ -1340,8 +1340,10 @@ static int terminal_EmvSelectApplication (lua_State *L) {
   const unsigned long amt = lua_tonumber(L,1);
   const unsigned long acc = lua_tonumber(L,2);
   int emvret = EMVSelectApplication(amt,acc);
+  int apps = gEmv.appsTotal;
   lua_pushinteger(L, emvret);  /*  push result */
-  return 1;  /*  number of results */
+  lua_pushinteger(L, apps);  /*  push result */
+  return 2;  /*  number of results */
 }
 
 static int terminal_EmvSetAmt (lua_State *L) {
@@ -1483,6 +1485,7 @@ static int terminal_EmvGlobal (lua_State *L) {
 	else if( strcmp(name, "TECHFALLBACK") ==0) lua_pushboolean(L, gEmv.techfallback);
 	else if( strcmp(name, "ACCT") ==0) lua_pushstring(L, gEmv.acct);
 	else if( strcmp(name, "ACCT_NOCR") ==0) lua_pushboolean(L, gEmv.acct_nocr);
+	else if( strcmp(name, "APPSTOTAL") ==0) lua_pushinteger(L, gEmv.appsTotal);
 	else lua_pushstring(L,"");
 	retcnt = 1;
   }
