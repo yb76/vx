@@ -1302,9 +1302,11 @@ static void BuildActivateTransactionMsg(char timeout) //add txn amount and type
 
 static void BuildSetEMVTxnAmtMsg()
 {	
-	char fields[4] = {0x04, 0x00, 0x00, 0x12};	
+	//char fields[4] = {0x04, 0x00, 0x00, 0x12};
+	char fields[4] = {0x04, 0x00, 0x00, 0x0c};
 	char tlv_9f02[9] = {0x9F, 0x02, 0x06 ,0,0,0,0,0,0};
-	char tlv_9f03[9] = {0x9F, 0x03, 0x06, 0,0,0,0,0,0};							
+	//char tlv_9f03[9] = {0x9F, 0x03, 0x06, 0,0,0,0,0,0};
+	char tlv_9f03[3] = {0x9F, 0x03, 0x00};
 
 	LOG_PRINTFF(0x00000001L,"BuildSetEMVTxnAmtMsg");
 	
