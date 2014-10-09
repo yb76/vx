@@ -753,6 +753,28 @@ int	EMVReadAppData(void)
     return(status);
 }
 
+int EmvFindCfgFile(char *aid,char *cfgfile)
+{
+		char emvCfgfile [50];
+		int i = 0;
+		bool found = false;
+
+		strcpy(cfgfile,"");
+		sprintf(emvCfgfile,"EMVCFG%s", aid);
+
+		for(i=0;i<emvcfg_list.total;i++) {
+			if(emvcfg_list.filename[i] ==NULL) break;
+			// compare EMVCFGA0000002501 and AID A00000002501nnnn
+			if(strncmp(emvCfgfile, emvcfg_list.filename[i],strlen(emvcfg_list.filename[i]))==0)
+			{
+				found = true ;
+				strcpy(cfgfile,emvcfg_list.filename[i]);
+				break;
+			}
+		}
+		return(found);
+}
+
 int EMVCheckLocalCfgFile()
 {
 		uchar aid_hex[17]="";

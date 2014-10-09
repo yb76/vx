@@ -121,6 +121,24 @@ int	EmvCallbackFnSelectAppMenu(char **pcMenuItems, int iMenuItemsTotal)
 	}
 	gEmv.appsTotal = iMenuItemsTotal;
 
+	if(iMenuItemsTotal>1) {
+		unsigned short cnt = 10;
+		unsigned short usAidBlockedTotal=0;
+		srAIDListStatus	sAidListStatus[10];
+		unsigned short idx = 0;
+		char eftpos_aid[5] = "\xA0\x00\x00\x03\x84";
+		bool eftpos_card = false;
+
+		cnt = iMenuItemsTotal;
+		usEMVGetAllAIDStatus(sAidListStatus, &cnt, &usAidBlockedTotal);
+		for(idx = 0;idx< cnt;idx++){
+			if(strncmp(sAidListStatus[idx].stAID,eftpos_aid,sizeof(eftpos_aid))==0) {
+				eftpos_card = true;
+				break;
+			}
+		}
+		gEmv.eftpos_mcard = eftpos_card;
+	}
 	if(selected > 0) return(selected);
 	else if(itemtotal == 1 && (selected == -1 * EVT_TIMEOUT)) return(1);
 

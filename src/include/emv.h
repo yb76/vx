@@ -24,6 +24,7 @@ typedef struct {
 	long amt ;
 	unsigned short termDesicion;
 	unsigned short appsTotal;
+	bool eftpos_mcard;
 	bool chipfallback; // offline
 	bool techfallback; // fallback to swipe
 	char acct[10] ;

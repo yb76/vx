@@ -1341,9 +1341,12 @@ static int terminal_EmvSelectApplication (lua_State *L) {
   const unsigned long acc = lua_tonumber(L,2);
   int emvret = EMVSelectApplication(amt,acc);
   int apps = gEmv.appsTotal;
+  int eftpos_mcard = gEmv.eftpos_mcard;
+
   lua_pushinteger(L, emvret);  /*  push result */
   lua_pushinteger(L, apps);  /*  push result */
-  return 2;  /*  number of results */
+  lua_pushinteger(L, eftpos_mcard);  /*  push result */
+  return 3;  /*  number of results */
 }
 
 static int terminal_EmvSetAmt (lua_State *L) {
@@ -1589,6 +1592,18 @@ static int terminal_EmvTLVReplace(lua_State *L) {
   lua_pushstring(L, newtlvs);  /*  push result */
   return 1;  /*  number of results */
 }
+
+static int terminal_EmvFindCfgFile (lua_State *L) {
+  const char *aid = lua_tostring(L,1);
+  char cfgfile[50]="";
+  int ret = 0;
+
+  ret = EmvFindCfgFile(aid,cfgfile);
+  lua_pushstring(L,cfgfile);
+
+  return 1;  /*  number of results */
+}
+
 #endif
 
 static int terminal_InitCommEng (lua_State *L) {
@@ -1755,6 +1770,7 @@ static const luaL_Reg terminallib[] = {
   {"EmvResetGlobal",terminal_EmvResetGlobal},
   {"EmvGetTacIac",terminal_EmvGetTacIac},
   {"EmvTLVReplace",terminal_EmvTLVReplace},
+  {"EmvFindCfgFile",terminal_EmvFindCfgFile},
 #endif
 
   {NULL, NULL}
