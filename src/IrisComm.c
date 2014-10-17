@@ -962,12 +962,19 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
     int  retVal = 0;
     struct timeval  mytimeval;
 	char *pchReceiveBuff = (char *)psComms->pbData;
-    
+	unsigned long MaxBufLen = 8192;
+
+
 	errno = 0;
+    if(MaxBufLen< psComms->wLength) {
+    	MaxBufLen = psComms->wLength;
+        setsockopt(gSocketHandle, SOL_SOCKET, SO_RCVBUF, (unsigned long*) &MaxBufLen, sizeof(MaxBufLen) );
+    }
     mytimeval.tv_sec = psComms->bResponseTimeout;
     mytimeval.tv_usec = 100;
     setsockopt(gSocketHandle, SOL_SOCKET, SO_RCVTIMEO, (char*) &mytimeval, sizeof(mytimeval) );
-	retVal = recv(gSocketHandle, pchReceiveBuff, 4096, 0);
+
+	retVal = recv(gSocketHandle, pchReceiveBuff, MaxBufLen, 0);
 
 	LOG_PRINTF( "inReceiveTCPCommunication retVal %d", retVal );
 

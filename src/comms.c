@@ -337,10 +337,6 @@ uint CommsReceive( T_COMMS * psComms, bool fFirstChar)
 
 	if (psComms->eConnectionType == E_CONNECTION_TYPE_IP)
 	{
-		//Dwarika .. not used for CE Lib
-		/*	
-		struct timeval timeout;
-		*/
 		int length = psComms->wLength;
 		char *pdata = (char *)psComms->pbData;
 		{

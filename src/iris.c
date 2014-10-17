@@ -484,7 +484,7 @@ bool remoteTms()
 
 			// Get the response
 			if(iConnectType == 1) {
-		  		__tcp_recv( &ptr,"8192",timeout_s,temp);
+		  		__tcp_recv( &ptr,"2000",timeout_s,temp);
 			}
 			else {
 		  		__pstn_recv( &ptr,"7000","45",temp);
@@ -544,7 +544,7 @@ bool remoteTms()
 					for(i=0;nextpack;i++) {
 						int iSent = -1;
 
-						__tcp_recv( &msgptr,"8192","10",temp);
+						__tcp_recv( &msgptr,"2000","10",temp);
 						if(strcmp(temp,"NOERROR") ) {
 							break;
 						}

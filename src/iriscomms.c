@@ -145,7 +145,7 @@ void IRIS_CommsRecv(T_COMMS * comms, const char* interCharTimeout, const char* t
 		comms->dwInterCharTimeout = atol(interCharTimeout);
 
 	// Allocate the receive buffer and set the maximum receive length
-	comms->pbData = my_malloc(bufLen);
+	comms->pbData = my_malloc(bufLen+50); //plus header
 	comms->wLength = bufLen;
 
 	// Go ahead..receive...
