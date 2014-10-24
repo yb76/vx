@@ -424,7 +424,7 @@ static int InitComPort(char comPortNumber)
 	
 	// configure the CTLS app
 	CTLSClientUIParamHandler(UI_LED_STYLE_PARAM, &ret, sizeof(ret));
-	CTLSClientUISetCardLogoBMP("N:/CTLSAMV.bmp");
+	CTLSClientUISetCardLogoBMP("");
 
 	return ret;
 }
@@ -2437,7 +2437,9 @@ int CfgAidTLVFind(char *sAid, long Tag, char* sValue)
 	}
 	pTLV = pAid->TLVs;
 
-	if(pTLV==NULL) return(-1);
+	if(pTLV==NULL) {
+		return(-1);
+	}
 
 	while(pTLV) {
 		if(pTLV->tag==Tag)
