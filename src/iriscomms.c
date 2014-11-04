@@ -77,6 +77,7 @@ void IRIS_CommsSend(const char *data,T_COMMS * comms, int * retVal,char*retMsg)
 	short HeaderLenMax = 50;
 
 	if(retMsg) strcpy(retMsg, "COMM ERROR");
+
 	// If not connected, return an error
 	if (comms->wHandle == 0xFFFF)
 		*retVal = ERR_COMMS_CONNECT_FAILURE;
@@ -93,8 +94,8 @@ void IRIS_CommsSend(const char *data,T_COMMS * comms, int * retVal,char*retMsg)
 		
 		if ((*retVal = Comms(E_COMMS_FUNC_SEND, comms)) != ERR_COMMS_NONE)
 		{
-			//Dwarika ..
 			//Comms(E_COMMS_FUNC_DISCONNECT, comms);
+			if(retMsg && comms->pErrmsg!=NULL) strcpy( retMsg, comms->pErrmsg);
 		}
 		else
 		{
@@ -173,7 +174,8 @@ void IRIS_CommsRecv(T_COMMS * comms, const char* interCharTimeout, const char* t
 	//if(retMsg) strcpy(retMsg, CommsErrorDesc(*retVal));
     if (retMsg) {
 		if( *retVal == ERR_COMMS_NONE) strcpy(retMsg, "NOERROR");
-		else if( *retVal == ERR_COMMS_RECEIVE_TIMEOUT) strcpy(retMsg, "TIMEOUT");
+		//else if( *retVal == ERR_COMMS_RECEIVE_TIMEOUT) strcpy(retMsg, "TIMEOUT");
+		else if( comms->pErrmsg != NULL ) strcpy(retMsg, comms->pErrmsg);
 		else strcpy(retMsg,"COMM ERROR");
 	}
 

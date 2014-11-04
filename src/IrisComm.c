@@ -22,8 +22,6 @@
 
 // for EOS log
 #include <eoslog.h>
-
-// CEIF
 #include <ceif.h>
 #include <vos_ddi_ini.h>
 #include <vos_ddi_app_evt.h>
@@ -39,42 +37,49 @@
 #define TO_CE_OPEN					120000L
 #define TO_START					60000L
 #define TO_STOP						60000L
-
 #define TO_ITERATION				200
+#define RESPONSE_TIMEOUT	1000	
+#define	COMMS_E_TIMEOUT		-235
 
 int g_inConnected = 0;
 int g_inAttached = 0;
 int g_inClosed = 1;
-
-
+static int g_inErrno = 0;
 char chSignalPercent [21 + 1] = {'0', '%', 0};
 char chSignaldBm [21 + 1] = {'0', 'd', 'B', 'm', 0};
 char chSignalRSSI [21 + 1] = {'0', 'R', 'S', 'S', 'I', 0};
-
 unsigned char g_ucExtEventData [CEIF_EVT_DATA_SZ];
-
-// Device Handles
-
-// Globals
 int g_NICount;						// Global for number of NWIF supported
 unsigned char* g_NIInfo;
 int g_GPRSHandle = -1;
-
 static int gSocketHandle = -1;
-//static int g_LinkState = -1;
-//static int g_StState = -1;
-//static int g_reconnect = -1;
 static stNIInfo g_currMediaInfo;			// Current media stNIInfo
-//static ceEvent_t	g_ceEvent_cb;
 static int g_signal=0;
 
 
 static int DebugPrint (const char*template,...) ;
 static int DebugPrint2 (const char*template,...) ;
-
 unsigned int inManageCEEvents (void);
 void voTranslateCEevt(int inCEEVT, char* chTranslatedEvent);
 int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout);
+
+static void ErrorDesc( int errorcode, char **errmsg)
+{
+	if( errmsg ) {//TODO
+		switch( errorcode ) {
+			case (NO_SIM_CARD):
+				*errmsg = "NO SIM CARD";
+				break;
+			case (COMMS_E_TIMEOUT):
+				*errmsg = "TIMEOUT";
+				break;
+			default:
+				*errmsg = "COMMS ERROR";
+				break;
+		}
+	}
+
+}
 
 static void ListNWIF (stNIInfo stArray[], int arrayCount)
 {
@@ -88,14 +93,11 @@ static void ListNWIF (stNIInfo stArray[], int arrayCount)
 	}
 }
 
-
 static int SocketConnect (int* pSocketHandle,char * tHIP, int tPort, int conn_timeout)
 {
 	int sockHandle = -1;
 	int sockType;
 	int retVal;
-	//int maxTCPRT = 10;
-	//char now[30];
 
 	struct linger myLinger;
 	struct sockaddr_in	sockHost;
@@ -130,15 +132,6 @@ static int SocketConnect (int* pSocketHandle,char * tHIP, int tPort, int conn_ti
 		return RET_FAILED;
 	}
 
-	//memset(now,0,sizeof(now));
-	LOG_PRINTF ("[%s] Socket handle is: %d", __FUNCTION__, sockHandle);
-
-	myLinger.l_onoff = true;
-	myLinger.l_linger = 3;
-	//setsockopt(sockHandle, SOL_SOCKET, SO_LINGER, (char*)&myLinger, sizeof(myLinger));
-	//setsockopt(sockHandle, IP_PROTOTCP, TCP_MAXRT, &maxTCPRT, sizeof(maxTCPRT));
-
-	//*pSocketHandle = sockHandle;
 	return RET_SUCCESS;
 }
 
@@ -146,6 +139,7 @@ int inCheckGPRSStatus(int x,int y)
 {
 	char stmp[20];
 	char *p = NULL;
+
 	inManageCEEvents ();
 	
 	strcpy(stmp,chSignalRSSI);
@@ -172,7 +166,6 @@ static vdDisplayBmp(int x,int y, char *bmpfile)
 
 void vdDisplayGPRSSignalStrength(int inSignalStatus, int inNetStatus,int x,int y)
 {
-	//static int lastbmp = -1;
 
 	if ((inSignalStatus <= 0) || (inNetStatus <0))
 		{
@@ -196,13 +189,17 @@ void vdDisplayGPRSSignalStrength(int inSignalStatus, int inNetStatus,int x,int y
 		}
 }
 
-int inStartCE_OPEN (void)
+static int inStartCE_OPEN (void)
 {
    unsigned int uiValueLength;
    int inRetVal = RET_FAILED;
-   //char chBuffer [21 + 1];
    stNI_NWIFState ceNWIF;
    unsigned int event;
+
+   if(g_inErrno) {
+	   LOG_PRINTF( " %s:g_inErrno[%d]", __FUNCTION__, g_inErrno );
+	   return(g_inErrno);
+   }
 
 	inRetVal = ceStartNWIF( g_GPRSHandle , CE_OPEN);
 	LOG_PRINTF( "ceStart %d errno%d", inRetVal, errno );
@@ -239,7 +236,7 @@ int inStartCE_OPEN (void)
 	return (inRetVal);
 }
 
-int inStartCE_NETWORK (void)
+static int inStartCE_NETWORK (void)
 {
     int inRetVal = RET_FAILED;
     unsigned long ulTime, ulTimeOut;
@@ -247,6 +244,11 @@ int inStartCE_NETWORK (void)
 	int retryCounter;
 	unsigned int uiValueLength;
 	stNI_NWIFState ceNWIF;
+
+   if(g_inErrno) {
+		   LOG_PRINTF( " %s:g_inErrno[%d]", __FUNCTION__, g_inErrno );
+		   return(g_inErrno);
+   }
 
 	retryCounter = 0;
 	for(;;)
@@ -272,7 +274,7 @@ int inStartCE_NETWORK (void)
 
 					ulTime = read_ticks();
 
-				}while((event != CE_EVT_NET_UP) && (ulTime < ulTimeOut));  
+				}while((event != CE_EVT_NET_UP) && (ulTime < ulTimeOut) && !g_inErrno);  
 
 				break;
 
@@ -400,11 +402,16 @@ int inStartCE_NETWORK (void)
 }
 
 
-int inStopCE_NETWORK (void)
+static int inStopCE_NETWORK (void)
 {
     int inRetVal = RET_FAILED;
     unsigned int event;
     unsigned long ulTime, ulTimeOut;
+
+    if(g_inErrno) {
+ 	   LOG_PRINTF( " %s:g_inErrno[%d]", __FUNCTION__, g_inErrno );
+ 	   return(g_inErrno);
+    }
 
 	LOG_PRINTF( "inStopCE_NETWORK ***********ceStopNWIF CE_NETWORK " );
 	inRetVal = ceStopNWIF(g_GPRSHandle, CE_NETWORK);	
@@ -523,11 +530,15 @@ int inStopCE_NETWORK (void)
 	return (inRetVal);
 }
 
-
 static int inCEStartGPRSNetwork(char *sAPN)
 {
 	static int firsttime = 1;
 	int inRetVal = RET_FAILED;
+
+   if(g_inErrno) {
+		   LOG_PRINTF( " %s:g_inErrno[%d]", __FUNCTION__, g_inErrno );
+		   return(g_inErrno);
+   }
 
 	LOG_PRINTF( "inCEStartGPRSNetwork ******* firsttime %d", firsttime);
 	LOG_PRINTF( "inCEStartGPRSNetwork ******* sAPN %s", sAPN);
@@ -561,9 +572,8 @@ static int inCEStartGPRSNetwork(char *sAPN)
 	return(inRetVal);
 }
 
-#define RESPONSE_TIMEOUT	1000	
 
-int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout)
+static int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout)
 {
 	int res; 
 	int valopt; 
@@ -618,40 +628,22 @@ int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout)
   return(0);
 }
 
-int inStartCeConnection(T_COMMS * psComms)
+static int inStartCeConnection(char * sAPN)
 {
 	int retVal = 0;
 
-	static char sAPN[20] = "";
-
-	strcpy( sAPN, psComms->ownIpAddress);
+   if(g_inErrno) {
+		   LOG_PRINTF( " %s:g_inErrno[%d]", __FUNCTION__, g_inErrno );
+		   return(g_inErrno);
+   }
 
 	LOG_PRINTF( "inStartCeConnection  sAPN %s", sAPN );
 
 	retVal = inCEStartGPRSNetwork(sAPN);
-
 	return retVal;
 }
 
-int SocketClose (int sockHandle)
-{
-	int retVal = 0;
-
-	LOG_PRINTF ( "Socket Shutdown....");
-
-    errno = 0; 
-	retVal = socketclose (sockHandle);
-
-	if (retVal < 0) {
-		LOG_PRINTF ( "Socket Shutdown FAILED: %d.  errno: %d", retVal, errno);
-		return RET_FAILED;
-	}
-
-	LOG_PRINTF ( "[%s] Socket Shutdown SUCCESS", __FUNCTION__);
-	return RET_SUCCESS;
-}
-
-int ceForceReconnect( stNI_NWIFState ceNWIF,char *newAPN)
+static int ceForceReconnect( stNI_NWIFState ceNWIF,char *newAPN)
 {
 	int inRetVal = -1;
 	unsigned long ulTime, ulTimeOut;
@@ -733,7 +725,7 @@ int ceForceReconnect( stNI_NWIFState ceNWIF,char *newAPN)
 	return inRetVal;
 }
 
-int inCeTcpConnect(T_COMMS * psComms, stNI_NWIFState *ptrceNWIF)
+int inCeTcpConnect(T_COMMS * psComms)
 {
 	static char sAPN[20] = "";
 	static char sHOSTIP[30] = "";
@@ -765,10 +757,15 @@ int inCeTcpConnect(T_COMMS * psComms, stNI_NWIFState *ptrceNWIF)
 	}
 
 	if (firsttime) {
-		int inRetVal = inStartCeConnection(psComms);
+		int inRetVal = inStartCeConnection(psComms->ownIpAddress);
 		firsttime = 0;
 		change = false;
 		changeAPN = false;
+	}
+	if(g_inErrno) {
+			ErrorDesc(g_inErrno, &psComms->pErrmsg);
+			LOG_PRINTF( " %s:g_inErrno[%d]", __FUNCTION__, g_inErrno );
+			return(RET_FAILED);
 	}
 
 	if (change) {}
@@ -803,8 +800,6 @@ int inCeTcpConnect(T_COMMS * psComms, stNI_NWIFState *ptrceNWIF)
 
 	LOG_PRINTF( "inCeTcpConnect  ceNWIF.nsErrorString %s", ceNWIF.nsErrorString );
 
-	//if(ptrceNWIF) *ptrceNWIF= ceNWIF;
-	
 	LOG_PRINTF( "inCeTcpConnect ceGetNWParamValue errorcode= %d,current=%d,target=%d\n", ceNWIF.nsErrorCode, ceNWIF.nsCurrentState, ceNWIF.nsTargetState );
 
 	LOG_PRINTF( "inCeTcpConnect  NWParamValue %d", NWParamValue );
@@ -908,7 +903,6 @@ int inCeTcpConnect(T_COMMS * psComms, stNI_NWIFState *ptrceNWIF)
 	return RET_FAILED;
 }
 
-
 int inCeTcpDisConnectIP()
 {
 	if(gSocketHandle>0) socketclose (gSocketHandle);
@@ -930,6 +924,12 @@ int inSendTCPCommunication(T_COMMS * psComms)
 	char sHOSTIP[18];
 	char *pchSendBuff =(char*) psComms->pbData;
 	int inSendSize = psComms->wLength;
+
+	if(g_inErrno) {
+		ErrorDesc(g_inErrno, &psComms->pErrmsg);
+		LOG_PRINTF( " %s:g_inErrno[%d]", __FUNCTION__, g_inErrno );
+		return(RET_FAILED);
+   }
 
 	memset(szTransmitBuffer, 0x00, sizeof(szTransmitBuffer));
 	memcpy(szTransmitBuffer, pchSendBuff, inSendSize);
@@ -964,6 +964,11 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
 	char *pchReceiveBuff = (char *)psComms->pbData;
 	unsigned long MaxBufLen = 8192;
 
+	if(g_inErrno) {
+		ErrorDesc(g_inErrno, &psComms->pErrmsg);
+		LOG_PRINTF( " %s:g_inErrno[%d]", __FUNCTION__, g_inErrno );
+		return(RET_FAILED);
+   }
 
 	errno = 0;
     if(MaxBufLen< psComms->wLength) {
@@ -983,7 +988,8 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
 		if(0) DebugPrint("for compiler warning");
 		if(0) DebugPrint2("for compiler warning");
 		errno = 0;
-		return(-235); //TIMEOUT
+		ErrorDesc(COMMS_E_TIMEOUT, &psComms->pErrmsg);
+		return(COMMS_E_TIMEOUT); //TIMEOUT
 	}
 	else
 	{
@@ -1071,7 +1077,7 @@ unsigned int inManageCEEvents (void)
     
 	while ( ceGetEventCount() )
 	{
-		        LOG_PRINTF( "%s:Reading CE event", __func__ );
+		        LOG_PRINTF( "%s:Reading CE event", __FUNCTION__ );
 
 	            memset (&ceEvt, 0, sizeof (stceNWEvt));
 	            memset (g_ucExtEventData, 0, CEIF_EVT_DATA_SZ);
@@ -1083,9 +1089,15 @@ unsigned int inManageCEEvents (void)
                 
                 voTranslateCEevt(ceEvt.neEvt, chBuffer);
 		        LOG_HEX_PRINTF ("EVENT DATA", (char*) g_ucExtEventData, evtDataLen);
+		        if ( strlen(g_ucExtEventData) && evtDataLen>0 ) {
+					if( ceEvt.neParam1 == NO_SIM_CARD) {
+						g_inErrno = NO_SIM_CARD;
+						return(0);
+					}
+		        }
 				if ( 0 == retVal)
 				{
-					LOG_PRINTF( "%s:CEevent niHandle:%d evtID:0x%02X", __func__, ceEvt.niHandle, ceEvt.neEvt);
+					LOG_PRINTF( "%s:CEevent niHandle:%d evtID:0x%02X", __FUNCTION__, ceEvt.niHandle, ceEvt.neEvt);
 					
 					if (ceEvt.niHandle != g_GPRSHandle)
 		            {
@@ -1197,7 +1209,7 @@ unsigned int inManageCEEvents (void)
 				                return CE_EVT_STOP_LINK;
 
 						   default:
-								LOG_PRINTF( "%s:Correct niHandle but unexpected CE Event", __func__ );
+								LOG_PRINTF( "%s:Correct niHandle but unexpected CE Event", __FUNCTION__ );
 								break;
 						}
 
@@ -1301,7 +1313,7 @@ void voTranslateCEevt(int inCEEVT, char* chTranslatedEvent)
 }
 
 
-int InitComEngine_DSS (void)
+int InitComEngine_Register (void)
 {
 	// Register this appication with CommEngine
 	int retVal = 0;
@@ -1337,7 +1349,7 @@ int InitComEngine_DSS (void)
 	return (retVal);
 }
 
-int InitCEEvents_DSS (void)
+int InitCEEvents (void)
 {	
 	int retVal = 0;
 
@@ -1363,7 +1375,7 @@ int InitCEEvents_DSS (void)
 // and will be stored in the stNIInfo structure array
 // Returns the number of supported NWIF
 
-int InitNWIF_DSS (void)
+int InitNWIF (void)
 {
 	int retVal = 0;
 	unsigned int nwInfoCount = 0;
@@ -1395,7 +1407,7 @@ int InitNWIF_DSS (void)
 	return retVal;
 }
 
-void GetMediaInfo_DSS (stNIInfo stArray[], int arrayCount)
+void GetMediaInfo (stNIInfo stArray[], int arrayCount)
 {
 	int i = 0;	
 
@@ -1411,7 +1423,6 @@ void GetMediaInfo_DSS (stNIInfo stArray[], int arrayCount)
 }
 
 int InitComEngine(void)
-//void init_comm_engine_DSS( void )
 {
 	stNI_IPConfig ip_config;
 	stNI_PPPConfig ppp_config;
@@ -1419,14 +1430,14 @@ int InitComEngine(void)
 
 	LOG_INIT( "RUN_AURIS", LOGSYS_COMM, 0xFFFFFFFF );
 
-	InitComEngine_DSS();
+	InitComEngine_Register();
 
-	InitCEEvents_DSS ();
+	InitCEEvents ();
 
 	// Get all NWIF
-	InitNWIF_DSS ();	
+	InitNWIF ();	
 
-	GetMediaInfo_DSS ( (stNIInfo*) g_NIInfo, g_NICount);
+	GetMediaInfo ( (stNIInfo*) g_NIInfo, g_NICount);
 
 	/* use DHCP */
 	memset(&ip_config,0,sizeof(ip_config));

@@ -533,7 +533,7 @@ static int SendMsg()
 		LOG_PRINTFF(0x00000001L,"CTLSSent:%d",msgLength);
 		for(len=0;len<msgLength;len++) sprintf(&stmp[strlen(stmp)],"%02x",	msg[len]);
 		for(len=0;len<msgLength*2;len+=100) LOG_PRINTFF(0x00000001L,"[%-.100s]",stmp+len);
-	}
+	}else SVC_WAIT(50);
 	SVC_WAIT(50);
 	return res;
 }
@@ -671,6 +671,7 @@ static int AcquireRsp(char waitForRsp, int timeout)
 				}
 				SVC_WAIT(50);
 				}
+				else SVC_WAIT(100);
 
 				return rspLength;			
 			}

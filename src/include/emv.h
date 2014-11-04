@@ -204,6 +204,7 @@ unsigned short	EmvOnlinePin(void);
 unsigned short	EmvGetUsrPin(unsigned char *ucPin);
 int	EmvCallbackFnInit(void);
 unsigned short	EmvFnAmtEntry(unsigned long *pulTxnAmt);
+unsigned short	EmvFnCandListModify(srAIDList *psrCandidateList);
 unsigned short	EmvFnLastAmtEntry(unsigned long *pulTxnAmt);
 static int	EmvIssuerAuth(void);
 static int	Emv71ScriptProc(void);

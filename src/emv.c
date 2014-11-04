@@ -231,7 +231,7 @@ int	EMVSelectApplication(const long amt, const long acc)
 
 	if (amt > 0) gEmv.amt = amt;
 
-	iStatus = inVXEMVAPSelectApplication(iAutoSelect, EmvCallbackFnSelectAppMenu, EmvCallbackFnPromptManager, EmvFnAmtEntry, NULL);
+	iStatus = inVXEMVAPSelectApplication(iAutoSelect, EmvCallbackFnSelectAppMenu, EmvCallbackFnPromptManager, EmvFnAmtEntry, EmvFnCandListModify);
 	if( (usDefaultRecordRFU1 & 0x0080) && (iStatus == SUCCESS) ) {
 		iStatus = inVXEMVAPPerformGPO();
 	}

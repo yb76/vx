@@ -77,69 +77,16 @@ int	EmvCallbackFnSelectAppMenu(char **pcMenuItems, int iMenuItemsTotal)
 {
 	int selected = 0;
 	int i = 0;
-	int last_item = 0;
-  	char jsontag[30] = "";
-  	char *jsonvalue=NULL;
-  	unsigned int objlength;
-  	static char *data = NULL;
-	char cardname_upper[60]="";
 	int itemtotal = iMenuItemsTotal;
-	char namearr[20][30];
 
-	if(data == NULL) data =(char*)IRIS_GetObjectData( "CARD_NAME", &objlength);
 
-	for(i=0;i<iMenuItemsTotal;i++) {
-	  jsonvalue = NULL;
-	  memset(cardname_upper,0,sizeof(cardname_upper));
-	  strnupr (cardname_upper, pcMenuItems[i], strlen(pcMenuItems[i]));
-      if(data) jsonvalue = (char*)IRIS_GetObjectTagValue( (const char *)data, cardname_upper );
-      if(jsonvalue && strncmp(jsonvalue,"DISABLE",7)==0) {
-		 strcpy( pcMenuItems[i],"");
-		 itemtotal -= 1;
-	  } else {
-		last_item = i+1;
-	  }
-    }
-
-    UtilStrDup(&jsonvalue , NULL);
-
-	//if(itemtotal == 1) return(last_item);
-	if(itemtotal != iMenuItemsTotal ) {
-		int j = 0;
-		memset(namearr,0,sizeof(namearr));
-		for(i=0;i<iMenuItemsTotal;i++) {
-			if(strlen(pcMenuItems[i])>0) {
-				strcpy( namearr[j] , pcMenuItems[i]);
-				j++;
-			}
-		}
-		selected = DispArray(30000, (char **)namearr,j);
-	} else {
+	{
 		int iTo = 30000;
 		if(itemtotal == 1) iTo = 5000;
 		selected = DispArray(iTo, pcMenuItems,iMenuItemsTotal);
 	}
 	gEmv.appsTotal = iMenuItemsTotal;
 
-	if(iMenuItemsTotal>1) {
-		unsigned short cnt = iMenuItemsTotal;
-		unsigned short idx = 0;
-		bool eftpos_card = false;
-
-		for(idx = 0;idx< cnt;idx++){
-			char cardname[64] ="";
-			char *eftpos_name1 = "EFTPOS";
-			char *eftpos_name2 = "EPAL";
-
-			strnupr(cardname, pcMenuItems[idx], strlen(pcMenuItems[idx]));
-			if(strstr(cardname,eftpos_name1)!=NULL || strstr(cardname,eftpos_name2)!=NULL) {
-				eftpos_card = true;
-				break;
-			}
-		}
-
-		gEmv.eftpos_mcard = eftpos_card;
-	}
 	if(selected > 0) return(selected);
 	else if(itemtotal == 1 && (selected == -1 * EVT_TIMEOUT)) return(1);
 
@@ -181,8 +128,10 @@ void	EmvCallbackFnPromptManager(unsigned short usPromptId)
 		case E_CAPK_FILE_NOT_FOUND:    
             //szDspMsg = "CAPK FILE Missing";
 			break;
+    	case E_CAPK_FILE_EXPIRED:
+            szDspMsg = "CARD EXPIRED";
+			break;
     	case E_INVALID_CAPK:		
-    	case E_CAPK_FILE_EXPIRED:		
 		case E_NO_CAPK_DATA:		
 		//Return without displaying any messages
 			break;
@@ -378,6 +327,24 @@ unsigned short	EmvFnAmtEntry(unsigned long *pulTxnAmt)
 	}
 
 	*pulTxnAmt = 0;
+	return(EMV_SUCCESS);
+}
+
+/*
+*/
+unsigned short	EmvFnCandListModify(srAIDList *psrCandidateList)
+{
+	unsigned short cnt = psrCandidateList ->countAID;
+	int i = 0;
+
+	for(i=0;i<cnt;i++) {
+		//EFTPOS multi-network card
+		if( memcmp(psrCandidateList->arrAIDList[i].stAID,"\xA0\x00\x00\x03\x84",5)==0){
+			gEmv.eftpos_mcard = true;
+			break;
+		}
+	}
+
 	return(EMV_SUCCESS);
 }
 

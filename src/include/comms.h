@@ -216,6 +216,7 @@ typedef struct
 	// This data changes per message
 	uchar * pbData;
 	uint wLength;
+	char *pErrmsg;
 } T_COMMS;
 
 /*

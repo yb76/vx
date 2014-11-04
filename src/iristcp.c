@@ -282,7 +282,9 @@ void __tcp_connect(const char * bufSize, const char * interCharTimeout, const ch
 		currHandle = comms.wHandle;
 		*perrmsg = "NOERROR";
 	}
-	else
+	else if(comms.pErrmsg)
+		*perrmsg = comms.pErrmsg;
+	else 
 		*perrmsg = "comm error";
 
 	//Dwarika .. Westpack Vx680
