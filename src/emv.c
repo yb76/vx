@@ -1125,11 +1125,22 @@ int EmvUseHostData(int hostDecision,const char *hexdata,short len)
 	uchar cid ;
 	
     if (len && findTag(0x91, buffer, (short *)&taglen, (const byte *)hexdata,len))   {           // Issuer auth data
-            usEMVUpdateTLVInCollxn(0x9100, buffer, taglen); 
+    	usEMVUpdateTLVInCollxn(0x9100, buffer, taglen);
 	}
- 
+
+    memset(buffer,0,sizeof(buffer));
+    memset(buffer1,0,sizeof(buffer1));
+    memset(buffer2,0,sizeof(buffer2));
+
+    //getTerminalParam(TAC_DEFAULT,buffer,&iret);
+	//DebugDisp("getTerminalParam....ret = %d,TAC_DEFAULT[%02x%02x%02x%02x%02x]",iret,buffer[0],buffer[1],buffer[2],buffer[3],buffer[4] );
+
+
     if(len) numScripts = createScriptFiles((byte *)hexdata,len,buffer1,&len1,buffer2,&len2);
-	iret = inVXEMVAPUseHostData(hostDecision, issuerScriptResults, &numScripts,buffer1,len1,buffer2,len2);
+
+    iret = inVXEMVAPUseHostData(hostDecision, issuerScriptResults, &numScripts,buffer1,len1,buffer2,len2);
+	//DebugDisp("inVXEMVAPUseHostData,hostDecision:%d,ret = %d",hostDecision,iret );
+
 	if(iret) return(iret);
 	
 	usEMVGetTLVFromColxn(0x9f27, &cid, &taglen);

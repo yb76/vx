@@ -40,6 +40,7 @@
 #define TO_ITERATION				200
 #define RESPONSE_TIMEOUT	1000	
 #define	COMMS_E_TIMEOUT		-235
+#define	COMMS_E_NO_RESPONSE	-236
 
 int g_inConnected = 0;
 int g_inAttached = 0;
@@ -67,6 +68,9 @@ static void ErrorDesc( int errorcode, char **errmsg)
 {
 	if( errmsg ) {//TODO
 		switch( errorcode ) {
+			case (COMMS_E_NO_RESPONSE):
+				*errmsg = "NO_RESPONSE";
+				break;
 			case (NO_SIM_CARD):
 				*errmsg = "NO SIM CARD";
 				break;
@@ -938,6 +942,8 @@ int inSendTCPCommunication(T_COMMS * psComms)
 	//nPort = psComms->wPortNumber;
 	
 	retVal = send(gSocketHandle, szTransmitBuffer, inSendSize, 0);
+	LOG_PRINTF( "inSendTCPCommunication sock:%d,sent:%d, retVal %d", gSocketHandle,inSendSize,retVal );
+
 	return(retVal);
 
 }
@@ -970,6 +976,7 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
 		return(RET_FAILED);
    }
 
+	psComms->pErrmsg = NULL;
 	errno = 0;
     if(MaxBufLen< psComms->wLength) {
     	MaxBufLen = psComms->wLength;
@@ -983,13 +990,18 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
 
 	LOG_PRINTF( "inReceiveTCPCommunication retVal %d", retVal );
 
-	if((retVal == -1 || retVal == 0) && errno == EWOULDBLOCK) 
+	if(retVal<=0 )
 	{
-		if(0) DebugPrint("for compiler warning");
-		if(0) DebugPrint2("for compiler warning");
-		errno = 0;
-		ErrorDesc(COMMS_E_TIMEOUT, &psComms->pErrmsg);
-		return(COMMS_E_TIMEOUT); //TIMEOUT
+		if(errno == ETIMEOUT) {
+			ErrorDesc(COMMS_E_TIMEOUT, &psComms->pErrmsg);
+			return(COMMS_E_TIMEOUT); //TIMEOUT
+		}
+		else if(retVal == 0) {
+			ErrorDesc(COMMS_E_NO_RESPONSE, &psComms->pErrmsg);
+			return(-1);
+		}else
+			return(retVal);
+
 	}
 	else
 	{
