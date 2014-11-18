@@ -1132,9 +1132,31 @@ int EmvUseHostData(int hostDecision,const char *hexdata,short len)
     memset(buffer1,0,sizeof(buffer1));
     memset(buffer2,0,sizeof(buffer2));
 
-    //getTerminalParam(TAC_DEFAULT,buffer,&iret);
-	//DebugDisp("getTerminalParam....ret = %d,TAC_DEFAULT[%02x%02x%02x%02x%02x]",iret,buffer[0],buffer[1],buffer[2],buffer[3],buffer[4] );
+    //verifone fix
+    //Check for failed to connect, check if Offline Data Authentication not
+    // performed bit is set in TVR, check if CDA failed bit is not set in TVR, check if the terminal and the card support CDA
+    if (hostDecision == FAILED_TO_CONNECT) {
+    	srTxnResult  srTVRTSI;
+    	char ucAIP[256] = "";
+    	char ucTermCap[256] = "";
+    	unsigned short usAIPLen=0;
+    	unsigned short usTermCapLen = 0;
 
+    	usEMVGetTxnStatus(&srTVRTSI); //Get TVR & TSI
+    	usEMVGetTLVFromColxn(TAG_8200_APPL_INTCHG_PROFILE, &ucAIP[0], &usAIPLen); // Get AIP
+    	usEMVGetTLVFromColxn(TAG_9F33_TERM_CAP, &ucTermCap[0], &usTermCapLen); //Get Terminal Capabilities
+    	if( (	(srTVRTSI.stTVR[0] & 0x80) == 0x80)
+    		&& ((srTVRTSI.stTVR[0] & 0x04) == 0x00)
+    		&& (((ucTermCap[2] & 0x08) == 0x08)
+    		&& ((ucAIP[0] & 0x01) == 0x01)))
+    	{
+    		srTVRTSI.stTVR[0] &= 0x7F;
+        	usEMVSetTxnStatus(&srTVRTSI);
+    	}
+    	//Reset the offline data authentication not performed bit
+    }
+
+    //end
 
     if(len) numScripts = createScriptFiles((byte *)hexdata,len,buffer1,&len1,buffer2,&len2);
 

@@ -1575,12 +1575,12 @@ static int CancelTransaction(int reason)
 {
 	int res;
 
-	if(strlen(p_ctls->TxnStatus) && atoi(p_ctls->TxnStatus)== V2_REQ_OL_AUTH)
+	/*if(strlen(p_ctls->TxnStatus) && atoi(p_ctls->TxnStatus)== V2_REQ_OL_AUTH)
 	{// set online response
 		BuildRawMsg("\xfc\x01\x00\x00\x8a\x02\x30\x30",8);
 		SendRxMsg(0);
 		SVC_WAIT(50);
-	}
+	}*/
 
 	{
 		BuildCancelTransactionMsg();	
