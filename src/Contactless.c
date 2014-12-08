@@ -1575,12 +1575,30 @@ static int CancelTransaction(int reason)
 {
 	int res;
 
-	/*if(strlen(p_ctls->TxnStatus) && atoi(p_ctls->TxnStatus)== V2_REQ_OL_AUTH)
-	{// set online response
-		BuildRawMsg("\xfc\x01\x00\x00\x8a\x02\x30\x30",8);
+	if(strlen(p_ctls->TxnStatus) && atoi(p_ctls->TxnStatus)== V2_REQ_OL_AUTH)
+	{// update balance
+		char dt[30]="";
+		char sCmd[64] = "";
+		char tag_date[4];
+		char tag_time[4];
+		int idx = 0;
+		__time_real("YYMMDDhhmmss",dt);
+
+		UtilStringToHex(dt,6,tag_date);
+		UtilStringToHex(dt+6,6,tag_time);
+
+		memcpy(sCmd+idx, "\x03\x03\x00\x00",4); idx += 4;
+		memcpy(sCmd+idx, "\x00",1); idx += 1; //status code
+		memcpy(sCmd+idx, "\xe3\x00\x06\x30\x30\x30\x30\x30\x30",9); idx += 9;
+		memcpy(sCmd+idx, "\x9a\x03",2); idx += 2;
+		memcpy(sCmd+idx, tag_date,3); idx+=3;
+		memcpy(sCmd+idx, "\x9f\x21\x03",3); idx += 3;
+		memcpy(sCmd+idx, tag_time,3); idx+=3;
+
+		BuildRawMsg(sCmd,idx);
 		SendRxMsg(0);
 		SVC_WAIT(50);
-	}*/
+	}
 
 	{
 		BuildCancelTransactionMsg();	
@@ -2186,7 +2204,8 @@ void InitCtlsPort(void)
 
 int GetCtlsTxnLimit(char *aid,  int *p_translimit, int *p_cvmlimit,int *p_floorlimit)
 {
-		int i =0;
+
+		/*int i =0;
 		char aid_chk[30];
 		char aid_chk2[30];
 
@@ -2202,7 +2221,26 @@ int GetCtlsTxnLimit(char *aid,  int *p_translimit, int *p_cvmlimit,int *p_floorl
 					*p_cvmlimit = AIDlist[i].CVMReqLimitExists ;
 			}
 		}
-		return(0);
+		*/
+	char sValue[40]="";
+	long lValue=0;
+
+	strcpy(sValue,"");
+	CfgAidTLVFind(aid, 0xfff1, sValue);
+	if(strlen(sValue)) *p_translimit = atol(sValue);
+
+	strcpy(sValue,"");
+	CfgAidTLVFind(aid, 0xfff5, sValue);
+	if(strlen(sValue)) *p_cvmlimit = atol(sValue);
+
+	strcpy(sValue,"");
+	CfgAidTLVFind(aid, 0x1ff5, sValue);
+	if( strlen(sValue)) {
+		lValue = strtol(sValue,NULL,16);
+		*p_floorlimit = lValue;
+
+	}
+	return(0);
 }
 
 int CTLSEmvGetTac(char *tac_df,char *tac_dn,char *tac_ol, const char *AID)

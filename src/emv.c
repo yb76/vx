@@ -263,8 +263,6 @@ int	EMVSelectApplication(const long amt, const long acc)
 		return(iStatus);
 	}
 
-	EmvFnAmtEntry(&pullTxnAmt);
-	EMVCheckLocalCfgFile();
 
 	return SUCCESS;
 }

@@ -313,6 +313,8 @@ unsigned short	EmvFnAmtEntry(unsigned long *pulTxnAmt)
 
 	EmvSetAmt(gEmv.amt,cashamt);
 
+	EMVCheckLocalCfgFile();
+
 	if(strlen(gEmv.acct)) {
 		if(strcmp(gEmv.acct,"SAVINGS")==0) {
 			AccountType = 0x10;
