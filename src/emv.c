@@ -1118,7 +1118,7 @@ int EmvUseHostData(int hostDecision,const char *hexdata,short len)
     ushort len2=0;
     ushort taglen = 0;
 	int numScripts = 0;
-	uchar issuerScriptResults[200];
+	uchar issuerScriptResults[1024];
 	short iret=0;
 	uchar cid ;
 	

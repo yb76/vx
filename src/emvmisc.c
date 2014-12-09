@@ -757,7 +757,7 @@ short getNextTLVObject(unsigned short *tag, short *length, byte *value, const by
 int createScriptFiles(byte *scriptBuf, short bufLen, byte* pScript71, unsigned short *usScript71Len, byte* pScript72, unsigned short *usScript72Len )
 {
     byte             *ptr;
-    byte             data[512] = {0};
+    byte             data[1024] = {0};
     unsigned short   tag = 0;
     //short            bufLen = 0;
     short            bytesRead = 0;
