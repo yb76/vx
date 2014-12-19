@@ -264,6 +264,7 @@ int	EMVSelectApplication(const long amt, const long acc)
 	}
 
 
+	EmvFnAmtEntry(&pullTxnAmt);
 	return SUCCESS;
 }
 

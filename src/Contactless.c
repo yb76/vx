@@ -714,7 +714,9 @@ static int HandleNoReqOLErrRsp()
 	case V2_NO_ERR:
 		//something went wrong but nothing went wrong? BAIL!
 		LOG_PRINTFF(0x00000001L,"ERROR! HandleNoReqOLErrRsp() called but ERR == 0");
+		sprintf(p_ctls->TxnStatus,"%2d",98);
 		return CTLS_UNKNOWN | CTLS_DECLINED;
+
 	case V2_AMT_ZERO:
 		//IGNORE TXN!
 		LOG_PRINTFF(0x00000001L,"ERROR! Contactless zero amount txn");
@@ -774,7 +776,10 @@ static int HandleNoReqOLErrRsp()
 		//visa only	
 		return CTLS_UNKNOWN | CTLS_DECLINED;
 	case V2_CRD_GEN_AAC:
-		return CTLS_EMV | CTLS_DECLINED;
+		LOG_PRINTFF(0x00000001L,"ERROR[%d]! Contactless GEN AAC",(*(rsp+V2_DATA_OFS)));
+		sprintf(p_ctls->TxnStatus,"%2d",99);
+		return CTLS_UNKNOWN | CTLS_TRY_CONTACT;
+		//return CTLS_EMV | CTLS_DECLINED;
 		//////////FALL FORWARD//////////	
 	case V2_CRD_BLKD:
 		//card blocked
@@ -1639,6 +1644,23 @@ static int ActivateTransaction(char waitForRsp, int timeout)
 	return(res);
 }
 
+static int SetEmvTag9f1d()
+{
+	char sLineHex[512];
+	char sLine[512];
+	int iHexLen = 0;
+	//4401000101110111
+
+	strcpy( sLine, "fd0e0000e007a00000000410100001019f1d0868f0000000000000");
+	iHexLen = strlen(sLine)/2;
+
+	memset(sLineHex,0,sizeof(sLineHex));
+	SVC_DSP_2_HEX(sLine, sLineHex, iHexLen);
+	BuildRawMsg(sLineHex,iHexLen);
+
+	return SendRxMsg(0);
+}
+
 static int SetEMVTxnAmt()
 {
 	BuildSetEMVTxnAmtMsg();
@@ -1988,6 +2010,7 @@ void CancelAcquireCard(int reason)
 static int CbAcquireCard(void *pParams)
 {			
 	SetEMVTxnAmt();
+	SetEmvTag9f1d();
 	return GetPayment(((AcquireCardParams*)pParams)->waitForRsp, 
 									((AcquireCardParams*)pParams)->timeoutMs);
 }
@@ -2134,13 +2157,16 @@ static void InitRdr(char comPortNumber)
 	}	
 	if(ctlsInitRes > 0) 
 	{
-		strcpy(lcdMsg, "%F2%Pcc15Thank you");
+		strcpy(lcdMsg, "%F2%Pcc15Please wait");
+		StoreLCDMsg(0x07, lcdMsg, "", "", "");
+
+		strcpy(lcdMsg, "%F2%Pcc15Approved");
 		StoreLCDMsg(0x0D, lcdMsg, "", "", "");
 
 		strcpy(lcdMsg, "%F2%Pcc22Not Authorised");
 		ctlsInitRes = StoreLCDMsg(0x0E, lcdMsg, "", "", "");
 
-		strcpy(lcdMsg, "%F2%Pcc15Thank you");
+		strcpy(lcdMsg, "%F2%Pcc15Declined");
 		StoreLCDMsg(0x0F, lcdMsg, "", "", "");
 	}
 	{
