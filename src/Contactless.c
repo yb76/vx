@@ -2166,7 +2166,8 @@ static void InitRdr(char comPortNumber)
 		strcpy(lcdMsg, "%F2%Pcc22Not Authorised");
 		ctlsInitRes = StoreLCDMsg(0x0E, lcdMsg, "", "", "");
 
-		strcpy(lcdMsg, "%F2%Pcc15Declined");
+		//strcpy(lcdMsg, "%F2%Pcc15Declined");
+		strcpy(lcdMsg, "%F2%Pcc15Please wait");
 		StoreLCDMsg(0x0F, lcdMsg, "", "", "");
 	}
 	{

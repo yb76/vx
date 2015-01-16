@@ -56,7 +56,7 @@ int g_GPRSHandle = -1;
 static int gSocketHandle = -1;
 static stNIInfo g_currMediaInfo;			// Current media stNIInfo
 static int g_signal=0;
-
+static int g_nowait=0;
 
 static int DebugPrint (const char*template,...) ;
 static int DebugPrint2 (const char*template,...) ;
@@ -550,7 +550,13 @@ static int inCEStartGPRSNetwork(char *sAPN)
 	if(firsttime ) {
 		
 		int reconnect = 1;
+		char model[20]="";
 		
+		SVC_INFO_MODELNO(model);
+		if( strstr(model,"3G")!= NULL) {
+			int hs_network = 1;
+			ceSetDDParamValue(g_GPRSHandle, INI_HS_NETWORK, &hs_network, sizeof(hs_network));
+		}
 		ceSetDDParamValue(g_GPRSHandle, AUTO_RECONNECT, &reconnect, sizeof(reconnect));
 
 		ceSetDDParamValue(g_GPRSHandle, INI_GPRS_APN, sAPN, strlen (sAPN) + 1);
