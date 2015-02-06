@@ -930,9 +930,7 @@ int EMVProcessingRestrictions (void)
 				ulRSThreshold = atol( sRSThreshold);
 	   			inRSTarget = atoi( sRSTarget);
 				inRSMax = atoi(sRSMax);
-				if (ulFloorLimit > 0) {
-					iStatus = inVXEMVAPSetROSParams(ulFloorLimit,ulRSThreshold,inRSTarget,inRSMax);
-				}
+				iStatus = inVXEMVAPSetROSParams(ulFloorLimit,ulRSThreshold,inRSTarget,inRSMax);
 			}
 		}
 

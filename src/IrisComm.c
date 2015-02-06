@@ -254,6 +254,9 @@ static int inStartCE_NETWORK (void)
 		   return(g_inErrno);
    }
 
+   //3G
+   SVC_WAIT(500);
+
 	retryCounter = 0;
 	for(;;)
 	{
