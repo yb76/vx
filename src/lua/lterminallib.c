@@ -23,6 +23,11 @@
 	#include "emv.h"
 #endif
 
+static int terminal_SetDisplayFlush (lua_State *L) {
+  bool flag = lua_toboolean(L, 1);  /*  get argument */
+  GetSetFlush(1,flag);
+  return 0;  /*  number of results */
+}
 
 static int terminal_DisplayObject (lua_State *L) {
   const char* lines ;
@@ -39,6 +44,7 @@ static int terminal_DisplayObject (lua_State *L) {
 
 
   DisplayObject( lines,keybmp,evtbmp,timeout,event,input);
+  GetSetFlush(1,true);
 
   lua_pushstring(L, event);  /*  push result */
   lua_pushstring(L, input);  /*  push result */
@@ -1651,7 +1657,34 @@ static int terminal_SysEnv(lua_State *L) {
   return 1; /*  number of results */
 }
 
+static int terminal_iStartGPS (lua_State *L)
+{
+    const char *method = lua_tostring(L,1);
+	if(method == NULL || strcmp(method,"ENGINE")==0)
+		iStartGPS();
+	if(method == NULL || strcmp(method,"LIBRARY")==0)
+		iStartLibGPS();
+	return 0; /*  number of results */
+}
+static int terminal_iStopGPS (lua_State *L)
+{
+    const char *method = lua_tostring(L,1);
+	if(method == NULL || strcmp(method,"LIBRARY")==0)
+		iStopLibGPS();
+	if(method == NULL || strcmp(method,"ENGINE")==0)
+		iStopGPS();
+	return 0; /*  number of results */
+}
+
+static int terminal_SetTcpBreak (lua_State *L)
+{
+	int allowbreak = lua_tonumber(L,1);
+	SetNonBlockTcp(allowbreak);
+	return(0);
+}
+
 static const luaL_Reg terminallib[] = {
+  {"SetDisplayFlush",terminal_SetDisplayFlush},
   {"DisplayObject", terminal_DisplayObject},
   {"DebugDisp", terminal_DebugDisp},
   {"SetNextObject", terminal_SetNextObject},
@@ -1772,7 +1805,9 @@ static const luaL_Reg terminallib[] = {
   {"EmvTLVReplace",terminal_EmvTLVReplace},
   {"EmvFindCfgFile",terminal_EmvFindCfgFile},
 #endif
-
+  {"iStartGPS",terminal_iStartGPS},
+  {"iStopGPS",terminal_iStopGPS},
+  {"SetTcpBreak",terminal_SetTcpBreak},
   {NULL, NULL}
 };
 

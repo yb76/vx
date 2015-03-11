@@ -694,6 +694,35 @@ uchar InpGetKeyEvent(T_KEYBITMAP keyBitmap, T_EVTBITMAP * evtBitmap, T_INP_ENTRY
 			 }
 		}
 		//Dwarika .. For touch
+		if(evt & EVT_SOKT)
+		{
+			static char gps_Lat_old[64]="";
+			static char gps_Lon_old[64]="";
+			char gps_Lat_new[64]="";
+			char gps_Lon_new[64]="";
+
+			char *sJsonObj = NULL;
+			char *jsonvalue = NULL;
+			int objlength = 0;
+
+			iReadGPS();
+
+			sJsonObj = (char*)IRIS_GetObjectData( "GPS_CFG", &objlength);
+			jsonvalue =  (char*)IRIS_GetObjectTagValue( sJsonObj,  "LAT");
+			if(jsonvalue) strcpy(gps_Lat_new,jsonvalue);
+			UtilStrDup(&jsonvalue , NULL);
+			jsonvalue =  (char*)IRIS_GetObjectTagValue( sJsonObj,  "LON");
+			if(jsonvalue) strcpy(gps_Lon_new,jsonvalue);
+			UtilStrDup(&jsonvalue , NULL);
+			UtilStrDup(&sJsonObj , NULL);
+
+			if(strcmp(gps_Lat_old,gps_Lat_new) || strcmp(gps_Lon_old,gps_Lon_new)) {
+				if(gps_Lat_old[0]=='0' && gps_Lat_new[0] != '0')
+					myEvtBitmap = EVT_TIMEOUT; // no need to send timeout event
+				strcpy(gps_Lat_old,gps_Lat_new);
+				strcpy(gps_Lon_old,gps_Lon_new);
+			}
+		}
 
 		if((keyCode == 0x00)&& (evt & EVT_KBD))
 		{
@@ -1508,4 +1537,12 @@ int GetSetTcpChkFlg(int mode, int* flag)
 		connflag = *flag;
 	}
 	return(0);
+}
+
+int GetSetFlush(int mode,int flag)
+{
+	static int flush = true;
+	if(mode == 1) flush = flag ;
+	return(flush);
+
 }

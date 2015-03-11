@@ -286,7 +286,7 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 	char * event=NULL;
 	bool firstRound = true;
 	bool eventOccurred = false;
-	bool flush = true;
+	bool flush = GetSetFlush(0,0); //true;
 	int item_num = 0;
 	int i=0,j=0;
 	char liness[1024];
@@ -714,8 +714,15 @@ int DisplayObject(const char *lines,T_KEYBITMAP keyBitmap,T_EVTBITMAP keepEvtBit
 							int pos_x = 0;
 							int pos_y = 0;
 
-							if(strlen(value) > 1)
+							if(strlen(value) > 1) {
+								char *p_color= NULL;
+								char *p_color_end= NULL;
 								len = strlen(value);
+								if( (p_color = strstr(value,"<color"))!=NULL)  {
+									p_color_end = strchr(p_color,'>');
+									len = len - (p_color_end - p_color+1);
+								}
+							}
 
 							// 8 * 16 font size
 							if (col == 255)

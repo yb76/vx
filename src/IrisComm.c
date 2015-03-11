@@ -63,6 +63,7 @@ static int DebugPrint2 (const char*template,...) ;
 unsigned int inManageCEEvents (void);
 void voTranslateCEevt(int inCEEVT, char* chTranslatedEvent);
 int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout);
+bool checkUserBreak();
 
 static void ErrorDesc( int errorcode, char **errmsg)
 {
@@ -89,6 +90,7 @@ static void ListNWIF (stNIInfo stArray[], int arrayCount)
 {
 	int cntr = 0;
 	for (cntr = 0; cntr < arrayCount; cntr++) {
+		LOG_PRINTF ( "[%s] ListNWIF: g_inConnected %s,%d", __FUNCTION__, stArray[cntr].niDeviceName,stArray[cntr].niCommTech);
 		if(((strcmp(stArray[cntr].niDeviceName,"/DEV/COM2")) == 0) && ((strcmp(stArray[cntr].niCommTech,"GPRS")) == 0))
 		{
 			g_GPRSHandle = stArray[cntr].niHandle;
@@ -131,7 +133,7 @@ static int SocketConnect (int* pSocketHandle,char * tHIP, int tPort, int conn_ti
 	retVal = connect_nonblock (sockHandle, (struct sockaddr*)&sockHost, 15);
 	if (retVal != 0)  {
 
-		LOG_PRINTF ( "[%s] Socket creation FAILED: %d. errno: %d", __FUNCTION__, retVal, errno);
+		LOG_PRINTF ( "[%s] connect nonblock FAILED: %d. errno: %d", __FUNCTION__, retVal, errno);
 		socketclose (sockHandle);
 		return RET_FAILED;
 	}
@@ -219,6 +221,7 @@ static int inStartCE_OPEN (void)
 
 			do
 			{
+				if(checkUserBreak()) return RET_FAILED;
 				inRetVal = ceGetNWParamValue(g_GPRSHandle, NWIF_STATE, &ceNWIF, sizeof (stNI_NWIFState), &uiValueLength);
 
 				if (inRetVal >= 0)
@@ -264,6 +267,7 @@ static int inStartCE_NETWORK (void)
 		inRetVal = ceStartNWIF(g_GPRSHandle, CE_CONNECT);
 		LOG_PRINTF( "inStartCE_NETWORK ***********inRetVal %d ", inRetVal);
 
+		if(checkUserBreak()) return RET_FAILED;
 		switch(inRetVal)
 		{
 			case 0:
@@ -273,6 +277,7 @@ static int inStartCE_NETWORK (void)
 				LOG_PRINTF( "inStartCE_NETWORK ***********ulTimeOut %d ", ulTimeOut);
 				do
 				{
+					if(checkUserBreak()) return RET_FAILED;
 					event = inManageCEEvents ();
 
 					LOG_PRINTF( "inStartCE_NETWORK ***********event %d ", event);
@@ -327,7 +332,7 @@ static int inStartCE_NETWORK (void)
 						ulTimeOut = read_ticks() + TO_STOP;
 						LOG_PRINTF( "inStartCE_NETWORK ***********ulTimeOut %d ", ulTimeOut);
 						do
-						{
+						{	if(checkUserBreak()) return RET_FAILED;
 							event = inManageCEEvents ();
 							ulTime = read_ticks();
 						}while((event != CE_EVT_START_LINK) && (ulTime < ulTimeOut));  
@@ -348,6 +353,7 @@ static int inStartCE_NETWORK (void)
 						LOG_PRINTF( "inStartCE_NETWORK ***********ulTimeOut %d ", ulTimeOut);
 						do
 						{
+							if(checkUserBreak()) return RET_FAILED;
 							event = inManageCEEvents ();
 							ulTime = read_ticks();
 						}while((event != CE_EVT_NET_UP) && (ulTime < ulTimeOut));  
@@ -433,6 +439,7 @@ static int inStopCE_NETWORK (void)
 			ulTimeOut = read_ticks() + TO_STOP;
 			do
 			{
+				if(checkUserBreak()) return RET_FAILED;
 				event = inManageCEEvents ();
 				ulTime = read_ticks();
 				}while((event != CE_EVT_STOP_NW) && (ulTime < ulTimeOut));  
@@ -448,6 +455,7 @@ static int inStopCE_NETWORK (void)
 					ulTimeOut = read_ticks() + TO_STOP;
 					do
 					{
+						if(checkUserBreak()) return RET_FAILED;
 						event = inManageCEEvents ();
 						ulTime = read_ticks();
 					}while((event != CE_EVT_STOP_LINK) && (ulTime < ulTimeOut));  
@@ -483,6 +491,7 @@ static int inStopCE_NETWORK (void)
 				ulTimeOut = read_ticks() + TO_STOP;
 				do
 				{
+					if(checkUserBreak()) return RET_FAILED;
 					event = inManageCEEvents ();
 					ulTime = read_ticks();
 				}while((event != CE_EVT_STOP_LINK) && (ulTime < ulTimeOut));  
@@ -502,6 +511,7 @@ static int inStopCE_NETWORK (void)
 				ulTimeOut = read_ticks() + TO_STOP;
 				do
 				{
+					if(checkUserBreak()) return RET_FAILED;
 					event = inManageCEEvents ();
 					ulTime = read_ticks();
 				}while((event != CE_EVT_STOP_LINK) && (ulTime < ulTimeOut));  
@@ -609,20 +619,22 @@ static int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout)
 	// Trying to connect with timeout 
 	res = connect(sockHandle, (struct sockaddr *)paddr, sizeof(struct sockaddr_in)); 
 	
-	LOG_PRINTF ( "[%s] Socket creation FAILED: %d. errno: %d", __FUNCTION__, res, errno);
+	LOG_PRINTF ( "[%s] Socket creation id: %d. ", __FUNCTION__, res );
 
 	if (res != 0) {
 		do { 
 			result = socketerrno(sockHandle);
 			
-			LOG_PRINTF( "connect_nonblock  result%d", result );
+			//LOG_PRINTF( "connect_nonblock  result%d", result );
 
 			if (result == 0)
 				break;
 
 			if((result != 0) && (result != EINPROGRESS) && (result != EISCONN))
 				return(-1);
-
+			
+			if(checkUserBreak()) return(-3);
+			
 			if (read_ticks()>=ulTimeout) 
 			{
 				LOG_PRINTF( "connect_nonblock  Timeout in select res %d", res );
@@ -675,6 +687,7 @@ static int ceForceReconnect( stNI_NWIFState ceNWIF,char *newAPN)
 			ulTimeOut = read_ticks() + TO_STOP;
 			do
 			{
+				if(checkUserBreak()) return RET_FAILED;
 				event = inManageCEEvents ();
 				ulTime = read_ticks();
 			}while((event != CE_EVT_NET_UP) && (ulTime < ulTimeOut));  
@@ -995,11 +1008,50 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
     mytimeval.tv_usec = 100;
     setsockopt(gSocketHandle, SOL_SOCKET, SO_RCVTIMEO, (char*) &mytimeval, sizeof(mytimeval) );
 
-	retVal = recv(gSocketHandle, pchReceiveBuff, MaxBufLen, 0);
+	{
+			struct linger so_linger;
 
+			so_linger.l_onoff = 1;
+			so_linger.l_linger = 0;
+    		setsockopt(gSocketHandle, SOL_SOCKET, SO_LINGER, (char*) &so_linger, sizeof(so_linger) );
+	
+	}
+
+	retVal = recv(gSocketHandle, pchReceiveBuff, MaxBufLen, g_nowait?MSG_DONTWAIT:0);
 	LOG_PRINTF( "inReceiveTCPCommunication retVal %d", retVal );
-
-	if(retVal<=0 )
+	if(g_nowait) {
+		int recved =0;
+		
+		while(1) {
+			if(retVal >0) recved += retVal;
+			if(recved >0) {
+				if(recved > MaxBufLen) { recved = MaxBufLen; break;}
+				if(retVal <=0) break; //received something and now got nothing, normal return
+			} else {
+				if( errno != EAGAIN && errno != EWOULDBLOCK) break; // not normal
+				else SVC_WAIT(10); //not arrived
+			}
+			if(checkUserBreak()) break; //user break
+			retVal = recv(gSocketHandle, pchReceiveBuff+recved, MaxBufLen, MSG_DONTWAIT);
+		}
+		
+		if(recved > 0) {
+			LOG_PRINTF( "inReceiveTCPCommunication received %d", recved );
+			return(recved);
+		} else {
+			LOG_PRINTF( "inReceiveTCPCommunication error %d", recved );
+			if(errno == ETIMEOUT) {
+				ErrorDesc(COMMS_E_TIMEOUT, &psComms->pErrmsg);
+				return(COMMS_E_TIMEOUT); //TIMEOUT
+			}
+			else if(retVal == 0) {
+				ErrorDesc(COMMS_E_NO_RESPONSE, &psComms->pErrmsg);
+				return(-1);
+			}else
+				return(retVal);
+		}
+	}
+	else if(retVal<=0 )
 	{
 		if(errno == ETIMEOUT) {
 			ErrorDesc(COMMS_E_TIMEOUT, &psComms->pErrmsg);
@@ -1472,6 +1524,37 @@ int InitComEngine(void)
 	auto_reconnect = 1;
 	ceSetDDParamValue( g_GPRSHandle, AUTO_RECONNECT, &auto_reconnect, sizeof(auto_reconnect));
 
-	return(0);
+}
 
+bool checkUserBreak()
+{
+	bool userbreak = false;
+	long evt = 0;
+	int penDown =0, new_touch_x = 0, new_touch_y = 0;
+
+	if(g_nowait) {
+		evt = peek_event();
+		if (evt & EVT_KBD || evt & EVT_MCR || evt & EVT_SCT_IN)  userbreak = true; 
+		if (evt & EVT_SOKT) {
+			iReadGPS();
+		}
+		else if(EmvIsCardPresent()) userbreak = true;
+		else {
+			penDown = get_touchscreen(&new_touch_x, &new_touch_y);
+			if(penDown >0 && new_touch_x > 0 && new_touch_x < 240 && new_touch_y > 0 && new_touch_y < 320)
+			{
+				userbreak = true; 
+			}
+		}
+		if(userbreak) LOG_PRINTF ( "USERBREAK , event = [%ld],[%s]", evt, __FUNCTION__);
+	}
+	if(g_nowait==1) return(userbreak); //g_nowait=1: allow break, =2: check EVT_SOKT
+	else return(false);
+
+}
+
+int SetNonBlockTcp(int setmode)
+{
+	g_nowait = setmode;
+	return(1);
 }
