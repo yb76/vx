@@ -91,7 +91,7 @@ int iStartLibGPS(void)
 	iRet = gps_stream(&g_stGpsData, iFlags, NULL);
 	LOG_PRINTF("gps_stream(0x%x) returned %d.", iFlags, iRet);
 	
-	
+	gps_setting(1, 1);
 	return 0;
 }
 
@@ -120,12 +120,19 @@ int iLogGPS(void)
 	{
 		char gps_lat[64];
 		char gps_lon[64];
+		unsigned long ltick=0;
+		char tick[64];
+
 		GPS_LOG_DBL(fix.latitude);
 		GPS_LOG_DBL(fix.longitude);
 		sprintf(gps_lat,"%f",g_stGpsData.fix.latitude);
 		sprintf(gps_lon,"%f",g_stGpsData.fix.longitude);
 		IRIS_StoreData("GPS_CFG","LAT", gps_lat, 0/* false */);
 		IRIS_StoreData("GPS_CFG","LON", gps_lon, 0/* false */);
+		ltick = read_ticks();
+		sprintf(tick,"%ld",ltick);
+		IRIS_StoreData("GPS_CFG","TICK", tick, 0/* false */);
+		gps_setting(1, 2);
 	}
 	if (g_stGpsData.set & ALTITUDE_SET)
 		GPS_LOG_DBL(fix.altitude);
@@ -171,7 +178,41 @@ int iReadGPS(void)
 }
 
 
-int gpsmain (int argc, char *argv[])
-{}
-int iReadGPS1(int waitevt, char *gps_lat, char *gps_lon)
-{}
+int gps_setting(int getset, int value)
+{
+	static int setting = 0;
+	if (getset==1){  //set
+		setting = value;
+	} else { //get
+	}
+	return setting;
+}
+
+int gps_check()
+{
+	int istatus = gps_setting(0,0);
+
+	if(istatus==2) { //started
+			unsigned long ltick =read_ticks();
+			unsigned long oldTick = 0;
+			char *sJsonObj = NULL;
+			char *jsonvalue = NULL;
+			int objlength = 0;
+
+			sJsonObj = (char*)IRIS_GetObjectData( "GPS_CFG", &objlength);
+			jsonvalue =  (char*)IRIS_GetObjectTagValue( sJsonObj,  "TICK");
+			if(jsonvalue && strlen(jsonvalue)) oldTick = atol(jsonvalue);
+			UtilStrDup(&jsonvalue , NULL);
+			UtilStrDup(&sJsonObj , NULL);
+			if(oldTick && ltick - oldTick > 1000 * 60 * 5) { // 5 minutes
+				int iRet = gps_read(&g_stGpsData);
+				if(iRet<0) {
+					LOG_PRINTF("gps lib restart");
+					iStopLibGPS();
+					iStartLibGPS();
+				}
+			}
+
+	}
+	return(-1);
+}

@@ -409,7 +409,7 @@ uchar InpGetKeyEvent(T_KEYBITMAP keyBitmap, T_EVTBITMAP * evtBitmap, T_INP_ENTRY
 
 	char retVal;
 	int ret;
-
+	int iGps = 0;
 	char sPrntBuff[50];
 	char sPressKeyCode[5];
 	char * pKeyCode;
@@ -694,7 +694,12 @@ uchar InpGetKeyEvent(T_KEYBITMAP keyBitmap, T_EVTBITMAP * evtBitmap, T_INP_ENTRY
 			 }
 		}
 		//Dwarika .. For touch
-		if(evt & EVT_SOKT)
+		if (evt & EVT_SOKT) {
+			iReadGPS();
+			iGps = 1;
+		}
+		iGps = gps_check(evt); //Handle EVT_SOKT
+		if(iGps>0 )
 		{
 			static char gps_Lat_old[64]="";
 			static char gps_Lon_old[64]="";
@@ -705,7 +710,8 @@ uchar InpGetKeyEvent(T_KEYBITMAP keyBitmap, T_EVTBITMAP * evtBitmap, T_INP_ENTRY
 			char *jsonvalue = NULL;
 			int objlength = 0;
 
-			iReadGPS();
+			if(iGps==0)
+				iReadGPS();
 
 			sJsonObj = (char*)IRIS_GetObjectData( "GPS_CFG", &objlength);
 			jsonvalue =  (char*)IRIS_GetObjectTagValue( sJsonObj,  "LAT");
@@ -1029,6 +1035,11 @@ uchar InpGetKeyEvent(T_KEYBITMAP keyBitmap, T_EVTBITMAP * evtBitmap, T_INP_ENTRY
 	
 	// Transfer the result to the caller
 	if (evtBitmap) *evtBitmap = myEvtBitmap;
+
+	//check if GPS need to restart ... no EVT_SOKT
+	if(iGps == 0 && myEvtBitmap == EVT_TIMEOUT ) {
+		gps_check();
+	}
 
 	// Indicate to the caller that no key was detected
 	if (retKeyCode == KEY_NONE && inpEntry.type == E_INP_PIN) iPS_CancelPIN();
