@@ -1683,6 +1683,13 @@ static int terminal_SetTcpBreak (lua_State *L)
 	return(0);
 }
 
+static int terminal_SetBackLight (lua_State *L)
+{
+	int backlight = lua_tonumber(L,1);
+	set_backlight(backlight);
+	return(0);
+}
+
 static const luaL_Reg terminallib[] = {
   {"SetDisplayFlush",terminal_SetDisplayFlush},
   {"DisplayObject", terminal_DisplayObject},
@@ -1808,6 +1815,7 @@ static const luaL_Reg terminallib[] = {
   {"iStartGPS",terminal_iStartGPS},
   {"iStopGPS",terminal_iStopGPS},
   {"SetTcpBreak",terminal_SetTcpBreak},
+  {"SetBackLight",terminal_SetBackLight},
   {NULL, NULL}
 };
 

@@ -592,6 +592,7 @@ void __store_objects(int unzip,char *objects,int* nextmsg,char **response)
 								write(whandle, (char *) data, len);
 							my_free(data);
 						}
+						close(whandle);
 					}
 #endif
 					IRIS_DeallocateStringValue(fileMax);
