@@ -154,8 +154,19 @@ void DispText(const char * intext, uint row, uint col, bool clearLine, bool larg
 	int len = 0;
     long color,old_color;
     char text[256];
+    static int large_setting = -1;
+
 
 	if(intext == NULL) return;
+	if(large_setting==-1) {
+		char key[30] = "RIS_LARGEFONT";
+		char value[30] = "";
+		get_env(key, value, sizeof(value));
+		if(strcmp(value,"YES")==0) {
+			large_setting = 1;
+		} else
+			large_setting = 0;
+	}
 
 
 	// Initialisation
@@ -166,14 +177,14 @@ void DispText(const char * intext, uint row, uint col, bool clearLine, bool larg
 	// If centre requested
 	//if (col == 255) col = ((largeFont?MAX_COL_LARGE_FONT:MAX_COL) - (len * 7)) / 2;
 	if (col == 255) {
-		col = (MAX_COL - (len * 8)) / 2;
+		col = (MAX_COL - (len * ((largeFont&&large_setting)?16:8))) / 2;
 	}
 
 	// If right justificatino requested
 	else if  (col == 254)
 	{
 		//col = (largeFont?MAX_COL_LARGE_FONT:MAX_COL) - (len * 7);
-		col = MAX_COL - (len * 8);
+		col = MAX_COL - (len * ((largeFont&&large_setting)?16:8));
 	}
 
 	if(color) {
@@ -194,7 +205,7 @@ void DispText(const char * intext, uint row, uint col, bool clearLine, bool larg
 	}
 	else
 	{
-		inverse?setfont("f:ir8x16i.vft"):setfont("f:ir8x16.vft");
+		inverse?setfont("f:ir8x16i.vft"):setfont(large_setting?"f:ir16x16.vft":"f:ir8x16.vft");
 		if (row == 9999)
 			write(conHandle, text, strlen(text));
 		else

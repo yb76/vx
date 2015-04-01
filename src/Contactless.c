@@ -398,7 +398,6 @@ static int InitComPort(char comPortNumber)
 			BuildRawMsg("\x29\x00\x00\x00",4);
 			SendRxMsg(0);
 		}
-
 	}
 
 	// if need to restore factory 
@@ -650,7 +649,7 @@ static int AcquireRsp(char waitForRsp, int timeout)
 		{
 			if(read_ticks() > t1+50)		
 			{
-				if(CTLSDEBUG) {
+				if(true) {
 				char stmp[4096]="";
 				long len = 0;
 				long idx = 0;
@@ -664,14 +663,16 @@ static int AcquireRsp(char waitForRsp, int timeout)
 					idx = 11;
 				}
 				if(rsp[idx] != 0x00 && rsp[idx]!=V2_REQ_OL_AUTH) {
-					DebugPrint(" boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
+					if(CTLSDEBUG)
+						DebugPrint(" boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
+					else if(p_ctls==NULL) SVC_WAIT(1000);
+
 					LOG_PRINTFF(0x00000001L, "boyang status = %02x, cmd/subcmd = %02x %02x", rsp[idx],msg[idx-1],msg[idx]);
 					respok = -1;
 					CtlsResp(1, &respok);
 				}
 				SVC_WAIT(50);
 				}
-				else SVC_WAIT(100);
 
 				return rspLength;			
 			}
@@ -1333,6 +1334,7 @@ static int SendRestoreRawMsg()
 	char restoremsg[6] = "\xf8\x00\x00\x00\xf1\x00";
 	BuildRawMsg(restoremsg,5);
 	SendRxMsg(0);
+	SVC_WAIT(100);
 	return(0);
 }
 
@@ -1889,6 +1891,7 @@ static int SendCfgLine()
 	int i = 0;
 
 	LOG_PRINTFF(0x00000001L,"cfg file 0, %d",sCfgLength);
+	SVC_WAIT(100);
 
 	memset(sLine,0,sizeof(sLine));
 	if(sCfgData==NULL||sCfgLength<=0) return(CTLS_SUCCESS); //no file
@@ -1905,6 +1908,7 @@ static int SendCfgLine()
 				int result=0;
 				
 				LOG_PRINTFF(0x00000001L,"cfg line = %.100s", psLine);
+
 				memset(sLineHex,0,sizeof(sLineHex));
 				SVC_DSP_2_HEX(psLine, sLineHex, iHexLen);
 				BuildRawMsg(sLineHex,iHexLen);
@@ -1914,6 +1918,7 @@ static int SendCfgLine()
 					// F1/00:SET EXIST ADDITIONAL AID PARAM
 					// F1/01:SET NEW   ADDITIONAL AID PARAM
 					LOG_PRINTFF(0x00000001L,"cfg line F1/00->F1/01");
+
 					sLineHex[1] = 0x01;
 					BuildRawMsg(sLineHex,iHexLen);
 					SendRxMsg(0);
