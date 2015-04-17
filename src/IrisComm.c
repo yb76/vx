@@ -1534,19 +1534,25 @@ bool checkUserBreak()
 
 	if(g_nowait) {
 		evt = peek_event();
-		if (evt & EVT_KBD || evt & EVT_MCR || evt & EVT_SCT_IN)  userbreak = true; 
+		if (evt & EVT_KBD || evt & EVT_MAG || evt & EVT_ICC1_INS) {
+			userbreak = true;
+			LOG_PRINTF ( "USERBREAK , event = [%ld],[%s]", evt, __FUNCTION__);
+		}
 		if (evt & EVT_SOKT) {
 			iReadGPS();
 		}
-		else if(EmvIsCardPresent()) userbreak = true;
+		else if(EmvIsCardPresent()) {
+			userbreak = true;
+			LOG_PRINTF ( "USERBREAK card insert");
+		}
 		else {
 			penDown = get_touchscreen(&new_touch_x, &new_touch_y);
 			if(penDown >0 && new_touch_x > 0 && new_touch_x < 240 && new_touch_y > 0 && new_touch_y < 320)
 			{
-				userbreak = true; 
+				userbreak = true;
+				LOG_PRINTF ( "USERBREAK touch");
 			}
 		}
-		if(userbreak) LOG_PRINTF ( "USERBREAK , event = [%ld],[%s]", evt, __FUNCTION__);
 	}
 	if(g_nowait==1) return(userbreak); //g_nowait=1: allow break, =2: check EVT_SOKT
 	else return(false);
