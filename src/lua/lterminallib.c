@@ -267,6 +267,13 @@ static int terminal_ErrorBeep (lua_State *L) {
   return 0;  /*  number of results */
 }
 
+static int terminal_PlaySound (lua_State *L) {
+  const char *fname = lua_tostring(L,1);
+  int iret = playSound(fname);
+  lua_pushnumber(L, iret);
+  return 1;  /*  number of results */
+}
+
 static int terminal_DoTmsCmd (lua_State *L) {
   	const char *jsonobj = lua_tostring(L,1);
     DoTmsCmd(jsonobj);
@@ -1707,6 +1714,7 @@ static const luaL_Reg terminallib[] = {
   {"SetJsonValue", terminal_SetJsonValue},
   {"GetTrack",terminal_GetTrack},
   {"ErrorBeep",terminal_ErrorBeep},
+  {"PlaySound",terminal_PlaySound},
   {"Sleep",terminal_Sleep},
   {"NewObject",terminal_NewObject},
   {"LocateCpat",terminal_LocateCpat},

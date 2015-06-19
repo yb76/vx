@@ -1,0 +1,94 @@
+// JSON notation with the following exceptions:
+//	- Default values allowed for text (ie. empty values).
+//	- Quotes are optional and can be removed if not ambiguous (eg. not mistaken with number, true, false, null which will take precedence).
+//	- All leading/trailing spaces to the object string or value are removed by the pre-processor. If some needed, 
+//	- Any line starting with // is a comment line
+//
+
+{
+	TYPE:DISPLAY,
+	NAME:SWIPE,
+	PROMPT:SWIPE CARD
+	TRACK1:                                                                                ,
+	TRACK2:                                        ,
+	PATH:
+	[
+		[EVENT,TIME,{VALUE:30000},IDLE],
+		[EVENT,MCR,,AMOUNT]
+		[KEY,CANCEL,,IDLE]
+	]
+}
+{
+	TYPE:DIALOG,
+	NAME:AMOUNT,
+	PROMPT:ENTER AMOUNT,
+	ENTRY:[AMOUNT TYPE,00000000]
+	PATH:
+	[
+		[EVENT,TIME,{VALUE:30000},IDLE],
+		[KEY,OK,,PROGRESS],
+		[KEY,CANCEL,,IDLE]
+	]
+}
+{
+	TYPE:DISPLAY,
+	NAME:PROGRESS,
+	ACTION:CONNECT,
+	PROMPT:[TRANSACTION IN,PROGRESS,,CONNECTING...],
+	PATH:
+	[
+		[EVENT,COMMS,{VALUE:CONNECTED,ACTION:SEND},RECEIVE],
+		[EVENT,COMMS,{VALUE:IDLE},PRINT],
+		[KEY,CANCEL,{ACTION:DISCONNECT},PRINT]
+	]
+}
+{
+	TYPE:DISPLAY,
+	NAME:RECEIVE,
+	ACTION:RECEIVE,
+	PROMPT:[TRANSACTION IN,PROGRESS,,RECEIVING...],
+	PATH:
+	[
+		[EVENT,COMMS,{VALUE:RECEIVE,ACTION:DISCONNECT},PROCESS],
+		[EVENT,COMMS,{VALUE:IDLE,ACTION:DISCONNECT},PRINT],
+		[KEY,CANCEL,{ACTION:DISCONNECT},PRINT]
+	]
+}
+{
+	TYPE:DISPLAY,
+	NAME:PROCESS,
+	ACTION:PARSERESPONSE,
+	VALUE:   ,
+	INVOICE:      ,
+	CARD NAME:          ,
+	AUTH NO:            ,
+	PROMPT:[TRANSACTION IN,PROGRESS,,PROCESSING...],
+	PATH:
+	[
+		[,,,PRINT]
+	]
+}
+{
+	TYPE:DISPLAY,
+	NAME:PRINT,
+	ACTION:PRINT,
+	PROMPT:PRINTING,PLEASE WAIT
+	VALUE:	\C?/CONFIG/PAYMENT/MERCHANT NAME?\n
+		\C?../ADDRESS?\n\n
+		Date/Time : ()date   ()now\n
+		MID:?../MID?\n
+		TID:?/../TID?\n
+		INV/ROC #:?/DISPLAY/PROCESS/INVOICE?\n
+		\FSALE\n
+		\f?/DISPLAY/SWIPE/TRACK2[1-6]?...?.[14-16]?(s)\n
+		Expiry: ?.[20-21]?/?.[18-19]?\n
+		AUTH NO:?/DISPLAY/PROCESS/AUTH NO?\n\n
+		AMOUNT:\R$?/DIALOG/AMOUNT/ENTRY[2] div 100?.?.[2] mod 100?\n\n
+		TIP:\R\U            \n
+		TOTAL:\n\n\n
+		SIGN:\U                   \n\n
+		I AGREE TO PAY THE ABOVE AMOUNT\n
+		ACCORDING TO THE CARD ISSUER AGREEMENT\n\n
+		\C**** MERCHANT COPY ****\n
+		\CTHANK YOU\n\n\n\n\n\n
+}

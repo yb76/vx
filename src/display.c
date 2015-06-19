@@ -39,6 +39,10 @@
 #include "Input.h"
 #include "printer.h"
 
+	#include <av_globals.h>
+	#include <av_api.h>
+	#include <av_defines.h>
+
 /*
 **-----------------------------------------------------------------------------
 ** Constants
@@ -476,3 +480,78 @@ int DebugPrint (const char*template,...) {
 
 
 #endif
+
+int playSound(char *filename)
+{
+	// AVCodec SDK header files
+
+	int eventValue=0;
+	int rc = 0;
+
+	static int inited = 0;
+
+	#define FINISHEVENT (0x01<<10)
+	#define STATUSEVENT (0x01<<11)
+	#define ERROREVENT (0x01<<12)
+
+	if(!inited) {
+		rc = av_init();
+		if (rc != AV_SUCCESS) {
+			return(-1);
+		}
+		inited = 1;
+	}
+
+	rc = av_open(filename);
+	if (rc != AV_SUCCESS) {
+		return(-2);
+	}
+
+	eventValue = AV_AUDIO;
+	rc = av_set_param(AV_MODE,&eventValue);
+	if (rc != AV_SUCCESS) {
+		return(-3);
+	}
+
+	eventValue = FINISHEVENT;
+	rc = av_set_param(AV_FINISH_EVENT_ID,&eventValue);
+	if (rc != AV_SUCCESS) {
+		return(-4);
+	}
+
+	eventValue = ERROREVENT;
+	rc = av_set_param(AV_ERROR_EVENT_ID,&eventValue);
+	if (rc != AV_SUCCESS) {
+		return(-5);
+	}
+
+	rc = av_start();
+	if (rc != AV_SUCCESS) {
+		return(-6);
+	}
+
+	do {
+		// wait for event - user event will be from the AVCodec library and
+		// we accept keyboard events
+		int event = wait_evt (EVT_USER);
+
+		// if event from AVCodec, read it and
+		if(event & EVT_USER) {
+			event = read_user_event();
+			if(event & FINISHEVENT) {
+					break;
+			}
+			if(event&ERROREVENT) {
+				int error;
+				error = av_get_error();
+				break;
+			}
+
+		}
+	} while(1);
+
+	av_close();
+	//av_deinit();
+	return(0);
+}
+
