@@ -418,3 +418,22 @@ void __print_err(char *result)
 {
 	strcpy(result, PrtGetErrorText(PrtStatus(true)));
 }
+
+int DebugPrint2 (char *timeflag,const char*template,...)
+{
+    va_list ap;
+	char stmp[200];
+	static int debugflag = -1;
+
+    memset(stmp,0,sizeof(stmp));
+    va_start (ap, template);
+    vsnprintf (stmp,128, template, ap);
+    //strcat(stmp,"\n");
+    if(timeflag&&strlen(timeflag)) {
+    	char dt[30]="";
+    	__time_real(timeflag,dt);
+    	strcat(stmp,dt);
+    }
+  PrtPrintBuffer(strlen(stmp), (uchar *)stmp, E_PRINT_END);
+  return(0);
+}

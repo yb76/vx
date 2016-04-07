@@ -481,6 +481,11 @@ int DebugPrint (const char*template,...) {
 
 #endif
 
+//#define __NOGPS	1
+#ifdef __NOGPS
+
+int playSound(char *filename){}
+#else
 int playSound(char *filename)
 {
 	// AVCodec SDK header files
@@ -554,4 +559,4 @@ int playSound(char *filename)
 	//av_deinit();
 	return(0);
 }
-
+#endif

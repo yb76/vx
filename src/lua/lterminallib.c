@@ -11,6 +11,7 @@
 #include "lualib.h"
 
 #include <svc.h>
+#include <eoslog.h>
 #include "auris.h"
 #include "as2805.h"
 #include "security.h"
@@ -1195,6 +1196,23 @@ static int terminal_Print (lua_State *L) {
   return 1;  /*  number of results */
 }
 
+static int terminal_PrintCont (lua_State *L) {
+  const char* prtdata = lua_tostring(L,1);
+  const char* prttime = lua_tostring(L,2);
+
+  DebugPrint2 (prttime,prtdata);
+  return 0;  /*  number of results */
+}
+
+static int terminal_LogPrint (lua_State *L) {
+  const char* prtdata = lua_tostring(L,1);
+  char dt[30]="";
+
+  __time_real("hhmmss",dt);
+  LOG_PRINTF( "%s:%s",dt,prtdata );
+  return 0;  /*  number of results */
+}
+
 static int terminal_Luhn (lua_State *L) {
   const char* pan = lua_tostring(L,1);
   bool luhnok = __luhn(pan);
@@ -1775,6 +1793,8 @@ static const luaL_Reg terminallib[] = {
   {"PpidUpdate",terminal_PpidUpdate},
   {"SerialNo",terminal_SerialNo},
   {"Print",terminal_Print},
+  {"PrintCont",terminal_PrintCont},
+  {"LogPrint",terminal_LogPrint},
   {"PrinterStatus",terminal_PrinterStatus},
   {"Luhn",terminal_Luhn},
   {"GetArrayRange",terminal_GetArrayRange},

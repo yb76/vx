@@ -12,6 +12,7 @@
 
 #include <eoslog.h>
 #include <ceif.h>
+
 #include <vxgps.h>
 
 //==============================================================================
@@ -28,6 +29,19 @@
 
 struct gps_data_t g_stGpsData;
 
+//#define __NOGPS	1
+#ifdef __NOGPS
+
+int gps_check() {}
+int gps_setting(int getset, int value){}
+int iReadGPS(){}
+int iLogGPS(){}
+int iStopLibGPS(){}
+int iStartLibGPS(){}
+int iStartGPS(){}
+int iStopGPS(){}
+
+#else
 //==============================================================================
 //==============================================================================
 // FUNCTIONS
@@ -69,11 +83,14 @@ int iStartLibGPS(void)
 	const char *cpRet;
 	int iFlags;
 	int iRet;
+	char dt[30]="";
+
+	__time_real("hhmmss",dt);
 
 	// Get and print GPS Lib version
 	memset(cpVer, 0, sizeof(cpVer));
 	iRet = gps_version(cpVer);
-	LOG_PRINTF("gps_version() returned %d, Ver=%s.", iRet, cpVer);
+	LOG_PRINTF("time:%s,gps_version() returned %d, Ver=%s.", dt,iRet, cpVer);
 
 	// Init GPS structure and connect to GPSD
 	memset(&g_stGpsData, 0, sizeof(struct gps_data_t));
@@ -89,7 +106,8 @@ int iStartLibGPS(void)
 	// Set receive updates from GPSD
 	iFlags = WATCH_ENABLE | WATCH_JSON | WATCH_SCALED;
 	iRet = gps_stream(&g_stGpsData, iFlags, NULL);
-	LOG_PRINTF("gps_stream(0x%x) returned %d.", iFlags, iRet);
+	__time_real("hhmmss",dt);
+	LOG_PRINTF("time:%s,gps_stream(0x%x) returned %d.",dt, iFlags, iRet);
 	
 	gps_setting(1, 1);
 	return 0;
@@ -191,6 +209,9 @@ int gps_setting(int getset, int value)
 int gps_check()
 {
 	int istatus = gps_setting(0,0);
+	char dt[30]="";
+
+
 
 	if(istatus==2) { //started
 			unsigned long ltick =read_ticks();
@@ -204,15 +225,20 @@ int gps_check()
 			if(jsonvalue && strlen(jsonvalue)) oldTick = atol(jsonvalue);
 			UtilStrDup(&jsonvalue , NULL);
 			UtilStrDup(&sJsonObj , NULL);
-			if(oldTick && ltick - oldTick > 1000 * 60 * 5) { // 5 minutes
+			if(oldTick && ltick - oldTick > 1000 * 60 * 2) { // 2 minutes
 				int iRet = gps_read(&g_stGpsData);
 				if(iRet<0) {
-					LOG_PRINTF("gps lib restart");
+					__time_real("hhmmss",dt);
+					LOG_PRINTF("time:%s,gps lib restart",dt);
 					iStopLibGPS();
 					iStartLibGPS();
+					__time_real("hhmmss",dt);
+					LOG_PRINTF("time:%s,gps restarted",dt);
 				}
 			}
 
 	}
 	return(-1);
 }
+
+#endif

@@ -669,6 +669,7 @@ uchar InpGetKeyEvent(T_KEYBITMAP keyBitmap, T_EVTBITMAP * evtBitmap, T_INP_ENTRY
 				if(penDown >0 && new_touch_x > 0 && new_touch_x < 240 && new_touch_y > 0 && new_touch_y < 320)
 				{
 					int nAlphaBtn=0;
+					set_backlight(1);
 					for(nLoop = 0; nLoop <10 && MenuTch.buttons[nLoop].x2+MenuTch.buttons[nLoop].y2>0 ; nLoop++)
 					{
 						if((MenuTch.buttons[nLoop].x1 <= new_touch_x) && (MenuTch.buttons[nLoop].y1 <= new_touch_y) 
@@ -697,41 +698,18 @@ uchar InpGetKeyEvent(T_KEYBITMAP keyBitmap, T_EVTBITMAP * evtBitmap, T_INP_ENTRY
 		if (evt & EVT_SOKT) {
 			iReadGPS();
 			iGps = 1;
-		}
-		iGps = gps_check(evt); //Handle EVT_SOKT
-		if(iGps>0 )
-		{
-			static char gps_Lat_old[64]="";
-			static char gps_Lon_old[64]="";
-			char gps_Lat_new[64]="";
-			char gps_Lon_new[64]="";
-
-			char *sJsonObj = NULL;
-			char *jsonvalue = NULL;
-			int objlength = 0;
-
-			if(iGps==0)
-				iReadGPS();
-
-			sJsonObj = (char*)IRIS_GetObjectData( "GPS_CFG", &objlength);
-			jsonvalue =  (char*)IRIS_GetObjectTagValue( sJsonObj,  "LAT");
-			if(jsonvalue) strcpy(gps_Lat_new,jsonvalue);
-			UtilStrDup(&jsonvalue , NULL);
-			jsonvalue =  (char*)IRIS_GetObjectTagValue( sJsonObj,  "LON");
-			if(jsonvalue) strcpy(gps_Lon_new,jsonvalue);
-			UtilStrDup(&jsonvalue , NULL);
-			UtilStrDup(&sJsonObj , NULL);
-
-			if(strcmp(gps_Lat_old,gps_Lat_new) || strcmp(gps_Lon_old,gps_Lon_new)) {
-				if(gps_Lat_old[0]=='0' && gps_Lat_new[0] != '0')
-					myEvtBitmap = EVT_TIMEOUT; // no need to send timeout event
-				strcpy(gps_Lat_old,gps_Lat_new);
-				strcpy(gps_Lon_old,gps_Lon_new);
+			if(evt & EVT_KBD || evt & EVT_SCT_IN || evt & EVT_MCR) {
+				// need to break
+			} else {
+				// check if we need to restart GPS
+				iGps = gps_check(evt); //Handle EVT_SOKT
 			}
 		}
 
+
 		if((keyCode == 0x00)&& (evt & EVT_KBD))
 		{
+			set_backlight(1);
 			read(conHandle, (char *) &keyCode, 1);
 		}
 

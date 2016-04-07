@@ -59,7 +59,6 @@ static int g_signal=0;
 static int g_nowait=0;
 
 static int DebugPrint (const char*template,...) ;
-static int DebugPrint2 (const char*template,...) ;
 unsigned int inManageCEEvents (void);
 void voTranslateCEevt(int inCEEVT, char* chTranslatedEvent);
 int connect_nonblock(int sockHandle, struct sockaddr* paddr,int timeout);
@@ -130,7 +129,7 @@ static int SocketConnect (int* pSocketHandle,char * tHIP, int tPort, int conn_ti
 	*pSocketHandle = sockHandle;
 
 	LOG_PRINTF ( "[%s] SocketConnect: tHIP %s", __FUNCTION__, tHIP);
-	retVal = connect_nonblock (sockHandle, (struct sockaddr*)&sockHost, 15);
+	retVal = connect_nonblock (sockHandle, (struct sockaddr*)&sockHost, conn_timeout<10? 30 : conn_timeout);
 	if (retVal != 0)  {
 
 		LOG_PRINTF ( "[%s] connect nonblock FAILED: %d. errno: %d", __FUNCTION__, retVal, errno);
@@ -1070,30 +1069,6 @@ int inReceiveTCPCommunication(T_COMMS * psComms)
 	}
 }
 
-
-static int DebugPrint2 (const char*template,...) 
-{
-    va_list ap;
-	char stmp[200];
-	static int debugflag = -1;
-
-	if(debugflag == -1) {
-		char flag[30] = "";
-		memset(flag,0,sizeof(flag));
-		get_env("RISGPRSDEBUG", flag, sizeof(flag));
-		if(strncmp(flag,"YES",3) == 0)
-				debugflag = 1;
-		else debugflag = 0;
-	}
-	if(debugflag == 0) return 0;
-
-    memset(stmp,0,sizeof(stmp));
-    va_start (ap, template);
-    vsnprintf (stmp,128, template, ap);
-    strcat(stmp,"\n");
-  PrtPrintBuffer(strlen(stmp), (uchar *)stmp, E_PRINT_END);
-  return(0);
-}
 
 static int DebugPrint (const char*template,...) {
 
