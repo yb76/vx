@@ -564,22 +564,45 @@ static int terminal_LocateCpat (lua_State *L) {
       if(jsonvalue) {
 		char *p ;
 		strcpy(prefix, jsonvalue );
-		p = strchr( jsonvalue, 'F');	
-		if(p) {
+		p = strchr( jsonvalue, '-');
+		if(p) { // BIN RANGE
+			char val1[20] = "";
+			char val2[20] = "";
 			*p = 0;
-			if(strncmp(jsonvalue,cardprefix,strlen(jsonvalue)) == 0 )  {
+			strcpy(val1,jsonvalue);
+			strcpy(val2,p+1);
+			if(strncmp(cardprefix,val1,strlen(val1)) >= 0 && strncmp(cardprefix,val2,strlen(val2)) <= 0) {
 				found = true;
 				sprintf( jsontag,"AGC%d",i);
 				agc  =  (char*)IRIS_GetObjectTagValue( data, jsontag );
 				sprintf( jsontag,"CODE%d",i);
 				code  =  (char*)IRIS_GetObjectTagValue( data, jsontag );
-  				lua_pushstring(L, prefix);
-  				lua_pushstring(L, agc);
-  				lua_pushstring(L, code);
-				UtilStrDup(&agc,NULL);	
-				UtilStrDup(&code,NULL);	
-	  			UtilStrDup(&jsonvalue,NULL);
+				lua_pushstring(L, code); // store card name prefix in codeNN tag
+				lua_pushstring(L, agc);
+				lua_pushstring(L, code);
+				UtilStrDup(&agc,NULL);
+				UtilStrDup(&code,NULL);
+				UtilStrDup(&jsonvalue,NULL);
 				break;
+			}
+		} else {
+			p = strchr( jsonvalue, 'F');
+			if(p) {
+				*p = 0;
+				if(strncmp(jsonvalue,cardprefix,strlen(jsonvalue)) == 0 )  {
+					found = true;
+					sprintf( jsontag,"AGC%d",i);
+					agc  =  (char*)IRIS_GetObjectTagValue( data, jsontag );
+					sprintf( jsontag,"CODE%d",i);
+					code  =  (char*)IRIS_GetObjectTagValue( data, jsontag );
+					lua_pushstring(L, prefix);
+					lua_pushstring(L, agc);
+					lua_pushstring(L, code);
+					UtilStrDup(&agc,NULL);
+					UtilStrDup(&code,NULL);
+					UtilStrDup(&jsonvalue,NULL);
+					break;
+				}
 			}
 		}
 	  }
