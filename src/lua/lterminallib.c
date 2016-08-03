@@ -564,13 +564,13 @@ static int terminal_LocateCpat (lua_State *L) {
       if(jsonvalue) {
 		char *p ;
 		strcpy(prefix, jsonvalue );
-		p = strchr( jsonvalue, '-');
+		p = strchr( jsonvalue,'T');
 		if(p) { // BIN RANGE
-			char val1[20] = "";
-			char val2[20] = "";
-			*p = 0;
-			strcpy(val1,jsonvalue);
-			strcpy(val2,p+1);
+			char *val1;
+			char *val2;
+			*p = '\0';
+			val1 =jsonvalue;
+			val2 = p+1;
 			if(strncmp(cardprefix,val1,strlen(val1)) >= 0 && strncmp(cardprefix,val2,strlen(val2)) <= 0) {
 				found = true;
 				sprintf( jsontag,"AGC%d",i);
